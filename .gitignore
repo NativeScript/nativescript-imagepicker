@@ -1,0 +1,8 @@
+# Output
+dist
+
+# Dev dependencies
+node_modules
+
+# Example platforms
+/examples/ExampleImgPick/platforms/

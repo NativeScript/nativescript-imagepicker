@@ -1,0 +1,20 @@
+{
+  "description": "An example app using the image picker plugin.",
+  "readme": "# This is the source of an example application using the NativeScript image picker plugin.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/PanayotCankov/nativescript-imagepicker"
+  },
+  "nativescript": {
+    "id": "org.nativescript.ExampleImgPick",
+    "tns-ios": {
+      "version": "1.2.1"
+    },
+    "tns-android": {
+      "version": "1.2.0"
+    }
+  },
+  "dependencies": {
+    "imagepicker": "file:../../dist/package"
+  }
+}

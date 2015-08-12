@@ -1,0 +1,14 @@
+{
+	"description": "A plugin for the NativeScript framework implementing multiple image picker",
+	"repository": {
+	  "type": "git",
+	  "url": "https://github.com/PanayotCankov/nativescript-imagepicker"
+	},
+	"name": "imagepicker",
+	"version": "0.0.1",
+	"nativescript": {
+		"ios": "1.0.0",
+		"android": "1.0.0"
+	},
+	"main": "viewmodel.js"
+}
