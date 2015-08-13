@@ -12,6 +12,10 @@ module.exports = function(grunt) {
         cmd: 'npm pack ./package',
         cwd: 'dist/'
       },
+      tns_install: {
+        cmd: 'tns install',
+        cwd: 'examples/ExampleImgPick'
+      },
       tns_plugin_install: {
         cmd: 'tns plugin add ../../dist/package',
         cwd: 'examples/ExampleImgPick'
@@ -49,6 +53,7 @@ module.exports = function(grunt) {
     'mkdir:dist',
     'copy:package',
     'exec:npm_pack',
+    'exec:tns_install',
     'exec:tns_plugin_install'
   ]);
 
