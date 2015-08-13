@@ -1,5 +1,6 @@
 import data_observable = require("data/observable");
 import data_observablearray = require("data/observable-array");
+import frame = require("ui/frame");
 
 import image_source = require("image-source");
 
@@ -15,15 +16,12 @@ export class ObservableBase extends data_observable.Observable {
     }
 }
 
-export var selectionEvent: string = "selection";
-
-export interface SelectionData extends data_observable.EventData {
-    urls: string[];
-}
-
 export class ImagePicker extends ObservableBase {
     private _selection: data_observablearray.ObservableArray<Asset>;
     private _albums: data_observablearray.ObservableArray<Album>;
+
+    private _resolve;
+    private _reject;
 
     constructor() {
         super();
@@ -33,6 +31,21 @@ export class ImagePicker extends ObservableBase {
 
     authorize(): Thenable<void> {
         return Promise.reject(new Error("Not implemented"));
+    }
+
+    present(): Thenable<string[]> {
+        if (this._resolve || this._reject) {
+            return Promise.reject(new Error("Selection is allready in progress..."));
+        } else {
+            return new Promise<string[]>((resolve, reject) => {
+                this._resolve = resolve;
+                this._reject = reject;
+                frame.topmost().navigate({
+                    moduleName: "./tns_modules/imagepicker/albums",
+                    context: this
+                });
+            });
+        }
     }
 
     get albums() {
@@ -55,12 +68,24 @@ export class ImagePicker extends ObservableBase {
         return "Albums";
     }
 
+    cancel() {
+        this.notifyCanceled();
+    }
+
     done() {
-        console.log("Done!");
+        this.notifySelection([]);
+    }
+
+    protected notifyCanceled() {
+        if (this._reject) {
+            this._reject(new Error("Selection canceled."));
+        }
     }
 
     protected notifySelection(urls: string[]) {
-        this.notify({ eventName: selectionEvent, object: this, urls: urls });
+        if (this._resolve) {
+            this._resolve(urls);
+        }
     }
 }
 
@@ -165,6 +190,8 @@ class ImagePickerPH extends ImagePicker {
     private _thumbRequestOptions: PHImageRequestOptions;
     private _thumbRequestSize: CGSize;
 
+    private _initialized: boolean;
+
     constructor() {
         super();
 
@@ -177,26 +204,27 @@ class ImagePickerPH extends ImagePicker {
 
         this._thumbRequestSize = CGSizeMake(80, 80);
 
-        var smart = PHAssetCollection.fetchAssetCollectionsWithTypeSubtypeOptions(PHAssetCollectionType.PHAssetCollectionTypeSmartAlbum, PHAssetCollectionSubtype.PHAssetCollectionSubtypeAlbumRegular, null);
-        this.addAlbumsForFetchResult(smart);
-
-        var user = PHCollection.fetchTopLevelUserCollectionsWithOptions(null);
-        this.addAlbumsForFetchResult(user);
+        this._initialized = false;
     }
 
-    // TODO: Return a promise...
     authorize(): Thenable<void> {
         return new Promise<void>((resolve, reject) => {
+            var runloop = CFRunLoopGetCurrent();
             PHPhotoLibrary.requestAuthorization(function(result) {
                 if (result === PHAuthorizationStatus.PHAuthorizationStatusAuthorized) {
-                    resolve();
-                    console.log("Resolve! " + resolve);
+                    invokeOnRunLoop(runloop, resolve);
                 } else {
-                    console.log("Reject!");
-                    reject(new Error("Authorization failed. Status: " + PHAuthorizationStatus[result]));
+                    invokeOnRunLoop(runloop, () => {
+                        reject(new Error("Authorization failed. Status: " + PHAuthorizationStatus[result]));
+                    });
                 }
             });
         });
+    }
+
+    present(): Thenable<string[]> {
+        this.initialize();
+        return super.present();
     }
 
     addAlbumsForFetchResult(result: PHFetchResult) {
@@ -235,11 +263,25 @@ class ImagePickerPH extends ImagePicker {
             PHImageManager.defaultManager().requestImageDataForAssetOptionsResultHandler((<any>item)._phAsset, r, (data, uti, orientation, info) => {
                 var url = info.objectForKey("PHImageFileURLKey");
                 if (url) {
-                    urls.push(url);
+                    urls.push(url.toString());
                 }
             });
         });
         this.notifySelection(urls);
+    }
+
+    private initialize() {
+        if (this._initialized) {
+            return;
+        }
+
+        this._initialized = true;
+
+        var smart = PHAssetCollection.fetchAssetCollectionsWithTypeSubtypeOptions(PHAssetCollectionType.PHAssetCollectionTypeSmartAlbum, PHAssetCollectionSubtype.PHAssetCollectionSubtypeAlbumRegular, null);
+        this.addAlbumsForFetchResult(smart);
+
+        var user = PHCollection.fetchTopLevelUserCollectionsWithOptions(null);
+        this.addAlbumsForFetchResult(user);
     }
 }
 
@@ -286,6 +328,11 @@ class AssetPH extends Asset {
     }
 }
 
+var defaultRunLoopMode = NSString.stringWithString(kCFRunLoopCommonModes);
 
+function invokeOnRunLoop(runloop, func) {
+    CFRunLoopPerformBlock(runloop, defaultRunLoopMode, func);
+    CFRunLoopWakeUp(runloop);
+}
 
 

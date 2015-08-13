@@ -1,5 +1,6 @@
 <Page xmlns="http://www.nativescript.org/tns.xsd" loaded="pageLoaded">
-  <GridLayout>
-    <Button text="Select Images" tap="onSelectImagesTap" horizontalAlignment="center" verticalAlignment="center" />
+  <GridLayout rows="*, auto">
+    <ListView id="urls-list" />
+    <Button row="1" text="Select Images" tap="onSelectImagesTap" horizontalAlignment="center" verticalAlignment="center" />
   </GridLayout>
 </Page>

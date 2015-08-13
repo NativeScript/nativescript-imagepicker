@@ -6,6 +6,7 @@ var __extends = (this && this.__extends) || function (d, b) {
 };
 var data_observable = require("data/observable");
 var data_observablearray = require("data/observable-array");
+var frame = require("ui/frame");
 var image_source = require("image-source");
 function create() {
     if (true) {
@@ -24,7 +25,6 @@ var ObservableBase = (function (_super) {
     return ObservableBase;
 })(data_observable.Observable);
 exports.ObservableBase = ObservableBase;
-exports.selectionEvent = "selection";
 var ImagePicker = (function (_super) {
     __extends(ImagePicker, _super);
     function ImagePicker() {
@@ -34,6 +34,22 @@ var ImagePicker = (function (_super) {
     }
     ImagePicker.prototype.authorize = function () {
         return Promise.reject(new Error("Not implemented"));
+    };
+    ImagePicker.prototype.present = function () {
+        var _this = this;
+        if (this._resolve || this._reject) {
+            return Promise.reject(new Error("Selection is allready in progress..."));
+        }
+        else {
+            return new Promise(function (resolve, reject) {
+                _this._resolve = resolve;
+                _this._reject = reject;
+                frame.topmost().navigate({
+                    moduleName: "./tns_modules/imagepicker/albums",
+                    context: _this
+                });
+            });
+        }
     };
     Object.defineProperty(ImagePicker.prototype, "albums", {
         get: function () {
@@ -70,11 +86,21 @@ var ImagePicker = (function (_super) {
         enumerable: true,
         configurable: true
     });
+    ImagePicker.prototype.cancel = function () {
+        this.notifyCanceled();
+    };
     ImagePicker.prototype.done = function () {
-        console.log("Done!");
+        this.notifySelection([]);
+    };
+    ImagePicker.prototype.notifyCanceled = function () {
+        if (this._reject) {
+            this._reject(new Error("Selection canceled."));
+        }
     };
     ImagePicker.prototype.notifySelection = function (urls) {
-        this.notify({ eventName: exports.selectionEvent, object: this, urls: urls });
+        if (this._resolve) {
+            this._resolve(urls);
+        }
     };
     return ImagePicker;
 })(ObservableBase);
@@ -193,24 +219,26 @@ var ImagePickerPH = (function (_super) {
         this._thumbRequestOptions.deliveryMode = PHImageRequestOptionsDeliveryMode.PHImageRequestOptionsDeliveryModeOpportunistic;
         this._thumbRequestOptions.normalizedCropRect = CGRectMake(0, 0, 1, 1);
         this._thumbRequestSize = CGSizeMake(80, 80);
-        var smart = PHAssetCollection.fetchAssetCollectionsWithTypeSubtypeOptions(PHAssetCollectionType.PHAssetCollectionTypeSmartAlbum, PHAssetCollectionSubtype.PHAssetCollectionSubtypeAlbumRegular, null);
-        this.addAlbumsForFetchResult(smart);
-        var user = PHCollection.fetchTopLevelUserCollectionsWithOptions(null);
-        this.addAlbumsForFetchResult(user);
+        this._initialized = false;
     }
     ImagePickerPH.prototype.authorize = function () {
         return new Promise(function (resolve, reject) {
+            var runloop = CFRunLoopGetCurrent();
             PHPhotoLibrary.requestAuthorization(function (result) {
                 if (result === PHAuthorizationStatus.PHAuthorizationStatusAuthorized) {
-                    resolve();
-                    console.log("Resolve! " + resolve);
+                    invokeOnRunLoop(runloop, resolve);
                 }
                 else {
-                    console.log("Reject!");
-                    reject(new Error("Authorization failed. Status: " + PHAuthorizationStatus[result]));
+                    invokeOnRunLoop(runloop, function () {
+                        reject(new Error("Authorization failed. Status: " + PHAuthorizationStatus[result]));
+                    });
                 }
             });
         });
+    };
+    ImagePickerPH.prototype.present = function () {
+        this.initialize();
+        return _super.prototype.present.call(this);
     };
     ImagePickerPH.prototype.addAlbumsForFetchResult = function (result) {
         for (var i = 0; i < result.count; i++) {
@@ -246,11 +274,21 @@ var ImagePickerPH = (function (_super) {
             PHImageManager.defaultManager().requestImageDataForAssetOptionsResultHandler(item._phAsset, r, function (data, uti, orientation, info) {
                 var url = info.objectForKey("PHImageFileURLKey");
                 if (url) {
-                    urls.push(url);
+                    urls.push(url.toString());
                 }
             });
         });
         this.notifySelection(urls);
+    };
+    ImagePickerPH.prototype.initialize = function () {
+        if (this._initialized) {
+            return;
+        }
+        this._initialized = true;
+        var smart = PHAssetCollection.fetchAssetCollectionsWithTypeSubtypeOptions(PHAssetCollectionType.PHAssetCollectionTypeSmartAlbum, PHAssetCollectionSubtype.PHAssetCollectionSubtypeAlbumRegular, null);
+        this.addAlbumsForFetchResult(smart);
+        var user = PHCollection.fetchTopLevelUserCollectionsWithOptions(null);
+        this.addAlbumsForFetchResult(user);
     };
     return ImagePickerPH;
 })(ImagePicker);
@@ -293,3 +331,8 @@ var AssetPH = (function (_super) {
     };
     return AssetPH;
 })(Asset);
+var defaultRunLoopMode = NSString.stringWithString(kCFRunLoopCommonModes);
+function invokeOnRunLoop(runloop, func) {
+    CFRunLoopPerformBlock(runloop, defaultRunLoopMode, func);
+    CFRunLoopWakeUp(runloop);
+}

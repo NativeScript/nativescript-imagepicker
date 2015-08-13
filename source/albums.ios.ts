@@ -11,11 +11,14 @@ import viewmodel = require("./viewmodel");
 var imagePicker: viewmodel.ImagePicker;
 var page;
 
+var goingToAlbum: boolean = false;
+
 export import viewmodel = require("./viewmodel");
 
 export function onAlbumsItemTap(args) {
     var list = args.object;
     var topmost = ui_frame.topmost();
+    goingToAlbum = true;
     topmost.navigate({
         moduleName: "tns_modules/imagepicker/images",
         context: list.items.getItem(args.index)
@@ -37,10 +40,16 @@ export function pageLoaded(args) {
     }
 }
 
+export function navigatedFrom(args) {
+    if (!goingToAlbum) {
+        page.bindingContext.cancel();
+    }
+    goingToAlbum = false;
+}
+
 export function done(args) {
     var topmost = ui_frame.topmost();
     topmost.goBack();
-
     page.bindingContext.done();
 }
 

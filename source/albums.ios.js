@@ -2,10 +2,12 @@ var ui_listview = require("ui/list-view");
 var ui_frame = require("ui/frame");
 var imagePicker;
 var page;
+var goingToAlbum = false;
 exports.viewmodel = require("./viewmodel");
 function onAlbumsItemTap(args) {
     var list = args.object;
     var topmost = ui_frame.topmost();
+    goingToAlbum = true;
     topmost.navigate({
         moduleName: "tns_modules/imagepicker/images",
         context: list.items.getItem(args.index)
@@ -26,6 +28,13 @@ function pageLoaded(args) {
     }
 }
 exports.pageLoaded = pageLoaded;
+function navigatedFrom(args) {
+    if (!goingToAlbum) {
+        page.bindingContext.cancel();
+    }
+    goingToAlbum = false;
+}
+exports.navigatedFrom = navigatedFrom;
 function done(args) {
     var topmost = ui_frame.topmost();
     topmost.goBack();
