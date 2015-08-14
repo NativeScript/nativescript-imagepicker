@@ -11,17 +11,19 @@
 		</ActionBar>
 	</Page.actionBar>
 
-	<Repeater id="images-list" items="{{ assets }}">
-		<Repeater.itemsLayout>
-			<WrapLayout />
-		</Repeater.itemsLayout>
-		<Repeater.itemTemplate>
-			<GridLayout width="94" height="94" tap="{{ toggleSelection }}">
-				<Image opacity="{{ selected ? 0.7 : 1 }}" imageSource="{{ thumb }}" />
-				<Border opacity="{{ selected ? 1 : 0 }}" width="24" height="24" margin="2" horizontalAlignment="right" verticalAlignment="bottom" borderWidth="1" borderColor="white" backgroundColor="blue" borderRadius="12">
-				</Border>
-			</GridLayout>
-		</Repeater.itemTemplate>
-	</Repeater>
+	<ScrollView>
+		<Repeater id="images-list" items="{{ assets }}">
+			<Repeater.itemsLayout>
+				<WrapLayout />
+			</Repeater.itemsLayout>
+			<Repeater.itemTemplate>
+				<GridLayout width="94" height="94" tap="{{ toggleSelection }}">
+					<Image opacity="{{ selected ? 0.7 : 1 }}" imageSource="{{ thumb }}" />
+					<Border opacity="{{ selected ? 1 : 0 }}" width="24" height="24" margin="2" horizontalAlignment="right" verticalAlignment="bottom" borderWidth="1" borderColor="white" backgroundColor="blue" borderRadius="12">
+					</Border>
+				</GridLayout>
+			</Repeater.itemTemplate>
+		</Repeater>
+	</ScrollView>
 
 </Page>
