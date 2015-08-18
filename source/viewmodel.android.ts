@@ -127,6 +127,7 @@ export class ImagePicker {
 
                 if (requestCode == RESULT_CODE_PICKER_IMAGES) {
                     if (resultCode == Activity.RESULT_OK) {
+
                         try {
                             var results = [];
 
@@ -147,14 +148,21 @@ export class ImagePicker {
                                 results.push(new SelectedAsset(uri));
                             }
 
+                            application.android.off(application.AndroidApplication.activityResultEvent, onResult);
                             resolve(results);
                             return;
+
                         } catch(e) {
+                            application.android.off(application.AndroidApplication.activityResultEvent, onResult);
                             reject(e);
+                            return;
+
                         }
                     } else {
+                        application.android.off(application.AndroidApplication.activityResultEvent, onResult);
                         reject(new Error("Image picker activity result code " + resultCode));
                         return;
+
                     }
                 }
             };
