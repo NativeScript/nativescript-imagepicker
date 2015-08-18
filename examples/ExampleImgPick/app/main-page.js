@@ -1,15 +1,17 @@
 var frame = require("ui/frame");
-var imagepicker = require("imagepicker");
+var platform = require("platform");
 
+var page;
 var list;
 
 function pageLoaded(args) {
-	var page = args.object;
+	page = args.object;
 	list = page.getViewById("urls-list");
 }
 exports.pageLoaded = pageLoaded;
 
 function onSelectImagesTap(args) {
+	var imagepicker = require("imagepicker");
 	var context = imagepicker.create();
 	context
 		.authorize()
@@ -17,14 +19,12 @@ function onSelectImagesTap(args) {
 			list.items = [];
 			return context.present();
 		})
-		.then(function(urls) {
+		.then(function(selection) {
 			console.log("Selection done:");
-			urls.forEach(function(url) {
-				console.log(" - " + url);
+			selection.forEach(function(selected) {
+				console.log(" - " + selected.uri);
 			});
-			list.items = urls.map(function(url) {
-				return url.substring(url.lastIndexOf("/"));
-			});
+			list.items = selection;
 		}).catch(function (e) {
 			console.log(e);
 		});

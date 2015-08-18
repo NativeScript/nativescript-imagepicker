@@ -23,6 +23,10 @@ module.exports = function(grunt) {
       run_ios_emulator: {
         cmd: 'tns run ios --emulator --device iPhone-6',
         cwd: 'examples/ExampleImgPick'
+      },
+      run_android_emulator: {
+        cmd: 'tns run android --emulator',
+        cwd: 'examples/ExampleImgPick'
       }
     },
     copy: {
@@ -61,5 +65,10 @@ module.exports = function(grunt) {
     'default',
     'exec:run_ios_emulator'
   ]);
+
+  grunt.registerTask('android', [
+    'default',
+    'exec:run_android_emulator'
+  ])
 };
 

@@ -12,7 +12,8 @@
     },
     "tns-android": {
       "version": "1.2.0"
-    }
+    },
+    "node-modules-cache-path": "/Users/cankov/GitRoot/NativeScript/nativescript-imagepicker/examples/ExampleImgPick/tmp/funnel-output_path-yx5Kn6d9.tmp"
   },
   "dependencies": {
     "imagepicker": "file:../../dist/package"

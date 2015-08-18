@@ -82,9 +82,9 @@ export class ImagePicker extends ObservableBase {
         }
     }
 
-    protected notifySelection(urls: string[]) {
+    protected notifySelection(results: SelectedAsset[]) {
         if (this._resolve) {
-            this._resolve(urls);
+            this._resolve(results);
         }
     }
 }
@@ -125,7 +125,21 @@ export class Album extends ObservableBase {
     }
 }
 
-export class Asset extends ObservableBase {
+export class SelectedAsset extends ObservableBase {
+    get thumb(): image_source.ImageSource {
+        return null;
+    }
+
+    get uri(): string {
+        return null;
+    }
+
+    get fileUri(): string {
+        return null;
+    }
+}
+
+export class Asset extends SelectedAsset {
 
     private _selected: boolean;
     private _album: Album;
@@ -256,18 +270,11 @@ class ImagePickerPH extends ImagePicker {
     }
 
     done() {
-        var r = PHImageRequestOptions.alloc().init();
-        r.synchronous = true;
-        var urls = [];
-        this.selection.forEach(item => {
-            PHImageManager.defaultManager().requestImageDataForAssetOptionsResultHandler((<any>item)._phAsset, r, (data, uti, orientation, info) => {
-                var url = info.objectForKey("PHImageFileURLKey");
-                if (url) {
-                    urls.push(url.toString());
-                }
-            });
-        });
-        this.notifySelection(urls);
+        var result = [];
+        for (var i = 0; i < this.selection.length; ++i) {
+            result.push(this.selection.getItem(i));
+        }
+        this.notifySelection(result);
     }
 
     private initialize() {
@@ -316,6 +323,7 @@ class AlbumPH extends Album {
 
 class AssetPH extends Asset {
     private _phAsset: PHAsset;
+    private static _uriRequestOptions: PHImageRequestOptions;
 
     constructor(album: AlbumPH, phAsset: PHAsset) {
         super(album);
@@ -325,6 +333,26 @@ class AssetPH extends Asset {
     protected onThumbRequest() {
         super.onThumbRequest();
         (<ImagePickerPH>(<AlbumPH>this.album).imagePicker).createPHImageThumb(this, this._phAsset);
+    }
+
+    get uri(): string {
+        return this._phAsset.localIdentifier.toString();
+    }
+
+    get fileUri(): string {
+        if (!AssetPH._uriRequestOptions) {
+            AssetPH._uriRequestOptions = PHImageRequestOptions.alloc().init();
+            AssetPH._uriRequestOptions.synchronous = true;
+        }
+
+        var uri;
+        PHImageManager.defaultManager().requestImageDataForAssetOptionsResultHandler(this._phAsset, AssetPH._uriRequestOptions, (data, uti, orientation, info) => {
+            uri = info.objectForKey("PHImageFileURLKey");
+        });
+        if (uri) {
+            return uri.toString();
+        }
+        return undefined;
     }
 }
 

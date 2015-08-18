@@ -4,5 +4,9 @@ dist
 # Dev dependencies
 node_modules
 
+# Source, written in TypeScript so JavaScript is not necessary
+/source/**/*.js
+
 # Example platforms
 /examples/ExampleImgPick/platforms/
+/examples/ExampleImgPick/lib/

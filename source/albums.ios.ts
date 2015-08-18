@@ -6,14 +6,8 @@ import image_source = require("image-source");
 import ui_listview = require("ui/list-view");
 import ui_frame = require("ui/frame");
 
-import viewmodel = require("./viewmodel");
-
-var imagePicker: viewmodel.ImagePicker;
 var page;
-
 var goingToAlbum: boolean = false;
-
-export import viewmodel = require("./viewmodel");
 
 export function onAlbumsItemTap(args) {
     var list = args.object;
