@@ -1,14 +1,16 @@
 <Page xmlns="http://www.nativescript.org/tns.xsd" loaded="pageLoaded">
-  <GridLayout rows="*, auto">
-    <ListView id="urls-list">
+  <GridLayout rows="auto, *, auto">
+  	<Button row="0" text="Upload" tap="onUploadTap" horizontalAlignment="center" verticalAlignment="center" />
+    <ListView id="urls-list" row="1">
 		<ListView.itemTemplate>
-			<GridLayout columns="94, *" rows="*, *">
-				<Image rowSpan="2" width="94" height="94" src="{{ thumb }}" />
+			<GridLayout columns="94, *" rows="*, *, *">
+				<Image rowSpan="3" width="94" height="94" src="{{ thumb }}" />
 				<Label col="1" text="{{ uri }}" />
 				<Label col="1" row="1" text="{{ fileUri }}" />
+				<Progress col="1" row="2" value="{{ upload }}" maxValue="{{ totalUpload }}" />
 			</GridLayout>
 		</ListView.itemTemplate>
     </ListView>
-    <Button row="1" text="Select Images" tap="onSelectImagesTap" horizontalAlignment="center" verticalAlignment="center" />
+    <Button row="2" text="Select Images" tap="onSelectImagesTap" horizontalAlignment="center" verticalAlignment="center" />
   </GridLayout>
 </Page>

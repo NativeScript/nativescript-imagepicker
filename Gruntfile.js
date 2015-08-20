@@ -50,6 +50,41 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-clean');
   grunt.loadNpmTasks('grunt-mkdir');
 
+  grunt.registerTask('http-dev', 'Host handle uploads.', function() {
+
+    var done = this.async();
+
+    var http = require("http");
+    var fs = require("fs");
+
+    var server = http.createServer(function(request, response) {
+      var fileName = request.headers["file-name"];
+      console.log(request.method + "Request! Content-Length: " + request.headers["content-length"] + ", file-name: " + fileName);
+
+      var out = "tests/www/uploads/upload-" + new Date().getTime() + "-" + fileName;
+      console.log("Output in: " + out);
+      request.pipe(fs.createWriteStream(out, { flags: 'w', encoding: null, fd: null, mode: 0666 }));
+
+      request.on('end', function () {
+        setTimeout(function() {
+          console.log("Sending back response... (" + out + ")");
+          var body = "Upload complete!";
+          response.writeHead(200, "Done!", { "Content-Type": "text/plain", "Content-Length": body.length });
+          response.write(body);
+          response.end();
+        }, 10000);
+      });
+
+      request.on('error', function(e) {
+        console.log('error!');
+        console.log(e);
+      });
+    });
+
+    server.listen(8282);
+    console.log("Server is listening");
+  });
+
   // Default task(s).
   grunt.registerTask('default', [
     'clean:dist',
