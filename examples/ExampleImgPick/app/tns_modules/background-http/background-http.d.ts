@@ -23,6 +23,13 @@ declare module "background-http" {
 
     interface Session {
         uploadFile(fileUri: string, request: Request): BackgroundHttpTask;
+        
+        /**
+         * The data argument should be NSData for iOS.
+         * Not implemented yet for Android.
+         * In future it will be an ArrayBuffer (that may be wrapping NSData).
+         */
+        uploadData(data: any, request: Request): BackgroundHttpTask;
     }
 
     interface Request {

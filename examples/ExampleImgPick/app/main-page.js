@@ -1,5 +1,6 @@
 var frame = require("ui/frame");
 var platform = require("platform");
+var fs = require("file-system");
 
 var page;
 var list;
@@ -38,6 +39,10 @@ function onUploadTap(args) {
 		return;
 	}
 
+	if (!page.ios) {
+		return;
+	}
+
 	var bghttp = require("background-http");
 
 	var session = bghttp.session("com.daycare.admin:upload");
@@ -45,27 +50,41 @@ function onUploadTap(args) {
 	selection.forEach(function(asset) {
 		
 		var name = asset.fileUri.split("/").pop();
-		console.log(" - (" + name + ") " + asset.fileUri);
-		
-		var request = {
-			// url: "http://localhost:8282",
-			url: "http://posttestserver.com/post.php",
-			method: "POST",
-			headers: {
-				"Content-Type": "application/octet-stream",
-				"File-Name": name
-			},
-			description: "Uploading " + name,
-		};
 
-		var task = session.uploadFile(asset.fileUri, request);
-		asset.task = task;
-		// We do not support bindings such as {{ task.upload }} yet so we will get the progress from the task and set it on the asset.
-		task.on("propertyChange", function(args) {
-			if (args.propertyName == "upload" || args.propertyName == "totalUpload") {
-				asset.set(args.propertyName, args.value);
-			}
-		});
+		asset.data()
+			.then(function(data) {
+
+				// Saving to temporary, 4 lines iOS only:
+				var tempFileURL = NSURL.fileURLWithPath(NSTemporaryDirectory() + "/upload-" + new Date().getTime().toString() + name);
+				console.log("Temporary: " + tempFileURL);
+				data.writeToURLAtomically(tempFileURL, false);
+				tempFileURL = tempFileURL.toString();
+
+				var request = {
+					// url: "http://localhost:8282",
+					url: "http://posttestserver.com/post.php",
+					method: "POST",
+					headers: {
+						"Content-Type": "application/octet-stream",
+						"File-Name": name
+					},
+					description: "Uploading " + name,
+				};
+
+				var task = session.uploadFile(tempFileURL, request);
+
+				asset.task = task;
+
+				// We do not support bindings such as {{ task.upload }} yet so we will get the progress from the task and set it on the asset.
+				task.on("propertyChange", function(args) {
+					if (args.propertyName == "upload" || args.propertyName == "totalUpload") {
+						asset.set(args.propertyName, args.value);
+					}
+				});
+			})
+			.catch(function(e) {
+				console.log("Failed getting data for " + name + ": " + e);
+			});
 	});
 }
 exports.onUploadTap = onUploadTap;

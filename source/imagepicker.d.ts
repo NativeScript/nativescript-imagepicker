@@ -24,6 +24,12 @@ declare module "imagepicker" {
          * The image data should be obtained using the other instance members.
          */
         fileUri: string;
+
+        /**
+         * For iOS Returns a promise with NSData representation of the asset.
+         * Note that in future versions it should return ArrayBuffer.
+         */
+        data(): Thenable<any>;
     }
 
     export class ImagePicker {
