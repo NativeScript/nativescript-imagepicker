@@ -18,6 +18,10 @@ export class SelectedAsset extends observable.Observable {
         this._thumbRequested = false;
     }
 
+    data(): Thenable<any> {
+        return Promise.reject(new Error("Not implemented."));
+    }
+    
     get thumb() {
         if (!this._thumbRequested) {
             this.decodeThumbUri();

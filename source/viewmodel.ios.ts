@@ -190,6 +190,10 @@ export class Asset extends SelectedAsset {
         this.selected = !this.selected;
     }
 
+    data(): Thenable<any> {
+        return Promise.reject(new Error("Not implemented."));
+    }
+
     protected setThumb(value: image_source.ImageSource) {
         this._thumb = value;
         this.notifyPropertyChanged("thumb", this._thumb);
@@ -199,6 +203,7 @@ export class Asset extends SelectedAsset {
     }
 }
 
+// iOS8+ Photo framework based view model implementation...
 class ImagePickerPH extends ImagePicker {
 
     private _thumbRequestOptions: PHImageRequestOptions;
@@ -209,7 +214,6 @@ class ImagePickerPH extends ImagePicker {
     constructor() {
         super();
 
-        // iOS8+ Photo framework based view model implementation...
         this._thumbRequestOptions = PHImageRequestOptions.alloc().init();
         this._thumbRequestOptions.resizeMode = PHImageRequestOptionsResizeMode.PHImageRequestOptionsResizeModeExact;
         this._thumbRequestOptions.synchronous = false;
@@ -353,6 +357,23 @@ class AssetPH extends Asset {
             return uri.toString();
         }
         return undefined;
+    }
+
+    data(): Thenable<any> {
+        return new Promise((resolve, reject) => {
+            var runloop = CFRunLoopGetCurrent();
+            PHImageManager.defaultManager().requestImageDataForAssetOptionsResultHandler(this._phAsset, null, (data, dataUTI, orientation, info) => {
+                if (data) {
+                    invokeOnRunLoop(runloop, () => {
+                        resolve(data);
+                    });
+                } else {
+                    invokeOnRunLoop(runloop, () => {
+                        reject(new Error("Failed to get image data."));
+                    });
+                }
+            });
+        });
     }
 }
 
