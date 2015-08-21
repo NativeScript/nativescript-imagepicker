@@ -106,6 +106,16 @@ export class SelectedAsset extends observable.Observable {
 }
 
 export class ImagePicker {
+    private _options;
+
+    constructor(options) {
+        this._options = options;
+    }
+
+    get mode() {
+        return this._options && this._options.mode && this._options.mode.toLowerCase() === 'single' ? 'single' : 'multiple';
+    }
+
     authorize(): Thenable<void> {
         return Promise.resolve<void>();
     }
@@ -171,7 +181,10 @@ export class ImagePicker {
             intent.setType("image/*");
 
             // TODO: Use (<any>android).content.Intent.EXTRA_ALLOW_MULTIPLE
-            intent.putExtra("android.intent.extra.ALLOW_MULTIPLE", true);
+            if (this.mode === 'multiple') {
+                intent.putExtra("android.intent.extra.ALLOW_MULTIPLE", true);
+            }
+            
             intent.setAction(Intent.ACTION_GET_CONTENT);
 
             var chooser = Intent.createChooser(intent, "Select Picture");
@@ -180,6 +193,6 @@ export class ImagePicker {
     }
 }
 
-export function create(): ImagePicker {
-    return new ImagePicker();
+export function create(options): ImagePicker {
+    return new ImagePicker(options);
 }

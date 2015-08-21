@@ -1,5 +1,5 @@
 <Page xmlns="http://www.nativescript.org/tns.xsd" loaded="pageLoaded">
-  <GridLayout rows="auto, *, auto">
+  <GridLayout rows="auto, *, auto, auto">
   	<Button row="0" text="Upload" tap="onUploadTap" horizontalAlignment="center" verticalAlignment="center" />
     <ListView id="urls-list" row="1">
 		<ListView.itemTemplate>
@@ -11,6 +11,7 @@
 			</GridLayout>
 		</ListView.itemTemplate>
     </ListView>
-    <Button row="2" text="Select Images" tap="onSelectImagesTap" horizontalAlignment="center" verticalAlignment="center" />
+    <Button row="2" text="Pick Single" tap="onSelectSingleTap" horizontalAlignment="center" />
+    <Button row="3" text="Pick Multiple" tap="onSelectMultipleTap" horizontalAlignment="center" />
   </GridLayout>
 </Page>

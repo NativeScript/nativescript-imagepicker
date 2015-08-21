@@ -12,9 +12,25 @@ function pageLoaded(args) {
 }
 exports.pageLoaded = pageLoaded;
 
-function onSelectImagesTap(args) {
+function onSelectMultipleTap(args) {
 	var imagepicker = require("imagepicker");
-	var context = imagepicker.create();
+	var context = imagepicker.create({
+		mode: "multiple"
+	});
+	startSelection(context);
+}
+exports.onSelectMultipleTap = onSelectMultipleTap;
+
+function onSelectSingleTap(args) {
+	var imagepicker = require("imagepicker");
+	var context = imagepicker.create({
+		mode: "single"
+	});	
+	startSelection(context);
+}
+exports.onSelectSingleTap = onSelectSingleTap;
+
+function startSelection(context) {
 	context
 		.authorize()
 		.then(function() {
@@ -32,7 +48,6 @@ function onSelectImagesTap(args) {
 			console.log(e);
 		});
 }
-exports.onSelectImagesTap = onSelectImagesTap;
 
 function onUploadTap(args) {
 	if (!selection || selection.length <= 0) {
