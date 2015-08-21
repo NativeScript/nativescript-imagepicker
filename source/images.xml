@@ -6,7 +6,8 @@
 				<NavigationButton text="Albums" />
 			</ActionBar.navigationButton>
 			<ActionBar.actionItems>
-				<ActionItem text="{{ imagePicker.selection.length, imagePicker.doneText + ' (' + imagePicker.selection.length + ')' }}" ios.position="right" tap="done" />
+				<!-- enabled="{{ selection.length > 0 }}" -->
+				<ActionItem  text="{{ imagePicker.selection.length, imagePicker.doneText + (imagePicker.mode === 'single' ? '' : ' (' + imagePicker.selection.length + ')') }}" ios.position="right" tap="done" />
 			</ActionBar.actionItems>
 		</ActionBar>
 	</Page.actionBar>

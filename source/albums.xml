@@ -5,7 +5,8 @@
 				<NavigationButton text="{{ cancelText }}" />
 			</ActionBar.navigationButton>
 			<ActionBar.actionItems>
-				<ActionItem text="{{ selection.length, doneText + ' (' + selection.length + ')' }}" ios.position="right" tap="done" />
+				<!-- enabled="{{ selection.length > 0 }}" -->
+				<ActionItem text="{{ selection.length, doneText + (mode === 'single' ? '' : ' (' + selection.length + ')') }}" ios.position="right" tap="done" />
 			</ActionBar.actionItems>
 		</ActionBar>
 	</Page.actionBar>

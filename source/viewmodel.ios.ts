@@ -4,9 +4,9 @@ import frame = require("ui/frame");
 
 import image_source = require("image-source");
 
-export function create(): ImagePicker {
-    if (true /* iOS8+ */) {
-        return new ImagePickerPH();
+export function create(options?): ImagePicker {
+    if (true /* TODO: iOS8+, consider implementation for iOS7. */) {
+        return new ImagePickerPH(options);
     }
 }
 
@@ -23,10 +23,13 @@ export class ImagePicker extends ObservableBase {
     private _resolve;
     private _reject;
 
-    constructor() {
+    protected _options;
+
+    constructor(options) {
         super();
         this._selection = new data_observablearray.ObservableArray<Asset>();
         this._albums = new data_observablearray.ObservableArray<Album>();
+        this._options = options;
     }
 
     authorize(): Thenable<void> {
@@ -66,6 +69,10 @@ export class ImagePicker extends ObservableBase {
 
     get albumsText() {
         return "Albums";
+    }
+
+    get mode() {
+        return this._options && this._options.mode && this._options.mode.toLowerCase() === 'single' ? 'single' : 'multiple';
     }
 
     cancel() {
@@ -173,6 +180,11 @@ export class Asset extends SelectedAsset {
         var index = this.album.imagePicker.selection.indexOf(this);
         if (value) {
             this._selected = true;
+            if (this.album.imagePicker.mode === "single") {
+                if (this.album.imagePicker.selection.length > 0) {
+                    this.album.imagePicker.selection.getItem(0).selected = false;
+                }
+            }
             if (index < 0) {
                 this.album.imagePicker.selection.push(this);
             }
@@ -182,7 +194,7 @@ export class Asset extends SelectedAsset {
                 this.album.imagePicker.selection.splice(index, 1);
             }
         }
-        // TODO: Push in the image picker selected items array...
+        
         this.notifyPropertyChanged("selected", this.selected);
     }
 
@@ -211,8 +223,8 @@ class ImagePickerPH extends ImagePicker {
 
     private _initialized: boolean;
 
-    constructor() {
-        super();
+    constructor(options) {
+        super(options);
 
         this._thumbRequestOptions = PHImageRequestOptions.alloc().init();
         this._thumbRequestOptions.resizeMode = PHImageRequestOptionsResizeMode.PHImageRequestOptionsResizeModeExact;

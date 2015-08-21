@@ -46,5 +46,15 @@ declare module "imagepicker" {
         present(): Thenable<SelectedAsset[]>;
     }
 
-    export function create(): ImagePicker;
+    /**
+     * Provide options for the image picker.
+     */
+    interface Options {
+        /**
+         * Set the picker mode. Supported modes: "single" or "multiple" (default).
+         */
+        selectionMode?: string;
+    }
+
+    export function create(options?: Options): ImagePicker;
 }
