@@ -22,7 +22,7 @@ export class SelectedAsset extends observable.Observable {
         return Promise.reject(new Error("Not implemented."));
     }
     
-    get thumb() {
+    get thumb(): imagesource.ImageSource {
         if (!this._thumbRequested) {
             this.decodeThumbUri();
         }
@@ -116,7 +116,7 @@ export class ImagePicker {
         this._options = options;
     }
 
-    get mode() {
+    get mode(): string {
         return this._options && this._options.mode && this._options.mode.toLowerCase() === 'single' ? 'single' : 'multiple';
     }
 
@@ -124,7 +124,7 @@ export class ImagePicker {
         return Promise.resolve<void>();
     }
 
-    present(): Thenable<SelectedAsset> {
+    present(): Thenable<SelectedAsset[]> {
         return new Promise((resolve, reject) => {
 
             // WARNING: If we want to support multiple pickers we will need to have a range of IDs here:

@@ -11,7 +11,7 @@ export function create(options?): ImagePicker {
 }
 
 export class ObservableBase extends data_observable.Observable {
-    protected notifyPropertyChanged(propertyName: string, value: any) {
+    protected notifyPropertyChanged(propertyName: string, value: any): void {
         this.notify({ object: this, eventName: data_observable.Observable.propertyChangeEvent, propertyName: propertyName, value: value });
     }
 }
@@ -36,11 +36,11 @@ export class ImagePicker extends ObservableBase {
         return Promise.reject(new Error("Not implemented"));
     }
 
-    present(): Thenable<string[]> {
+    present(): Thenable<SelectedAsset[]> {
         if (this._resolve || this._reject) {
             return Promise.reject(new Error("Selection is allready in progress..."));
         } else {
-            return new Promise<string[]>((resolve, reject) => {
+            return new Promise<SelectedAsset[]>((resolve, reject) => {
                 this._resolve = resolve;
                 this._reject = reject;
                 frame.topmost().navigate({
@@ -51,45 +51,45 @@ export class ImagePicker extends ObservableBase {
         }
     }
 
-    get albums() {
+    get albums(): data_observablearray.ObservableArray<Album> {
         return this._albums;
     }
 
-    get selection() {
+    get selection(): data_observablearray.ObservableArray<Asset> {
         return this._selection;
     }
 
-    get doneText() {
+    get doneText(): string {
         return "Done";
     }
 
-    get cancelText() {
+    get cancelText(): string {
         return "Cancel";
     }
 
-    get albumsText() {
+    get albumsText(): string {
         return "Albums";
     }
 
-    get mode() {
+    get mode(): string {
         return this._options && this._options.mode && this._options.mode.toLowerCase() === 'single' ? 'single' : 'multiple';
     }
 
-    cancel() {
+    cancel(): void {
         this.notifyCanceled();
     }
 
-    done() {
+    done(): void {
         this.notifySelection([]);
     }
 
-    protected notifyCanceled() {
+    protected notifyCanceled(): void {
         if (this._reject) {
             this._reject(new Error("Selection canceled."));
         }
     }
 
-    protected notifySelection(results: SelectedAsset[]) {
+    protected notifySelection(results: SelectedAsset[]): void {
         if (this._resolve) {
             this._resolve(results);
         }
@@ -114,19 +114,19 @@ export class Album extends ObservableBase {
         return this._imagePicker;
     }
 
-    get title() {
+    get title(): string {
         return this._title;
     }
 
-    get assets() {
+    get assets(): data_observablearray.ObservableArray<Asset> {
         return this._assets;
     }
 
-    get thumb() {
+    get thumb(): image_source.ImageSource {
         return this._thumb;
     }
 
-    protected setThumb(value: image_source.ImageSource) {
+    protected setThumb(value: image_source.ImageSource): void {
         this._thumb = value;
         this.notifyPropertyChanged("thumb", value);
     }
@@ -198,7 +198,7 @@ export class Asset extends SelectedAsset {
         this.notifyPropertyChanged("selected", this.selected);
     }
 
-    toggleSelection(args) {
+    toggleSelection(args): void {
         this.selected = !this.selected;
     }
 
@@ -206,12 +206,12 @@ export class Asset extends SelectedAsset {
         return Promise.reject(new Error("Not implemented."));
     }
 
-    protected setThumb(value: image_source.ImageSource) {
+    protected setThumb(value: image_source.ImageSource): void {
         this._thumb = value;
         this.notifyPropertyChanged("thumb", this._thumb);
     }
 
-    protected onThumbRequest() {
+    protected onThumbRequest(): void {
     }
 }
 
@@ -252,12 +252,12 @@ class ImagePickerPH extends ImagePicker {
         });
     }
 
-    present(): Thenable<string[]> {
+    present(): Thenable<SelectedAsset[]> {
         this.initialize();
         return super.present();
     }
 
-    addAlbumsForFetchResult(result: PHFetchResult) {
+    addAlbumsForFetchResult(result: PHFetchResult): void {
         for (var i = 0; i < result.count; i++) {
             var item = result.objectAtIndex(i);
             if (item.isKindOfClass(PHAssetCollection)) {
@@ -268,7 +268,7 @@ class ImagePickerPH extends ImagePicker {
         }
     }
 
-    addAlbumForAssetCollection(assetCollection: PHAssetCollection) {
+    addAlbumForAssetCollection(assetCollection: PHAssetCollection): void {
         var album = new AlbumPH(this, assetCollection.localizedTitle);
         var pfAssets = PHAsset.fetchAssetsInAssetCollectionOptions(assetCollection, null);
         album.addAssetsForFetchResult(pfAssets);
@@ -277,7 +277,7 @@ class ImagePickerPH extends ImagePicker {
         }
     }
 
-    createPHImageThumb(target, asset: PHAsset) {
+    createPHImageThumb(target, asset: PHAsset): void {
         PHImageManager.defaultManager().requestImageForAssetTargetSizeContentModeOptionsResultHandler(asset, this._thumbRequestSize, PHImageContentMode.PHImageContentModeAspectFill, this._thumbRequestOptions, function(target, uiImage, info) {
             var imageSource = new image_source.ImageSource();
             imageSource.setNativeSource(uiImage);
@@ -285,7 +285,7 @@ class ImagePickerPH extends ImagePicker {
         }.bind(this, target));
     }
 
-    done() {
+    done(): void {
         var result = [];
         for (var i = 0; i < this.selection.length; ++i) {
             result.push(this.selection.getItem(i));
@@ -293,7 +293,7 @@ class ImagePickerPH extends ImagePicker {
         this.notifySelection(result);
     }
 
-    private initialize() {
+    private initialize(): void {
         if (this._initialized) {
             return;
         }
@@ -316,7 +316,7 @@ class AlbumPH extends Album {
         this._setThumb = false;
     }
 
-    addAssetsForFetchResult(result: PHFetchResult) {
+    addAssetsForFetchResult(result: PHFetchResult): void {
         for (var i = 0; i < result.count; i++) {
             var asset = result.objectAtIndex(i);
             if (asset.isKindOfClass(PHAsset)) {
@@ -327,7 +327,7 @@ class AlbumPH extends Album {
         }
     }
 
-    addAsset(asset: PHAsset) {
+    addAsset(asset: PHAsset): void {
         var item = new AssetPH(this, asset);
         if (!this._setThumb) {
             this._setThumb = true;
@@ -346,7 +346,7 @@ class AssetPH extends Asset {
         this._phAsset = phAsset;
     }
 
-    protected onThumbRequest() {
+    protected onThumbRequest(): void {
         super.onThumbRequest();
         (<ImagePickerPH>(<AlbumPH>this.album).imagePicker).createPHImageThumb(this, this._phAsset);
     }
@@ -390,8 +390,7 @@ class AssetPH extends Asset {
 }
 
 var defaultRunLoopMode = NSString.stringWithString(kCFRunLoopCommonModes);
-
-function invokeOnRunLoop(runloop, func) {
+function invokeOnRunLoop(runloop, func): void {
     CFRunLoopPerformBlock(runloop, defaultRunLoopMode, func);
     CFRunLoopWakeUp(runloop);
 }
