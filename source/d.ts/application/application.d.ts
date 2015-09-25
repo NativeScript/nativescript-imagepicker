@@ -4,6 +4,7 @@
 declare module "application" {
     import cssSelector = require("ui/styling/css-selector");
     import observable = require("data/observable");
+    import frame = require("ui/frame");
 
     /**
      * An extended JavaScript Error which will have the nativeError property initialized in case the error is caused by executing platform-specific code.
@@ -46,6 +47,11 @@ declare module "application" {
     export var lowMemoryEvent: string;
 
     /**
+     * String value used when hooking to orientationChanged event.
+     */
+    export var orientationChangedEvent: string;
+
+    /**
      * Event data containing information for the application events.
      */
     export interface ApplicationEventData {
@@ -71,6 +77,16 @@ declare module "application" {
     }
 
     /**
+     * Event data containing information for orientation changed event.
+     */
+    export interface OrientationChangedEventData extends ApplicationEventData {
+        /**
+         * New orientation value.
+         */
+        newValue: string;
+    }
+
+    /**
      * The main page path (without the file extension) for the application starting from the application root. 
      * For example if you have page called "main.js" in a folder called "subFolder" and your root folder is "app" you can specify mainModule like this:
      * var application = require("application");
@@ -78,6 +94,11 @@ declare module "application" {
      * application.start();
      */
     export var mainModule: string;
+
+    /**
+     * The main navigation entry to be used when loading the main Page.
+     */
+    export var mainEntry: frame.NavigationEntry;
 
 	/**
 	 * An application level static resources.
@@ -147,6 +168,14 @@ declare module "application" {
     export function on(eventNames: string, callback: (data: any) => void, thisArg?: any);
 
     /**
+     * Shortcut alias to the removeEventListener method.
+     * @param eventNames - String corresponding to events (e.g. "onLaunch").
+     * @param callback - Callback function which will be removed.
+     * @param thisArg - An optional parameter which will be used as `this` context for callback execution.
+     */
+    export function off(eventNames: string, callback ?: any, thisArg ?: any);
+
+    /**
      * Notifies all the registered listeners for the event provided in the data.eventName.
      * @param data The data associated with the event.
      */
@@ -187,6 +216,11 @@ declare module "application" {
      * This event is raised when an uncaught error occurs while the application is running.
      */
     export function on(event: "uncaughtError", callback: (args: ApplicationEventData) => void, thisArg?: any);
+
+    /**
+     * This event is raised the orientation of the current device has changed.
+     */
+    export function on(event: "orientationChanged", callback: (args: OrientationChangedEventData) => void, thisArg?: any);
 
     /**
      * This is the Android-specific application object instance.
@@ -304,42 +338,42 @@ declare module "application" {
         getActivity(intent: android.content.Intent): any;
 
         /**
-         * Direct handler of the [onActivityCreated method](http://developer.android.com/reference/android/app/Application.ActivityLifecycleCallbacks.html).
+         * [Deprecated. Please use the respective event instead.] Direct handler of the [onActivityCreated method](http://developer.android.com/reference/android/app/Application.ActivityLifecycleCallbacks.html).
          */
         onActivityCreated: (activity: android.app.Activity, bundle: android.os.Bundle) => void;
 
         /**
-         * Direct handler of the [onActivityDestroyed method](http://developer.android.com/reference/android/app/Application.ActivityLifecycleCallbacks.html).
+         * [Deprecated. Please use the respective event instead.] Direct handler of the [onActivityDestroyed method](http://developer.android.com/reference/android/app/Application.ActivityLifecycleCallbacks.html).
          */
         onActivityDestroyed: (activity: android.app.Activity) => void;
 
         /**
-         * Direct handler of the [onActivityDestroyed method](http://developer.android.com/reference/android/app/Application.ActivityLifecycleCallbacks.html).
+         * [Deprecated. Please use the respective event instead.] Direct handler of the [onActivityDestroyed method](http://developer.android.com/reference/android/app/Application.ActivityLifecycleCallbacks.html).
          */
         onActivityStarted: (activity: android.app.Activity) => void;
 
         /**
-         * Direct handler of the [onActivityPaused method](http://developer.android.com/reference/android/app/Application.ActivityLifecycleCallbacks.html).
+         * [Deprecated. Please use the respective event instead.] Direct handler of the [onActivityPaused method](http://developer.android.com/reference/android/app/Application.ActivityLifecycleCallbacks.html).
          */
         onActivityPaused: (activity: android.app.Activity) => void;
 
         /**
-         * Direct handler of the [onActivityResumed method](http://developer.android.com/reference/android/app/Application.ActivityLifecycleCallbacks.html).
+         * [Deprecated. Please use the respective event instead.] Direct handler of the [onActivityResumed method](http://developer.android.com/reference/android/app/Application.ActivityLifecycleCallbacks.html).
          */
         onActivityResumed: (activity: android.app.Activity) => void;
 
         /**
-         * Direct handler of the [onActivityStopped method](http://developer.android.com/reference/android/app/Application.ActivityLifecycleCallbacks.html).
+         * [Deprecated. Please use the respective event instead.] Direct handler of the [onActivityStopped method](http://developer.android.com/reference/android/app/Application.ActivityLifecycleCallbacks.html).
          */
         onActivityStopped: (activity: android.app.Activity) => void;
 
         /**
-         * Direct handler of the [onActivitySaveInstanceState method](http://developer.android.com/reference/android/app/Application.ActivityLifecycleCallbacks.html).
+         * [Deprecated. Please use the respective event instead.] Direct handler of the [onActivitySaveInstanceState method](http://developer.android.com/reference/android/app/Application.ActivityLifecycleCallbacks.html).
          */
         onSaveActivityState: (activity: android.app.Activity, bundle: android.os.Bundle) => void;
 
         /**
-         * Direct handler of the onActivityResult method.
+         * [Deprecated. Please use the respective event instead.] Direct handler of the onActivityResult method.
          */
         onActivityResult: (requestCode: number, resultCode: number, data: android.content.Intent) => void;
             
@@ -440,6 +474,21 @@ declare module "application" {
          * String value used when hooking to activityBackPressed event.
          */
         public static activityBackPressedEvent: string;
+
+        /**
+         * Register a BroadcastReceiver to be run in the main activity thread. The receiver will be called with any broadcast Intent that matches filter, in the main application thread. 
+         * For more information, please visit 'http://developer.android.com/reference/android/content/Context.html#registerReceiver%28android.content.BroadcastReceiver,%20android.content.IntentFilter%29'
+         * @param intentFilter A string containing the intent filter.
+         * @param onReceiveCallback A callback function that will be called each time the receiver receives a broadcast.
+         */
+        registerBroadcastReceiver(intentFilter: string, onReceiveCallback: (context: android.content.Context, intent: android.content.Intent) => void): void;
+
+        /**
+         * Unregister a previously registered BroadcastReceiver. 
+         * For more information, please visit 'http://developer.android.com/reference/android/content/Context.html#unregisterReceiver(android.content.BroadcastReceiver)'
+         * @param intentFilter A string containing the intent filter with which the receiver was originally registered.
+         */
+        unregisterBroadcastReceiver(intentFilter: string): void;
     }
 
     /* tslint:disable */
@@ -454,8 +503,30 @@ declare module "application" {
         rootController: UIViewController;
 
         /**
-         * The [UIApplication](https://developer.apple.com/library/ios/documentation/UIKit/Reference/UIApplication_Class/index.html) object instance provided to the init of the module.
+         * The [UIApplication](https://developer.apple.com/library/ios/documentation/UIKit/Reference/UIApplication_Class/index.html).
          */
         nativeApp: UIApplication;
+
+        /**
+         * The [UIApplicationDelegate](https://developer.apple.com/library/ios/documentation/UIKit/Reference/UIApplicationDelegate_Protocol/index.html) class.
+         */
+        delegate: typeof UIApplicationDelegate;
+
+        /**
+         * Adds an observer to the default notification center for the specified notification.
+         * For more information, please visit 'https://developer.apple.com/library/mac/documentation/Cocoa/Reference/Foundation/Classes/NSNotificationCenter_Class/#//apple_ref/occ/instm/NSNotificationCenter/addObserver:selector:name:object:'
+         * @param notificationName A string containing the name of the notification.
+         * @param onReceiveCallback A callback function that will be called each time the observer receives a notification.
+         */
+        addNotificationObserver(notificationName: string, onReceiveCallback: (notification: NSNotification) => void): any;
+
+        /**
+         * Removes the observer for the specified notification from the default notification center.
+         * For more information, please visit 'https://developer.apple.com/library/mac/documentation/Cocoa/Reference/Foundation/Classes/NSNotificationCenter_Class/#//apple_ref/occ/instm/NSNotificationCenter/addObserver:selector:name:object:'
+         * @param observer The observer that was returned from the addNotificationObserver method.
+         * @param notificationName A string containing the name of the notification.
+         * @param onReceiveCallback A callback function that will be called each time the observer receives a notification.
+         */
+        removeNotificationObserver(observer: any, notificationName: string): void;
     }
 }

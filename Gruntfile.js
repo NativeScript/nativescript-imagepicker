@@ -71,4 +71,3 @@ module.exports = function(grunt) {
     'exec:run_android_emulator'
   ])
 };
-

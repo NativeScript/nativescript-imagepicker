@@ -14,5 +14,8 @@ declare module "file-system/file-name-resolver" {
         resolveFileName(path: string, ext: string): string;
     }
 
+    export function resolveFileName(path: string, ext: string): string;
+
     
+
 }

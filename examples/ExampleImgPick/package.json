@@ -5,17 +5,19 @@
     "type": "git",
     "url": "https://github.com/PanayotCankov/nativescript-imagepicker"
   },
+  "name": "ExampleImgPick",
+  "version": "0.0.1",
   "nativescript": {
     "id": "org.nativescript.ExampleImgPick",
-    "tns-ios": {
-      "version": "1.2.1"
-    },
     "tns-android": {
-      "version": "1.2.0"
+      "version": "1.3.0"
     },
-    "node-modules-cache-path": "/Users/cankov/GitRoot/NativeScript/nativescript-imagepicker/examples/ExampleImgPick/tmp/funnel-output_path-yx5Kn6d9.tmp"
+    "tns-ios": {
+      "version": "1.3.0"
+    }
   },
   "dependencies": {
-    "imagepicker": "file:../../dist/package"
+    "imagepicker": "file:../../dist/package",
+    "tns-core-modules": "1.3.0"
   }
 }
