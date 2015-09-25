@@ -8,6 +8,10 @@ declare module "utils/utils" {
      * Utility module related to layout.
      */
     module layout {
+        /**
+         * Bits that provide the actual measured size.
+         */
+        export var MEASURED_SIZE_MASK: number;
         export var MEASURED_STATE_MASK: number;
         export var MEASURED_STATE_TOO_SMALL: number;
         export var UNSPECIFIED: number;
@@ -45,6 +49,16 @@ declare module "utils/utils" {
      */
     module ad {
         /**
+         * Gets the native Android application instance.
+         */
+        export function getApplication(): android.app.Application;
+
+        /**
+         * Gets the Android application context.
+         */
+        export function getApplicationContext(): android.content.Context;
+
+        /**
          * Utility module dealing with some android collections.
          */
         module collections {
@@ -74,11 +88,18 @@ declare module "utils/utils" {
              * @param name - Name of the resource.
              */
             export function getStringId(name)
+
             /**
              * Gets the id from a given name.
              * @param name - Name of the resource.
              */
             export function getId(name: string): number;
+
+            /**
+             * Gets a color from the current theme.
+             * @param name - Name of the color resource.
+             */
+            export function getPalleteColor(name: string, context: android.content.Context): number;
         }
 
         export function async<T>(doInBackground: () => T, callback: (result: T) => void);
@@ -146,4 +167,16 @@ declare module "utils/utils" {
      * @param uri The URI.
      */
     export function isDataURI(uri: string): boolean
+
+    /**
+     * Returns object from JSON or JSONP string.
+     * @param source The JSON or JSONP string.
+     */
+    export function parseJSON(source: string): any
+
+    /**
+     * Opens url.
+     * @param url The url.
+     */
+    export function openUrl(url: string): boolean
 }

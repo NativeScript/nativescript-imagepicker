@@ -10,13 +10,7 @@ export function create(options?): ImagePicker {
     }
 }
 
-export class ObservableBase extends data_observable.Observable {
-    protected notifyPropertyChanged(propertyName: string, value: any): void {
-        this.notify({ object: this, eventName: data_observable.Observable.propertyChangeEvent, propertyName: propertyName, value: value });
-    }
-}
-
-export class ImagePicker extends ObservableBase {
+export class ImagePicker extends data_observable.Observable  {
     private _selection: data_observablearray.ObservableArray<Asset>;
     private _albums: data_observablearray.ObservableArray<Album>;
 
@@ -96,7 +90,7 @@ export class ImagePicker extends ObservableBase {
     }
 }
 
-export class Album extends ObservableBase {
+export class Album extends data_observable.Observable {
 
     private _imagePicker: ImagePicker;
     private _assets: data_observablearray.ObservableArray<Asset>;
@@ -128,11 +122,11 @@ export class Album extends ObservableBase {
 
     protected setThumb(value: image_source.ImageSource): void {
         this._thumb = value;
-        this.notifyPropertyChanged("thumb", value);
+        this.notifyPropertyChange("thumb", value);
     }
 }
 
-export class SelectedAsset extends ObservableBase {
+export class SelectedAsset extends data_observable.Observable {
     get thumb(): image_source.ImageSource {
         return null;
     }
@@ -194,8 +188,8 @@ export class Asset extends SelectedAsset {
                 this.album.imagePicker.selection.splice(index, 1);
             }
         }
-        
-        this.notifyPropertyChanged("selected", this.selected);
+
+        this.notifyPropertyChange("selected", this.selected);
     }
 
     toggleSelection(args): void {
@@ -208,7 +202,7 @@ export class Asset extends SelectedAsset {
 
     protected setThumb(value: image_source.ImageSource): void {
         this._thumb = value;
-        this.notifyPropertyChanged("thumb", this._thumb);
+        this.notifyPropertyChange("thumb", this._thumb);
     }
 
     protected onThumbRequest(): void {
@@ -394,5 +388,3 @@ function invokeOnRunLoop(runloop, func): void {
     CFRunLoopPerformBlock(runloop, defaultRunLoopMode, func);
     CFRunLoopWakeUp(runloop);
 }
-
-

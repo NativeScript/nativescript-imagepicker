@@ -21,7 +21,7 @@ export class SelectedAsset extends observable.Observable {
     data(): Thenable<any> {
         return Promise.reject(new Error("Not implemented."));
     }
-    
+
     get thumb(): imagesource.ImageSource {
         if (!this._thumbRequested) {
             this.decodeThumbUri();
@@ -97,15 +97,11 @@ export class SelectedAsset extends observable.Observable {
 
         this._thumb = new imagesource.ImageSource();
         this._thumb.setNativeSource(bitmap);
-        this.notifyPropertyChanged("thumb", this._thumb);
+        this.notifyPropertyChange("thumb", this._thumb);
     }
 
     private getContentResolver(): android.content.ContentResolver {
         return application.android.nativeApp.getContentResolver();
-    }
-
-    protected notifyPropertyChanged(propertyName: string, value: any) {
-        this.notify({ object: this, eventName: observable.Observable.propertyChangeEvent, propertyName: propertyName, value: value });
     }
 }
 
@@ -187,7 +183,7 @@ export class ImagePicker {
             if (this.mode === 'multiple') {
                 intent.putExtra("android.intent.extra.ALLOW_MULTIPLE", true);
             }
-            
+
             intent.setAction(Intent.ACTION_GET_CONTENT);
 
             var chooser = Intent.createChooser(intent, "Select Picture");
