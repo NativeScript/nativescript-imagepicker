@@ -5,7 +5,7 @@
 	  "url": "https://github.com/PanayotCankov/nativescript-imagepicker"
 	},
 	"name": "imagepicker",
-	"version": "0.0.1",
+	"version": "0.0.2",
     "nativescript": {
         "id": "org.nativescript.imagepicker",
         "tns-android": {
