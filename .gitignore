@@ -10,3 +10,4 @@ node_modules
 # Example platforms
 /examples/ExampleImgPick/platforms/
 /examples/ExampleImgPick/lib/
+.DS_Store
