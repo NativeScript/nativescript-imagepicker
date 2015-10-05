@@ -16,3 +16,12 @@ To compile the TypeScript and create the npm package output in `dist`:
 ```
 grunt
 ```
+
+To compile, install in the example and run
+```
+grunt ios
+```
+And
+```
+grunt android
+```

@@ -76,8 +76,8 @@ function onUploadTap(args) {
 				tempFileURL = tempFileURL.toString();
 
 				var request = {
-					// url: "http://localhost:8282",
-					url: "http://posttestserver.com/post.php",
+					url: "http://localhost:8282",
+					// url: "http://posttestserver.com/post.php",
 					method: "POST",
 					headers: {
 						"Content-Type": "application/octet-stream",

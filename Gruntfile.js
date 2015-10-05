@@ -58,12 +58,14 @@ module.exports = function(grunt) {
     var fs = require("fs");
 
     var server = http.createServer(function(request, response) {
+      var Throttle = require("stream-throttle").Throttle;
+
       var fileName = request.headers["file-name"];
       console.log(request.method + "Request! Content-Length: " + request.headers["content-length"] + ", file-name: " + fileName);
 
       var out = "tests/www/uploads/upload-" + new Date().getTime() + "-" + fileName;
       console.log("Output in: " + out);
-      request.pipe(fs.createWriteStream(out, { flags: 'w', encoding: null, fd: null, mode: 0666 }));
+      request.pipe(new Throttle({ rate: 1024 * 128 })).pipe(fs.createWriteStream(out, { flags: 'w', encoding: null, fd: null, mode: 0666 }));
 
       request.on('end', function () {
         setTimeout(function() {
