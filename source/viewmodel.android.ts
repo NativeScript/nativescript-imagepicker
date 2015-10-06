@@ -11,6 +11,7 @@ export class SelectedAsset extends observable.Observable {
     private _uri: android.net.Uri;
     private _thumb: imagesource.ImageSource;
     private _thumbRequested: boolean;
+    private _fileUri: string;
 
     constructor(uri: android.net.Uri) {
         super();
@@ -34,9 +35,16 @@ export class SelectedAsset extends observable.Observable {
     }
 
     get fileUri(): string {
+        if (!this._fileUri){
+            this._fileUri = this._calculateFileUri();
+        }
+        return this._fileUri;
+    }
+
+    private _calculateFileUri(): string {
         var cursor: android.database.ICursor;
         var columns = [MediaStore.MediaColumns.DATA];
-        if (android && android.provider && (<any>android.provider).DocumentsContract){
+        if (android.os.Build.VERSION.SDK_INT >= 19){
             var wholeID: string = (<any>android.provider).DocumentsContract.getDocumentId(this._uri);
             var id = wholeID.split(":")[1];
             cursor = this.getContentResolver().query(android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI, columns, "_id=?", [id], null);
@@ -48,8 +56,8 @@ export class SelectedAsset extends observable.Observable {
         var filePath;
 
         try {
-            var columnIndex = cursor.getColumnIndexOrThrow(columns[0]);
             cursor.moveToFirst();
+            var columnIndex = cursor.getColumnIndexOrThrow(columns[0]);
             filePath = cursor.getString(columnIndex);
             if (filePath) {
                 return filePath;
