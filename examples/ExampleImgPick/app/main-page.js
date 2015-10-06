@@ -23,7 +23,7 @@ function onSelectSingleTap(args) {
 	var imagepicker = require("imagepicker");
 	var context = imagepicker.create({
 		mode: "single"
-	});	
+	});
 	startSelection(context);
 }
 exports.onSelectSingleTap = onSelectSingleTap;
@@ -38,7 +38,9 @@ function startSelection(context) {
 		.then(function(selection) {
 			console.log("Selection done:");
 			selection.forEach(function(selected) {
-				console.log(" - " + selected.uri);
+                console.log("----------------");
+				console.log("uri: " + selected.uri);
+                console.log("fileUri: " + selected.fileUri);
 			});
 			list.items = selection;
 		}).catch(function (e) {
