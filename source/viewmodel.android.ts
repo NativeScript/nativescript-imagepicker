@@ -34,12 +34,21 @@ export class SelectedAsset extends observable.Observable {
     }
 
     get fileUri(): string {
-        var filePathColumn = [MediaStore.MediaColumns.DATA];
-        var cursor = this.getContentResolver().query(this._uri, filePathColumn, null, null, null);
+        var cursor: android.database.ICursor;
+        var columns = [MediaStore.MediaColumns.DATA];
+        if (android && android.provider && (<any>android.provider).DocumentsContract){
+            var wholeID: string = (<any>android.provider).DocumentsContract.getDocumentId(this._uri);
+            var id = wholeID.split(":")[1];
+            cursor = this.getContentResolver().query(android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI, columns, "_id=?", [id], null);
+        }
+        else {
+            cursor = this.getContentResolver().query(this._uri, columns, null, null, null);
+        }
+
         var filePath;
 
         try {
-            var columnIndex = cursor.getColumnIndexOrThrow(filePathColumn[0]);
+            var columnIndex = cursor.getColumnIndexOrThrow(columns[0]);
             cursor.moveToFirst();
             filePath = cursor.getString(columnIndex);
             if (filePath) {
@@ -65,7 +74,7 @@ export class SelectedAsset extends observable.Observable {
             console.log(e);
         }
 
-        return void 0;
+        return undefined;
     }
 
     private decodeThumbUri(): void {
