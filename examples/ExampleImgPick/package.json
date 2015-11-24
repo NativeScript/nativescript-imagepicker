@@ -6,18 +6,18 @@
     "url": "https://github.com/PanayotCankov/nativescript-imagepicker"
   },
   "name": "ExampleImgPick",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "nativescript": {
     "id": "org.nativescript.ExampleImgPick",
     "tns-android": {
-      "version": "1.3.0"
+      "version": "1.4.0"
     },
     "tns-ios": {
-      "version": "1.3.0"
+      "version": "1.4.0"
     }
   },
   "dependencies": {
     "imagepicker": "file:../../dist/package",
-    "tns-core-modules": "1.3.0"
+    "tns-core-modules": "1.4.0"
   }
 }
