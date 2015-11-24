@@ -11,7 +11,7 @@ function pageLoaded(args) {
 exports.pageLoaded = pageLoaded;
 
 function onSelectMultipleTap(args) {
-	var imagepicker = require("imagepicker");
+	var imagepicker = require("nativescript-imagepicker");
 	var context = imagepicker.create({
 		mode: "multiple"
 	});

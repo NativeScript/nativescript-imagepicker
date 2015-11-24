@@ -4,7 +4,7 @@
 	  "type": "git",
 	  "url": "https://github.com/NativeScript/nativescript-imagepicker"
 	},
-	"name": "imagepicker",
+	"name": "nativescript-imagepicker",
 	"version": "0.0.3",
     "nativescript": {
         "id": "org.nativescript.imagepicker",

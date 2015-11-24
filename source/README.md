@@ -11,7 +11,7 @@ On Android it uses Intents to open the stock image or file pickers.
 
 # How-to Pick Multiple Images
 ```
-var imagepicker = require("imagepicker");
+var imagepicker = require("nativescript-imagepicker");
 
 function selectImages() {
 	var context = imagepicker.create({

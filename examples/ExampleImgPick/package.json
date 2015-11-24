@@ -18,6 +18,7 @@
   },
   "dependencies": {
     "imagepicker": "file:../../dist/package",
+    "nativescript-imagepicker": "file:../../dist/package",
     "tns-core-modules": "1.4.0"
   }
 }
