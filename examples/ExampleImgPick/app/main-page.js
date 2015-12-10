@@ -20,7 +20,7 @@ function onSelectMultipleTap(args) {
 exports.onSelectMultipleTap = onSelectMultipleTap;
 
 function onSelectSingleTap(args) {
-	var imagepicker = require("imagepicker");
+	var imagepicker = require("nativescript-imagepicker");
 	var context = imagepicker.create({
 		mode: "single"
 	});
