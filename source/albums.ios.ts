@@ -14,7 +14,7 @@ export function onAlbumsItemTap(args) {
     var topmost = ui_frame.topmost();
     goingToAlbum = true;
     topmost.navigate({
-        moduleName: "tns_modules/imagepicker/images",
+        moduleName: "tns_modules/nativescript-imagepicker/images",
         context: list.items.getItem(args.index)
     });
 };
