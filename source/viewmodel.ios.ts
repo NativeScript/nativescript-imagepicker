@@ -38,7 +38,7 @@ export class ImagePicker extends data_observable.Observable  {
                 this._resolve = resolve;
                 this._reject = reject;
                 frame.topmost().navigate({
-                    moduleName: "./tns_modules/imagepicker/albums",
+                    moduleName: "./tns_modules/nativescript-imagepicker/albums",
                     context: this
                 });
             });
