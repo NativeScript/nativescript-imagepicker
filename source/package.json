@@ -6,19 +6,14 @@
 	},
 	"name": "nativescript-imagepicker",
 	"version": "0.0.4",
-    "nativescript": {
-        "id": "org.nativescript.imagepicker",
-        "platforms": {
-            "tns-android": {
-                "version": "1.4.0"
-            },
-            "tns-ios": {
-                "version": "1.4.0"
-            }
-        }
-    },
+	"nativescript": {
+	    "platforms": {
+	        "android": "1.4.0",
+	        "ios": "1.4.0"
+	    }
+	},
     "dependencies": {
-		"tns-core-modules": "1.4.0"
+		"tns-core-modules": "^1.4.0"
 	},
     "main": "viewmodel.js"
 }
