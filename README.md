@@ -22,6 +22,9 @@ Search or browse for a plugin and click Install.
 
 ## Usage
 
+For sample application with single and multiple image selection ready for Android and IOS
+[follow this link](https://github.com/NativeScript/sample-ImageUpload)
+
 ### How-to Pick Multiple Images
 ```
 var imagepickerModule = require("nativescript-imagepicker");
@@ -51,7 +54,6 @@ function selectImages() {
 var context = imagepicker.create({
     mode: "single"
 });
-
 ```
 ### How-to Bind Selected Images
 #### main-page.xml
@@ -68,7 +70,6 @@ var context = imagepicker.create({
 
 <Button row="1" text="Pick Multiple Images" tap="onSelectMultipleTap" />
 <Button row="2" text="Pick Single Image" tap="onSelectSingleTap" />
-
 ```
 #### main-page.js
 ```
@@ -117,5 +118,4 @@ function startSelection(context) {
 exports.pageLoaded = pageLoaded;
 exports.onSelectMultipleTap = onSelectMultipleTap;
 exports.onSelectSingleTap = onSelectSingleTap;
-
 ```
