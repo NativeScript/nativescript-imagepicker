@@ -146,15 +146,27 @@ export class Asset extends SelectedAsset {
     private _album: Album;
 
     private _thumb: image_source.ImageSource;
+    private _image: image_source.ImageSource;
     private _thumbRequested: boolean;
 
     constructor(album: Album) {
         super();
         this._album = album;
+        this._image = null;
     }
 
     get album(): Album {
         return this._album;
+    }
+
+    imageAsync(): Thenable<image_source.ImageSource> {
+        if(this._image === null) {
+            return new Promise((resolve, reject) => {
+                
+            });
+        } else {
+            return Promise.resolve(this._image);
+        }
     }
 
     thumbAsync(): Thenable<image_source.ImageSource> {
