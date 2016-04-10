@@ -87,34 +87,53 @@ export class SelectedAsset extends observable.Observable {
 
     private decodeThumbUri(): void {
         // Decode image size
+        var REQUIRED_SIZE = 100;
+
+        // Decode with scale
+        var downsampleOptions = new BitmapFactory.Options();
+        downsampleOptions.inSampleSize = this.getSampleSize(this._uri, REQUIRED_SIZE);
+        this._thumb = this.decodeUri(this._uri, downsampleOptions);
+        this.notifyPropertyChange("thumb", this._thumb);
+    }
+    
+    /**
+     * Discovers the sample size that a BitmapFactory.Options object should have
+     * to scale the retrieved image to the given max size.
+     * @param uri The URI of the image that should be scaled.
+     * @param maxSize The maximum size (in pixels) of the image.
+     */
+    private getSampleSize(uri: android.net.Uri, maxSize: number): number {
         var boundsOptions = new BitmapFactory.Options();
         boundsOptions.inJustDecodeBounds = true;
         BitmapFactory.decodeStream(this.getContentResolver().openInputStream(this._uri), null, boundsOptions);
-
-        var REQUIRED_SIZE = 100;
-
+        
         // Find the correct scale value. It should be the power of 2.
         var outWidth = boundsOptions.outWidth;
         var outHeight = boundsOptions.outHeight;
         var scale = 1;
         while (true) {
-            if (outWidth / 2 < REQUIRED_SIZE
-                || outHeight / 2 < REQUIRED_SIZE) {
+            if (outWidth / 2 < maxSize
+                || outHeight / 2 < maxSize) {
                 break;
             }
             outWidth /= 2;
             outHeight /= 2;
             scale *= 2;
         }
-
-        // Decode with scale
-        var downsampleOptions = new BitmapFactory.Options();
-        downsampleOptions.inSampleSize = scale;
-        var bitmap = BitmapFactory.decodeStream(this.getContentResolver().openInputStream(this._uri), null, downsampleOptions);
-
-        this._thumb = new imagesource.ImageSource();
-        this._thumb.setNativeSource(bitmap);
-        this.notifyPropertyChange("thumb", this._thumb);
+        
+        return scale;
+    }
+    
+    /**
+     * Decodes the given URI using the given options.
+     * @param uri The URI that should be decoded into an ImageSource.
+     * @param options The options that should be used to decode the image.
+     */
+    private decodeUri(uri: android.net.Uri, options: android.graphics.BitmapFactory.Options): imagesource.ImageSource {
+        var bitmap = BitmapFactory.decodeStream(this.getContentResolver().openInputStream(this._uri), null, options);
+        var image = new imagesource.ImageSource();
+        image.setNativeSource(bitmap);
+        return image;
     }
 
     private getContentResolver(): android.content.ContentResolver {
