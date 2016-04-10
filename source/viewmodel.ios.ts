@@ -160,6 +160,8 @@ export class Asset extends SelectedAsset {
     thumbAsync(): Thenable<image_source.ImageSource> {
         if(!this._thumbRequested) {
             return new Promise((resolve, reject) => {
+                // TODO: Refactor to real promise-like pattern instead of using the
+                //       current hacky async-but-not-async solution. 
                 this._thumbRequested = true;
                 var callback = (data: data_observable.PropertyChangeData) => {
                     if(data.propertyName === "thumb") {

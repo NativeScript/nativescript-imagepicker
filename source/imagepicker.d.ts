@@ -30,6 +30,11 @@ declare module "nativescript-imagepicker" {
          * Promise async pattern.
          */
         thumbAsync(): Thenable<imagesource.ImageSource>;
+        
+        /**
+         * Retrieves the full image as an ImageSource object using the Promise Pattern.
+         */
+        imageAsync(): Thenable<imagesource.ImageSource>;
 
         /**
          * For iOS Returns a promise with NSData representation of the asset.
