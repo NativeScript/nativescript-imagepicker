@@ -1,4 +1,4 @@
-declare module "imagepicker" {
+declare module "nativescript-imagepicker" {
 
     import observable = require("data/observable");
     import imagesource = require("image-source");
@@ -60,7 +60,7 @@ declare module "imagepicker" {
         /**
          * Set the picker mode. Supported modes: "single" or "multiple" (default).
          */
-        selectionMode?: string;
+        mode?: string;
     }
 
     export function create(options?: Options): ImagePicker;
