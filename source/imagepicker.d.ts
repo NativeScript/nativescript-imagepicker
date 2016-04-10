@@ -26,7 +26,14 @@ declare module "imagepicker" {
         fileUri: string;
 
         /**
+         * Retrieves the 100x100 pixel thumb of the selected image using the
+         * Promise async pattern.
+         */
+        thumbAsync(): Thenable<imagesource.ImageSource>;
+
+        /**
          * For iOS Returns a promise with NSData representation of the asset.
+         * On Android, Returns a promise with a java.io.InputStream.
          * Note that in future versions it should return ArrayBuffer.
          */
         data(): Thenable<any>;

@@ -157,6 +157,24 @@ export class Asset extends SelectedAsset {
         return this._album;
     }
 
+    thumbAsync(): Thenable<image_source.ImageSource> {
+        if(!this._thumbRequested) {
+            return new Promise((resolve, reject) => {
+                this._thumbRequested = true;
+                var callback = (data: data_observable.PropertyChangeData) => {
+                    if(data.propertyName === "thumb") {
+                        this.off("propertyChange", callback);
+                        resolve(this._thumb);
+                    }
+                };
+                this.on("propertyChange", callback);
+                this.onThumbRequest();
+            });
+        } else {
+            return Promise.resolve(this._thumb);
+        }
+    }
+
     get thumb(): image_source.ImageSource {
         if (!this._thumbRequested) {
             this._thumbRequested = true;

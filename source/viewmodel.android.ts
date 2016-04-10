@@ -23,6 +23,10 @@ export class SelectedAsset extends observable.Observable {
         return Promise.reject(new Error("Not implemented."));
     }
 
+    thumbAsync(): Thenable<imagesource.ImageSource> {
+        return Promise.resolve(this.thumb);
+    }
+
     get thumb(): imagesource.ImageSource {
         if (!this._thumbRequested) {
             this.decodeThumbUri();
@@ -35,7 +39,7 @@ export class SelectedAsset extends observable.Observable {
     }
 
     get fileUri(): string {
-        if (!this._fileUri){
+        if (!this._fileUri) {
             this._fileUri = this._calculateFileUri();
         }
         return this._fileUri;
@@ -44,7 +48,7 @@ export class SelectedAsset extends observable.Observable {
     private _calculateFileUri(): string {
         var cursor: android.database.ICursor;
         var columns = [MediaStore.MediaColumns.DATA];
-        if (android.os.Build.VERSION.SDK_INT >= 19){
+        if (android.os.Build.VERSION.SDK_INT >= 19) {
             var wholeID: string = (<any>android.provider).DocumentsContract.getDocumentId(this._uri);
             var id = wholeID.split(":")[1];
             cursor = this.getContentResolver().query(android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI, columns, "_id=?", [id], null);
@@ -95,7 +99,7 @@ export class SelectedAsset extends observable.Observable {
         this._thumb = this.decodeUri(this._uri, downsampleOptions);
         this.notifyPropertyChange("thumb", this._thumb);
     }
-    
+
     /**
      * Discovers the sample size that a BitmapFactory.Options object should have
      * to scale the retrieved image to the given max size.
@@ -106,7 +110,7 @@ export class SelectedAsset extends observable.Observable {
         var boundsOptions = new BitmapFactory.Options();
         boundsOptions.inJustDecodeBounds = true;
         BitmapFactory.decodeStream(this.getContentResolver().openInputStream(this._uri), null, boundsOptions);
-        
+
         // Find the correct scale value. It should be the power of 2.
         var outWidth = boundsOptions.outWidth;
         var outHeight = boundsOptions.outHeight;
@@ -120,10 +124,10 @@ export class SelectedAsset extends observable.Observable {
             outHeight /= 2;
             scale *= 2;
         }
-        
+
         return scale;
     }
-    
+
     /**
      * Decodes the given URI using the given options.
      * @param uri The URI that should be decoded into an ImageSource.
@@ -198,7 +202,7 @@ export class ImagePicker {
                             resolve(results);
                             return;
 
-                        } catch(e) {
+                        } catch (e) {
                             application.android.off(application.AndroidApplication.activityResultEvent, onResult);
                             reject(e);
                             return;
