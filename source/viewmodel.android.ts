@@ -15,7 +15,6 @@ var StaticArrayBuffer = <ArrayBufferStatic>ArrayBuffer;
 export class SelectedAsset extends observable.Observable {
     private _uri: android.net.Uri;
     private _thumb: imagesource.ImageSource;
-    private _image: imagesource.ImageSource;
     private _thumbRequested: boolean;
     private _fileUri: string;
     private _data: ArrayBuffer;
@@ -24,7 +23,6 @@ export class SelectedAsset extends observable.Observable {
         super();
         this._uri = uri;
         this._thumbRequested = false;
-        this._image = null;
     }
 
     data(): Thenable<any> {
@@ -33,17 +31,25 @@ export class SelectedAsset extends observable.Observable {
 
     getImage(options?): Promise<imagesource.ImageSource> {
         return new Promise<imagesource.ImageSource>((resolve, reject) => {
-            resolve(this.decodeUri(this._uri, options));
+            try {
+                resolve(this.decodeUri(this._uri, options));
+            } catch (ex) {
+                reject(ex);
+            }
         });
     }
 
     getImageData(): Promise<ArrayBuffer> {
         return new Promise<ArrayBuffer>((resolve, reject) => {
-            if(!this._data) {
-                var bb = this.getByteBuffer(this._uri);
-                this._data = StaticArrayBuffer.from(bb);
+            try {
+                if (!this._data) {
+                    var bb = this.getByteBuffer(this._uri);
+                    this._data = StaticArrayBuffer.from(bb);
+                }
+                resolve(this._data);
+            } catch (ex) {
+                reject(ex);
             }
-            resolve(this._data);
         });
     }
 
@@ -127,7 +133,7 @@ export class SelectedAsset extends observable.Observable {
      * Discovers the sample size that a BitmapFactory.Options object should have
      * to scale the retrieved image to the given max size.
      * @param uri The URI of the image that should be scaled.
-     * @param options The options that should be used to procude the scaled image.
+     * @param options The options that should be used to produce the correct image scale.
      */
     private getSampleSize(uri: android.net.Uri, options?): number {
         var boundsOptions = new BitmapFactory.Options();
@@ -143,8 +149,8 @@ export class SelectedAsset extends observable.Observable {
             //       Right now, it just selects the smallest of the two sizes
             //       and scales the image proportionally to that.
             var targetSize = options.maxWidth < options.maxHeight ? options.maxWidth : options.maxHeight;
-            while (!(this.matchesSize(targetSize, outWidth) || 
-                     this.matchesSize(targetSize, outHeight))) {
+            while (!(this.matchesSize(targetSize, outWidth) ||
+                this.matchesSize(targetSize, outHeight))) {
                 outWidth /= 2;
                 outHeight /= 2;
                 scale *= 2;
@@ -152,9 +158,9 @@ export class SelectedAsset extends observable.Observable {
         }
         return scale;
     }
-    
+
     private matchesSize(targetSize: number, actualSize: number): boolean {
-        return targetSize && actualSize / 2 < targetSize; 
+        return targetSize && actualSize / 2 < targetSize;
     }
 
     /**
@@ -168,30 +174,32 @@ export class SelectedAsset extends observable.Observable {
         image.setNativeSource(bitmap);
         return image;
     }
-    
+
     /**
      * Retrieves the raw data of the given file and exposes it as a byte buffer.
      */
     private getByteBuffer(uri: android.net.Uri): java.nio.ByteBuffer {
-        var file = this.getContentResolver().openAssetFileDescriptor(uri, "r");
-        
-        // Determine how many bytes to allocate in memory based on the file length
-        var length: number = file.getLength();
-        var buffer: java.nio.ByteBuffer = java.nio.ByteBuffer.allocateDirect(length);
-        var bytes = buffer.array();
-        var stream = file.createInputStream();
-        
-        // Buffer the data in 4KiB amounts
-        var reader = new java.io.BufferedInputStream(stream, 4096);
-        reader.read(bytes, 0, bytes.length);
-        
-        // TODO: Add Proper Cleanup
-        reader.close();
-        file.close();
-        
-        return buffer;
+        var file: android.content.res.AssetFileDescriptor = null;
+        try {
+            file = this.getContentResolver().openAssetFileDescriptor(uri, "r");
+
+            // Determine how many bytes to allocate in memory based on the file length
+            var length: number = file.getLength();
+            var buffer: java.nio.ByteBuffer = java.nio.ByteBuffer.allocateDirect(length);
+            var bytes = buffer.array();
+            var stream = file.createInputStream();
+
+            // Buffer the data in 4KiB amounts
+            var reader = new java.io.BufferedInputStream(stream, 4096);
+            reader.read(bytes, 0, bytes.length);
+            return buffer;
+        } finally {
+            if (file) {
+                file.close();
+            }
+        }
     }
-    
+
     private openInputStream(uri: android.net.Uri): java.io.InputStream {
         return this.getContentResolver().openInputStream(uri);
     }
