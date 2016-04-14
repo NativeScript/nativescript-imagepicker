@@ -2,10 +2,15 @@ import observable = require("data/observable");
 import imagesource = require("image-source");
 import application = require("application");
 
+interface ArrayBufferStatic extends ArrayBufferConstructor {
+    from(buffer: java.nio.ByteBuffer): ArrayBuffer;
+}
+
 var Intent = android.content.Intent;
 var Activity = android.app.Activity;
 var MediaStore = android.provider.MediaStore;
 var BitmapFactory = android.graphics.BitmapFactory;
+var StaticArrayBuffer = <ArrayBufferStatic>ArrayBuffer;
 
 export class SelectedAsset extends observable.Observable {
     private _uri: android.net.Uri;
@@ -13,6 +18,7 @@ export class SelectedAsset extends observable.Observable {
     private _image: imagesource.ImageSource;
     private _thumbRequested: boolean;
     private _fileUri: string;
+    private _data: ArrayBuffer;
 
     constructor(uri: android.net.Uri) {
         super();
@@ -23,6 +29,22 @@ export class SelectedAsset extends observable.Observable {
 
     data(): Thenable<any> {
         return Promise.reject(new Error("Not implemented."));
+    }
+
+    getImage(options?): Promise<imagesource.ImageSource> {
+        return new Promise<imagesource.ImageSource>((resolve, reject) => {
+            resolve(this.decodeUri(this._uri, options));
+        });
+    }
+
+    getImageData(): Promise<ArrayBuffer> {
+        return new Promise<ArrayBuffer>((resolve, reject) => {
+            if(!this._data) {
+                var bb = this.getByteBuffer(this._uri);
+                this._data = StaticArrayBuffer.from(bb);
+            }
+            resolve(this._data);
+        });
     }
 
     get thumb(): imagesource.ImageSource {
@@ -89,7 +111,10 @@ export class SelectedAsset extends observable.Observable {
 
     private decodeThumbUri(): void {
         // Decode image size
-        var REQUIRED_SIZE = 100;
+        var REQUIRED_SIZE = {
+            maxWidth: 100,
+            maxHeight: 100
+        };
 
         // Decode with scale
         var downsampleOptions = new BitmapFactory.Options();
@@ -102,28 +127,32 @@ export class SelectedAsset extends observable.Observable {
      * Discovers the sample size that a BitmapFactory.Options object should have
      * to scale the retrieved image to the given max size.
      * @param uri The URI of the image that should be scaled.
-     * @param maxSize The maximum size (in pixels) of the image.
+     * @param options The options that should be used to procude the scaled image.
      */
-    private getSampleSize(uri: android.net.Uri, maxSize: number): number {
+    private getSampleSize(uri: android.net.Uri, options?): number {
         var boundsOptions = new BitmapFactory.Options();
         boundsOptions.inJustDecodeBounds = true;
-        BitmapFactory.decodeStream(this.getContentResolver().openInputStream(this._uri), null, boundsOptions);
+        BitmapFactory.decodeStream(this.openInputStream(uri), null, boundsOptions);
 
         // Find the correct scale value. It should be the power of 2.
         var outWidth = boundsOptions.outWidth;
         var outHeight = boundsOptions.outHeight;
         var scale = 1;
-        while (true) {
-            if (outWidth / 2 < maxSize
-                || outHeight / 2 < maxSize) {
-                break;
+        if (options) {
+            // TODO: Refactor to accomodate different scaling options
+            var targetSize = options.maxWidth < options.maxHeight ? options.maxWidth : options.maxHeight;
+            while (!(this.matchesSize(targetSize, outWidth) || 
+                     this.matchesSize(targetSize, outHeight))) {
+                outWidth /= 2;
+                outHeight /= 2;
+                scale *= 2;
             }
-            outWidth /= 2;
-            outHeight /= 2;
-            scale *= 2;
         }
-
         return scale;
+    }
+    
+    private matchesSize(targetSize: number, actualSize: number): boolean {
+        return targetSize && actualSize / 2 < targetSize; 
     }
 
     /**
@@ -132,10 +161,37 @@ export class SelectedAsset extends observable.Observable {
      * @param options The options that should be used to decode the image.
      */
     private decodeUri(uri: android.net.Uri, options: android.graphics.BitmapFactory.Options): imagesource.ImageSource {
-        var bitmap = BitmapFactory.decodeStream(this.getContentResolver().openInputStream(this._uri), null, options);
+        var bitmap = BitmapFactory.decodeStream(this.openInputStream(uri), null, options);
         var image = new imagesource.ImageSource();
         image.setNativeSource(bitmap);
         return image;
+    }
+    
+    /**
+     * Retrieves the raw data of the given file and exposes it as a byte buffer.
+     */
+    private getByteBuffer(uri: android.net.Uri): java.nio.ByteBuffer {
+        var file = this.getContentResolver().openAssetFileDescriptor(uri, "r");
+        
+        // Determine how many bytes to allocate in memory based on the file length
+        var length: number = file.getLength();
+        var buffer: java.nio.ByteBuffer = java.nio.ByteBuffer.allocateDirect(length);
+        var bytes = buffer.array();
+        var stream = file.createInputStream();
+        
+        // Buffer the data in 4KiB amounts
+        var reader = new java.io.BufferedInputStream(stream, 4096);
+        reader.read(bytes, 0, bytes.length);
+        
+        // TODO: Add Proper Cleanup
+        reader.close();
+        file.close();
+        
+        return buffer;
+    }
+    
+    private openInputStream(uri: android.net.Uri): java.io.InputStream {
+        return this.getContentResolver().openInputStream(uri);
     }
 
     private getContentResolver(): android.content.ContentResolver {
