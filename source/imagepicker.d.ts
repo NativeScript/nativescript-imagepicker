@@ -3,6 +3,19 @@ declare module "nativescript-imagepicker" {
     import observable = require("data/observable");
     import imagesource = require("image-source");
 
+    export interface ImageOptions {
+        /**
+         * The maximum width that the image is allowed to be.
+         */
+        maxWidth?: number;
+
+        /**
+         * The maximum height that the image is allowed to be.
+         */
+        maxHeight?: number;
+    }
+
+
     export class SelectedAsset extends observable.Observable {
         /**
          * A 100x100 pixels thumb of the selected image.
@@ -26,15 +39,15 @@ declare module "nativescript-imagepicker" {
         fileUri: string;
 
         /**
-         * Retrieves the 100x100 pixel thumb of the selected image using the
-         * Promise async pattern.
+         * Asynchronously retrieves an ImageSource object that represents this selected image.
+         * Scaled to the given size. (Aspect-ratio is preserved by default)
          */
-        thumbAsync(): Thenable<imagesource.ImageSource>;
-        
+        getImage(options?: ImageOptions): Promise<imagesource.ImageSource>;
+
         /**
-         * Retrieves the full image as an ImageSource object using the Promise Pattern.
+         * Asynchronously retrieves an ArrayBuffer that represents the raw byte data from this selected image.
          */
-        imageAsync(): Thenable<imagesource.ImageSource>;
+        getImageData(): Promise<ArrayBuffer>;
 
         /**
          * For iOS Returns a promise with NSData representation of the asset.
