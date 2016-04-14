@@ -159,36 +159,6 @@ export class Asset extends SelectedAsset {
         return this._album;
     }
 
-    imageAsync(): Thenable<image_source.ImageSource> {
-        if(this._image === null) {
-            return new Promise((resolve, reject) => {
-                
-            });
-        } else {
-            return Promise.resolve(this._image);
-        }
-    }
-
-    thumbAsync(): Thenable<image_source.ImageSource> {
-        if(!this._thumbRequested) {
-            return new Promise((resolve, reject) => {
-                // TODO: Refactor to real promise-like pattern instead of using the
-                //       current hacky async-but-not-async solution. 
-                this._thumbRequested = true;
-                var callback = (data: data_observable.PropertyChangeData) => {
-                    if(data.propertyName === "thumb") {
-                        this.off("propertyChange", callback);
-                        resolve(this._thumb);
-                    }
-                };
-                this.on("propertyChange", callback);
-                this.onThumbRequest();
-            });
-        } else {
-            return Promise.resolve(this._thumb);
-        }
-    }
-
     get thumb(): image_source.ImageSource {
         if (!this._thumbRequested) {
             this._thumbRequested = true;
