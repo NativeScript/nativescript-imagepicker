@@ -140,6 +140,8 @@ export class SelectedAsset extends observable.Observable {
         var scale = 1;
         if (options) {
             // TODO: Refactor to accomodate different scaling options
+            //       Right now, it just selects the smallest of the two sizes
+            //       and scales the image proportionally to that.
             var targetSize = options.maxWidth < options.maxHeight ? options.maxWidth : options.maxHeight;
             while (!(this.matchesSize(targetSize, outWidth) || 
                      this.matchesSize(targetSize, outHeight))) {
