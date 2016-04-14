@@ -25,22 +25,6 @@ export class SelectedAsset extends observable.Observable {
         return Promise.reject(new Error("Not implemented."));
     }
 
-    thumbAsync(): Thenable<imagesource.ImageSource> {
-        return Promise.resolve(this.thumb);
-    }
-    
-    imageAsync(): Thenable<imagesource.ImageSource> {
-        if(this._image === null) {
-            return new Promise((resolve, reject) => {
-                this._image = this.decodeUri(this._uri, new BitmapFactory.Options());
-                resolve(this._image);
-            });
-        }
-        else {
-            return Promise.resolve(this._image);
-        }
-    }
-
     get thumb(): imagesource.ImageSource {
         if (!this._thumbRequested) {
             this.decodeThumbUri();
