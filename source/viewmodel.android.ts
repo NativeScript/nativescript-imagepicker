@@ -29,7 +29,7 @@ export class SelectedAsset extends observable.Observable {
         return Promise.reject(new Error("Not implemented."));
     }
 
-    getImage(options?): Promise<imagesource.ImageSource> {
+    getImage(options?: { maxWidth: number, maxHeight: number }): Promise<imagesource.ImageSource> {
         return new Promise<imagesource.ImageSource>((resolve, reject) => {
             try {
                 resolve(this.decodeUri(this._uri, options));
@@ -123,9 +123,7 @@ export class SelectedAsset extends observable.Observable {
         };
 
         // Decode with scale
-        var downsampleOptions = new BitmapFactory.Options();
-        downsampleOptions.inSampleSize = this.getSampleSize(this._uri, REQUIRED_SIZE);
-        this._thumb = this.decodeUri(this._uri, downsampleOptions);
+        this._thumb = this.decodeUri(this._uri, REQUIRED_SIZE);
         this.notifyPropertyChange("thumb", this._thumb);
     }
 
@@ -135,7 +133,7 @@ export class SelectedAsset extends observable.Observable {
      * @param uri The URI of the image that should be scaled.
      * @param options The options that should be used to produce the correct image scale.
      */
-    private getSampleSize(uri: android.net.Uri, options?): number {
+    private getSampleSize(uri: android.net.Uri, options?: { maxWidth: number, maxHeight: number }): number {
         var boundsOptions = new BitmapFactory.Options();
         boundsOptions.inJustDecodeBounds = true;
         BitmapFactory.decodeStream(this.openInputStream(uri), null, boundsOptions);
@@ -168,8 +166,10 @@ export class SelectedAsset extends observable.Observable {
      * @param uri The URI that should be decoded into an ImageSource.
      * @param options The options that should be used to decode the image.
      */
-    private decodeUri(uri: android.net.Uri, options: android.graphics.BitmapFactory.Options): imagesource.ImageSource {
-        var bitmap = BitmapFactory.decodeStream(this.openInputStream(uri), null, options);
+    private decodeUri(uri: android.net.Uri, options?: { maxWidth: number, maxHeight: number }): imagesource.ImageSource {
+        var downsampleOptions = new BitmapFactory.Options();
+        downsampleOptions.inSampleSize = this.getSampleSize(uri, options);
+        var bitmap = BitmapFactory.decodeStream(this.openInputStream(uri), null, downsampleOptions);
         var image = new imagesource.ImageSource();
         image.setNativeSource(bitmap);
         return image;
