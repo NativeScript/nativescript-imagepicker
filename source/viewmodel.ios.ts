@@ -4,13 +4,18 @@ import frame = require("ui/frame");
 
 import image_source = require("image-source");
 
+interface ImageOptions {
+    maxWidth?: number;
+    maxHeight?: number;
+}
+
 export function create(options?): ImagePicker {
     if (true /* TODO: iOS8+, consider implementation for iOS7. */) {
         return new ImagePickerPH(options);
     }
 }
 
-export class ImagePicker extends data_observable.Observable  {
+export class ImagePicker extends data_observable.Observable {
     private _selection: data_observablearray.ObservableArray<Asset>;
     private _albums: data_observablearray.ObservableArray<Album>;
 
@@ -138,6 +143,14 @@ export class SelectedAsset extends data_observable.Observable {
     get fileUri(): string {
         return null;
     }
+
+    getImage(options?: ImageOptions): Promise<image_source.ImageSource> {
+        return Promise.reject(new Error("getImage() is not implemented in SelectedAsset. Derived classes should implement it to be fully functional."));
+    }
+
+    getImageData(): Promise<ArrayBuffer> {
+        return Promise.reject(new Error("getImageData() is not implemented in SelectedAsset. Derived classes should implement it to be fully functional."));
+    }
 }
 
 export class Asset extends SelectedAsset {
@@ -165,6 +178,18 @@ export class Asset extends SelectedAsset {
             this.onThumbRequest();
         }
         return this._thumb;
+    }
+
+    getImage(options?: ImageOptions): Promise<image_source.ImageSource> {
+        return new Promise<image_source.ImageSource>((resolve, reject) => {
+            
+        });
+    }
+
+    getImageData(): Promise<ArrayBuffer> {
+        return new Promise<ArrayBuffer>((resolve, reject) => {
+            
+        });
     }
 
     get selected(): boolean {
@@ -236,7 +261,7 @@ class ImagePickerPH extends ImagePicker {
     authorize(): Thenable<void> {
         return new Promise<void>((resolve, reject) => {
             var runloop = CFRunLoopGetCurrent();
-            PHPhotoLibrary.requestAuthorization(function(result) {
+            PHPhotoLibrary.requestAuthorization(function (result) {
                 if (result === PHAuthorizationStatus.PHAuthorizationStatusAuthorized) {
                     invokeOnRunLoop(runloop, resolve);
                 } else {
@@ -274,7 +299,7 @@ class ImagePickerPH extends ImagePicker {
     }
 
     createPHImageThumb(target, asset: PHAsset): void {
-        PHImageManager.defaultManager().requestImageForAssetTargetSizeContentModeOptionsResultHandler(asset, this._thumbRequestSize, PHImageContentMode.PHImageContentModeAspectFill, this._thumbRequestOptions, function(target, uiImage, info) {
+        PHImageManager.defaultManager().requestImageForAssetTargetSizeContentModeOptionsResultHandler(asset, this._thumbRequestSize, PHImageContentMode.PHImageContentModeAspectFill, this._thumbRequestOptions, function (target, uiImage, info) {
             var imageSource = new image_source.ImageSource();
             imageSource.setNativeSource(uiImage);
             target.setThumb(imageSource);
