@@ -180,18 +180,6 @@ export class Asset extends SelectedAsset {
         return this._thumb;
     }
 
-    getImage(options?: ImageOptions): Promise<image_source.ImageSource> {
-        return new Promise<image_source.ImageSource>((resolve, reject) => {
-            
-        });
-    }
-
-    getImageData(): Promise<ArrayBuffer> {
-        return new Promise<ArrayBuffer>((resolve, reject) => {
-            
-        });
-    }
-
     get selected(): boolean {
         return !!this._selected;
     }
@@ -299,11 +287,52 @@ class ImagePickerPH extends ImagePicker {
     }
 
     createPHImageThumb(target, asset: PHAsset): void {
-        PHImageManager.defaultManager().requestImageForAssetTargetSizeContentModeOptionsResultHandler(asset, this._thumbRequestSize, PHImageContentMode.PHImageContentModeAspectFill, this._thumbRequestOptions, function (target, uiImage, info) {
-            var imageSource = new image_source.ImageSource();
-            imageSource.setNativeSource(uiImage);
-            target.setThumb(imageSource);
-        }.bind(this, target));
+        PHImageManager.defaultManager().requestImageForAssetTargetSizeContentModeOptionsResultHandler(asset, this._thumbRequestSize, PHImageContentMode.PHImageContentModeAspectFill,
+            this._thumbRequestOptions, function (target, uiImage, info) {
+                var imageSource = new image_source.ImageSource();
+                imageSource.setNativeSource(uiImage);
+                target.setThumb(imageSource);
+            }.bind(this, target));
+    }
+
+    /**
+     * Creates a new ImageSource from the given image, using the given sizing options.
+     * @param image   The image asset that should be put into an ImageSource.
+     * @param options The options that should be used to create the ImageSource. 
+     */
+    createPHImage(image: PHAsset, options?: ImageOptions): Promise<image_source.ImageSource> {
+        return new Promise<image_source.ImageSource>((resolve, reject) => {
+            var size: CGSize = options ? CGSizeMake(options.maxWidth, options.maxHeight) : PHImageManagerMaximumSize;
+            var resizeMode = PHImageRequestOptions.alloc().init();
+
+            // TODO: Decide whether it is benefical to use PHImageRequestOptionsResizeModeFast
+            //       Accuracy vs Performance. It is probably best to expose these as iOS specific options.
+            resizeMode.resizeMode = PHImageRequestOptionsResizeMode.PHImageRequestOptionsResizeModeExact;
+            resizeMode.synchronous = false;
+
+            // TODO: provide the ability to change this setting.
+            //       Right now, it is needed to make sure that resolve is not called twice.
+            resizeMode.deliveryMode = PHImageRequestOptionsDeliveryMode.PHImageRequestOptionsDeliveryModeHighQualityFormat;
+            resizeMode.normalizedCropRect = CGRectMake(0, 0, 1, 1);
+            PHImageManager.defaultManager().requestImageForAssetTargetSizeContentModeOptionsResultHandler(
+                image,
+                size,
+                PHImageContentMode.PHImageContentModeAspectFill,
+                resizeMode,
+                (createdImage, data) => {
+                    if (createdImage) {
+                        var imageSource = new image_source.ImageSource();
+                        imageSource.setNativeSource(createdImage);
+                        
+                        // TODO: Determine whether runOnRunLoop is needed
+                        //       for callback or not. (See the data() implementation in AssetPH below)
+                        resolve(imageSource);
+                    } else {
+                        reject(new Error("The image could not be created."));
+                    }
+                }
+            );
+        });
     }
 
     done(): void {
@@ -376,6 +405,16 @@ class AssetPH extends Asset {
         return this._phAsset.localIdentifier.toString();
     }
 
+    getImage(options?: ImageOptions): Promise<image_source.ImageSource> {
+        return (<ImagePickerPH>(<AlbumPH>this.album).imagePicker).createPHImage(this._phAsset, options);
+    }
+
+    getImageData(): Promise<ArrayBuffer> {
+        return this.data().then((data: NSData) => {
+            return (<any>interop).bufferFromData(data);
+        });
+    }
+
     get fileUri(): string {
         if (!AssetPH._uriRequestOptions) {
             AssetPH._uriRequestOptions = PHImageRequestOptions.alloc().init();
@@ -392,7 +431,7 @@ class AssetPH extends Asset {
         return undefined;
     }
 
-    data(): Thenable<any> {
+    data(): Promise<any> {
         return new Promise((resolve, reject) => {
             var runloop = CFRunLoopGetCurrent();
             PHImageManager.defaultManager().requestImageDataForAssetOptionsResultHandler(this._phAsset, null, (data, dataUTI, orientation, info) => {
