@@ -5,15 +5,15 @@
 	  "url": "https://github.com/NativeScript/nativescript-imagepicker"
 	},
 	"name": "nativescript-imagepicker",
-	"version": "0.0.4",
+	"version": "0.0.5",
 	"nativescript": {
 	    "platforms": {
-	        "android": "1.4.0",
-	        "ios": "1.4.0"
+	        "android": "2.0.0",
+	        "ios": "2.0.0"
 	    }
 	},
     "dependencies": {
-		"tns-core-modules": "^1.4.0"
+		"tns-core-modules": "2.0.0"
 	},
     "main": "viewmodel.js"
 }
