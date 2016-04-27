@@ -1,7 +1,20 @@
-declare module "imagepicker" {
+declare module "nativescript-imagepicker" {
 
     import observable = require("data/observable");
     import imagesource = require("image-source");
+
+    export interface ImageOptions {
+        /**
+         * The maximum width that the image is allowed to be.
+         */
+        maxWidth?: number;
+
+        /**
+         * The maximum height that the image is allowed to be.
+         */
+        maxHeight?: number;
+    }
+
 
     export class SelectedAsset extends observable.Observable {
         /**
@@ -26,7 +39,19 @@ declare module "imagepicker" {
         fileUri: string;
 
         /**
+         * Asynchronously retrieves an ImageSource object that represents this selected image.
+         * Scaled to the given size. (Aspect-ratio is preserved by default)
+         */
+        getImage(options?: ImageOptions): Promise<imagesource.ImageSource>;
+
+        /**
+         * Asynchronously retrieves an ArrayBuffer that represents the raw byte data from this selected image.
+         */
+        getImageData(): Promise<ArrayBuffer>;
+
+        /**
          * For iOS Returns a promise with NSData representation of the asset.
+         * On Android, Returns a promise with a java.io.InputStream.
          * Note that in future versions it should return ArrayBuffer.
          */
         data(): Thenable<any>;
@@ -53,7 +78,7 @@ declare module "imagepicker" {
         /**
          * Set the picker mode. Supported modes: "single" or "multiple" (default).
          */
-        selectionMode?: string;
+        mode?: string;
     }
 
     export function create(options?: Options): ImagePicker;

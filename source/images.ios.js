@@ -1,3 +1,4 @@
+"use strict";
 var ui_frame = require("ui/frame");
 var page;
 var list;
