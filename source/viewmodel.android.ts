@@ -9,6 +9,7 @@ interface ArrayBufferStatic extends ArrayBufferConstructor {
 var Intent = android.content.Intent;
 var Activity = android.app.Activity;
 var MediaStore = android.provider.MediaStore;
+var DocumentsContract = (<any>android.provider).DocumentsContract;
 var BitmapFactory = android.graphics.BitmapFactory;
 var StaticArrayBuffer = <ArrayBufferStatic>ArrayBuffer;
 
@@ -71,33 +72,91 @@ export class SelectedAsset extends observable.Observable {
         return this._fileUri;
     }
 
-    private _calculateFileUri(): string {
-        var cursor: android.database.ICursor;
-        var columns = [MediaStore.MediaColumns.DATA];
-        if (android.os.Build.VERSION.SDK_INT >= 19) {
-            var wholeID: string = (<any>android.provider).DocumentsContract.getDocumentId(this._uri);
-            var id = wholeID.split(":")[1];
-            cursor = this.getContentResolver().query(android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI, columns, "_id=?", [id], null);
+  private _calculateFileUri() {
+        var _this = this;
+
+        var isKitKat = android.os.Build.VERSION.SDK_INT >= 19;//android.os.Build.VERSION_CODES.KITKAT
+
+        if (isKitKat && DocumentsContract.isDocumentUri(application.android.context, this._uri)) {
+            // ExternalStorageProvider
+            if (_this.isExternalStorageDocument(this._uri)) {
+                var docId = DocumentsContract.getDocumentId(this._uri);
+                var id = docId.split(":")[1];
+                var type = docId.split(":")[0];
+
+                if ("primary" === type.toLowerCase()) {
+                    return android.os.Environment.getExternalStorageDirectory() + "/" + id;
+                }
+
+            // TODO handle non-primary volumes
+            }
+                // DownloadsProvider
+                else if (_this.isDownloadsDocument(this._uri)) {
+
+                    var id = DocumentsContract.getDocumentId(this._uri);
+                    var contentUri = android.content.ContentUris.withAppendedId(
+                            android.net.Uri.parse("content://downloads/public_downloads"), id);
+
+                    return _this.getDataColumn( contentUri, null, null);
+                }
+                // MediaProvider
+                else if (_this.isMediaDocument(this._uri)) {
+                    var docId = DocumentsContract.getDocumentId(this._uri);
+                    var split = docId.split(":");
+                    var type = split[0];
+                    var id = split[1];
+
+                    var contentUri: android.net.Uri = null;
+                    if ("image" === type) {
+                        contentUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+                    } else if ("video" === type) {
+                        contentUri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
+                    } else if ("audio" === type) {
+                        contentUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
+                    }
+
+                    var selection = "_id=?";
+                    var selectionArgs = [ id ];
+
+                    return _this.getDataColumn(contentUri, selection, selectionArgs);
+                }
         }
         else {
-            cursor = this.getContentResolver().query(this._uri, columns, null, null, null);
+            // MediaStore (and general)
+            if ("content" === this._uri.getScheme()) {
+                return _this.getDataColumn(this._uri, null, null);
+            }
+            // FILE
+            else if ("file" === this._uri.getScheme()) {
+                return this._uri.getPath();
+            }
         }
 
+        return undefined;
+    };
+
+    private getDataColumn( uri: android.net.Uri, selection, selectionArgs) {
+
+        var cursor = null;
+        var columns = [MediaStore.MediaColumns.DATA];
+ 
         var filePath;
 
         try {
-            cursor.moveToFirst();
-            var columnIndex = cursor.getColumnIndexOrThrow(columns[0]);
-            filePath = cursor.getString(columnIndex);
-            if (filePath) {
-                return filePath;
+            cursor = this.getContentResolver().query(uri, columns, selection, selectionArgs, null);
+            if (cursor != null && cursor.moveToFirst()) {
+                var column_index = cursor.getColumnIndexOrThrow(columns[0]);
+                filePath = cursor.getString(column_index);
+                if (filePath) {
+                    return filePath;
+                }
             }
         }
-        catch (e) {
+         catch (e) {
             console.log(e);
-        }
-        finally {
-            if (cursor) {
+        } 
+         finally {
+           if (cursor) {
                 cursor.close();
             }
         }
@@ -113,7 +172,17 @@ export class SelectedAsset extends observable.Observable {
         }
 
         return undefined;
-    }
+   };
+
+    private isExternalStorageDocument(uri: android.net.Uri) {
+        return "com.android.externalstorage.documents" === uri.getAuthority();
+    };
+    private isDownloadsDocument(uri: android.net.Uri) {
+        return "com.android.providers.downloads.documents" === uri.getAuthority();
+    };
+    private isMediaDocument(uri: android.net.Uri) {
+        return "com.android.providers.media.documents" === uri.getAuthority();
+    };
 
     private decodeThumbUri(): void {
         // Decode image size
