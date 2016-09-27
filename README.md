@@ -4,20 +4,21 @@ An image picker control that supports multiple selection.
 ## Usage
 [Please check the follwing article.](source/README.md)
 
-## Development
-
 ### Prerequisites
  - [nodejs](https://nodejs.org/)
  - [nativescript](https://www.nativescript.org/)
- - [grunt](http://gruntjs.com/getting-started)
 
-### Build
-To install dev dependencies:
+## Development
+Go to `nativescript-imagepicker`:
 ```
-npm install
+npm link
 ```
-
-To compile the TypeScript and create the npm package output in `dist`:
+Go to `examples\ExampleImgPick`:
 ```
-grunt
+npm link nativescript-imagepicker
+```
+Then you can run the app using either:
+```
+tns run ios
+tns run android
 ```

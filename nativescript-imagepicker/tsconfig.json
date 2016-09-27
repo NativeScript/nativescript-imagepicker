@@ -1,0 +1,22 @@
+{
+	"compilerOptions": {
+		"module": "commonjs",
+		"target": "es5",
+		"noImplicitAny": false,
+		"removeComments": true,
+		"preserveConstEnums": true,
+		"sourceMap": false,
+		"declaration": false,
+		"experimentalDecorators": true,
+		"lib": [
+			"es2016"
+		]
+	},
+	"files": [
+		"reference.d.ts",
+		"images.ios.ts",
+		"albums.ios.ts",
+		"viewmodel.ios.ts",
+		"viewmodel.android.ts"
+	]
+}
