@@ -5,11 +5,11 @@
     "url": "https://github.com/NativeScript/nativescript-imagepicker"
   },
   "name": "nativescript-imagepicker",
-  "version": "2.3.0",
+  "version": "2.4.0",
   "nativescript": {
     "platforms": {
-      "android": "2.3.0",
-      "ios": "2.3.0"
+      "android": "2.4.0",
+      "ios": "2.4.0"
     }
   },
   "dependencies": {
