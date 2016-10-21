@@ -13,7 +13,8 @@
     }
   },
   "dependencies": {
-    "tns-core-modules": "*"
+    "tns-core-modules": "*",
+	"nativescript-telerik-ui": "*"
   },
   "main": "viewmodel.js",
   "devDependencies": {
