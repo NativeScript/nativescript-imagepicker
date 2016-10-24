@@ -28,7 +28,7 @@ var ImagePicker = (function (_super) {
     ImagePicker.prototype.present = function () {
         var _this = this;
         if (this._resolve || this._reject) {
-            return Promise.reject(new Error("Selection is allready in progress..."));
+            return Promise.reject(new Error("Selection is already in progress..."));
         }
         else {
             return new Promise(function (resolve, reject) {
@@ -79,6 +79,13 @@ var ImagePicker = (function (_super) {
     Object.defineProperty(ImagePicker.prototype, "mode", {
         get: function () {
             return this._options && this._options.mode && this._options.mode.toLowerCase() === 'single' ? 'single' : 'multiple';
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(ImagePicker.prototype, "newestFirst", {
+        get: function () {
+            return this._options && !!this._options.newestFirst;
         },
         enumerable: true,
         configurable: true
@@ -367,7 +374,12 @@ var AlbumPH = (function (_super) {
             this._setThumb = true;
             this.imagePicker.createPHImageThumb(this, asset);
         }
-        this.assets.push(item);
+        if (this.imagePicker.newestFirst) {
+            this.assets.unshift(item);
+        }
+        else {
+            this.assets.push(item);
+        }
     };
     return AlbumPH;
 }(Album));
