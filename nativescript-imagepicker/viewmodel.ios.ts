@@ -37,7 +37,7 @@ export class ImagePicker extends data_observable.Observable {
 
     present(): Promise<SelectedAsset[]> {
         if (this._resolve || this._reject) {
-            return Promise.reject(new Error("Selection is allready in progress..."));
+            return Promise.reject(new Error("Selection is already in progress..."));
         } else {
             return new Promise<SelectedAsset[]>((resolve, reject) => {
                 this._resolve = resolve;
@@ -72,6 +72,10 @@ export class ImagePicker extends data_observable.Observable {
 
     get mode(): string {
         return this._options && this._options.mode && this._options.mode.toLowerCase() === 'single' ? 'single' : 'multiple';
+    }
+
+    get newestFirst(): boolean {
+        return this._options && !!this._options.newestFirst;
     }
 
     cancel(): void {
@@ -381,7 +385,11 @@ class AlbumPH extends Album {
             this._setThumb = true;
             (<ImagePickerPH>this.imagePicker).createPHImageThumb(this, asset);
         }
-        this.assets.push(item);
+        if (this.imagePicker.newestFirst) {
+            this.assets.unshift(item);
+        } else {
+            this.assets.push(item);
+        }
     }
 }
 
@@ -441,9 +449,9 @@ class AssetPH extends Asset {
             var runloop = CFRunLoopGetCurrent();
             PHImageManager.defaultManager().requestImageDataForAssetOptionsResultHandler(this._phAsset, null, (data, dataUTI, orientation, info) => {
                 if (data) {
-                    resolve(data);
+                        resolve(data);
                 } else {
-                    reject(new Error("Failed to get image data."));
+                        reject(new Error("Failed to get image data."));
                 }
             });
         });
