@@ -1,30 +1,30 @@
-<Page xmlns="http://www.nativescript.org/tns.xsd" loaded="pageLoaded">
+<Page xmlns="http://www.nativescript.org/tns.xsd" loaded="pageLoaded"
+      xmlns:lv="nativescript-telerik-ui/listview">
 
-	<Page.actionBar>
-		<ActionBar title="{{ title }}">
-			<ActionBar.navigationButton>
-				<NavigationButton text="Albums" />
-			</ActionBar.navigationButton>
-			<ActionBar.actionItems>
-				<!-- enabled="{{ selection.length > 0 }}" -->
-				<ActionItem  text="{{ imagePicker.selection.length, imagePicker.doneText + (imagePicker.mode === 'single' ? '' : ' (' + imagePicker.selection.length + ')') }}" ios.position="right" tap="done" />
-			</ActionBar.actionItems>
-		</ActionBar>
-	</Page.actionBar>
+    <Page.actionBar>
+        <ActionBar title="{{ title }}">
+            <ActionBar.navigationButton>
+                <NavigationButton text="Albums"/>
+            </ActionBar.navigationButton>
+            <ActionBar.actionItems>
+                <ActionItem
+                        text="{{ imagePicker.selection.length, imagePicker.doneText + (imagePicker.mode === 'single' ? '' : ' (' + imagePicker.selection.length + ')') }}"
+                        ios.position="right" tap="done"/>
+            </ActionBar.actionItems>
+        </ActionBar>
+    </Page.actionBar>
 
-	<ScrollView>
-		<Repeater id="images-list" items="{{ assets }}">
-			<Repeater.itemsLayout>
-				<WrapLayout />
-			</Repeater.itemsLayout>
-			<Repeater.itemTemplate>
-				<GridLayout width="94" height="94" tap="{{ toggleSelection }}">
-					<Image opacity="{{ selected ? 0.7 : 1 }}" imageSource="{{ thumb }}" />
-					<Border opacity="{{ selected ? 1 : 0 }}" width="24" height="24" margin="2" horizontalAlignment="right" verticalAlignment="bottom" borderWidth="1" borderColor="white" backgroundColor="blue" borderRadius="12">
-					</Border>
-				</GridLayout>
-			</Repeater.itemTemplate>
-		</Repeater>
-	</ScrollView>
-
+    <lv:RadListView id="images-list" items="{{ assets }}" >
+        <lv:RadListView.listViewLayout>
+            <lv:ListViewGridLayout scrollDirection="Vertical" spanCount="4" itemHeight="80"/>
+        </lv:RadListView.listViewLayout>
+        <lv:RadListView.itemTemplate>
+            <GridLayout margin="1" rows="auto" tap="{{ toggleSelection }}">
+                <Image height="78" width="78" opacity="{{ selected ? 0.7 : 1 }}" imageSource="{{ thumb }}"/>
+                <Border opacity="{{ selected ? 1 : 0 }}" width="24" height="24" margin="2" horizontalAlignment="right"
+                        verticalAlignment="bottom" borderWidth="1" borderColor="white" backgroundColor="blue"
+                        borderRadius="12"/>
+            </GridLayout>
+        </lv:RadListView.itemTemplate>
+    </lv:RadListView>
 </Page>
