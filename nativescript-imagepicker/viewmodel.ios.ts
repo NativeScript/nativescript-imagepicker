@@ -4,6 +4,8 @@ import frame = require("ui/frame");
 
 import image_source = require("image-source");
 
+import { albumsPageFactory } from "./albums.ios";
+
 require("bundle-entry-points");
 
 interface ImageOptions {
@@ -45,7 +47,7 @@ export class ImagePicker extends data_observable.Observable {
                 this._resolve = resolve;
                 this._reject = reject;
                 frame.topmost().navigate({
-                    moduleName: "tns_modules/nativescript-imagepicker/albums",
+                    create: albumsPageFactory,
                     context: this
                 });
             });

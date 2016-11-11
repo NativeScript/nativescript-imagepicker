@@ -3,6 +3,7 @@ var data_observable = require("data/observable");
 var data_observablearray = require("data/observable-array");
 var frame = require("ui/frame");
 var image_source = require("image-source");
+var albums_ios_1 = require("./albums.ios");
 require("bundle-entry-points");
 function create(options) {
     if (true) {
@@ -31,7 +32,7 @@ var ImagePicker = (function (_super) {
                 _this._resolve = resolve;
                 _this._reject = reject;
                 frame.topmost().navigate({
-                    moduleName: "tns_modules/nativescript-imagepicker/albums",
+                    create: albums_ios_1.albumsPageFactory,
                     context: _this
                 });
             });
