@@ -4,9 +4,13 @@ import frame = require("ui/frame");
 
 import image_source = require("image-source");
 
-import { albumsPageFactory } from "./albums.ios";
+if (global.TNS_WEBPACK) {
+    var albumsModule = require("./albums.ios");
 
-require("bundle-entry-points");
+    require("bundle-entry-points");
+} else {
+    var albumsModule = require("./albums");
+}
 
 interface ImageOptions {
     maxWidth?: number;
@@ -47,7 +51,7 @@ export class ImagePicker extends data_observable.Observable {
                 this._resolve = resolve;
                 this._reject = reject;
                 frame.topmost().navigate({
-                    create: albumsPageFactory,
+                    create: albumsModule.albumsPageFactory,
                     context: this
                 });
             });

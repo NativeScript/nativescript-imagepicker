@@ -3,8 +3,13 @@ var data_observable = require("data/observable");
 var data_observablearray = require("data/observable-array");
 var frame = require("ui/frame");
 var image_source = require("image-source");
-var albums_ios_1 = require("./albums.ios");
-require("bundle-entry-points");
+if (global.TNS_WEBPACK) {
+    var albumsModule = require("./albums.ios");
+    require("bundle-entry-points");
+}
+else {
+    var albumsModule = require("./albums");
+}
 function create(options) {
     if (true) {
         return new ImagePickerPH(options);
@@ -32,7 +37,7 @@ var ImagePicker = (function (_super) {
                 _this._resolve = resolve;
                 _this._reject = reject;
                 frame.topmost().navigate({
-                    create: albums_ios_1.albumsPageFactory,
+                    create: albumsModule.albumsPageFactory,
                     context: _this
                 });
             });

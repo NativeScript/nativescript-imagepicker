@@ -3,7 +3,13 @@ var ui_frame = require("ui/frame");
 var page_1 = require("ui/page");
 var action_bar_1 = require("ui/action-bar");
 var list_view_1 = require("ui/list-view");
-var images_ios_1 = require("./images.ios");
+if (global.TNS_WEBPACK) {
+    var imagesModule = require("./images.ios");
+    require("bundle-entry-points");
+}
+else {
+    var imagesModule = require("./images");
+}
 var page;
 var goingToAlbum = false;
 function onAlbumsItemTap(args) {
@@ -11,7 +17,7 @@ function onAlbumsItemTap(args) {
     var topmost = ui_frame.topmost();
     goingToAlbum = true;
     topmost.navigate({
-        create: images_ios_1.imagesPageFactory,
+        create: imagesModule.imagesPageFactory,
         context: list.items.getItem(args.index)
     });
 }

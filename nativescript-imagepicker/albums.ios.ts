@@ -9,7 +9,14 @@ import { ListView } from "ui/list-view";
 import { Label } from "ui/label";
 
 import { ImagePicker } from "./viewmodel.ios";
-import { imagesPageFactory } from "./images.ios";
+
+if (global.TNS_WEBPACK) {
+    var imagesModule = require("./images.ios");
+
+    require("bundle-entry-points");
+} else {
+    var imagesModule = require("./images");
+}
 
 var page;
 var goingToAlbum: boolean = false;
@@ -19,7 +26,7 @@ export function onAlbumsItemTap(args) {
     var topmost = ui_frame.topmost();
     goingToAlbum = true;
     topmost.navigate({
-        create: imagesPageFactory,
+        create: imagesModule.imagesPageFactory,
         context: list.items.getItem(args.index)
     });
 };
