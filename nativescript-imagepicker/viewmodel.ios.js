@@ -1,13 +1,15 @@
 "use strict";
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
 var data_observable = require("data/observable");
 var data_observablearray = require("data/observable-array");
 var frame = require("ui/frame");
 var image_source = require("image-source");
+if (global.TNS_WEBPACK) {
+    var albumsModule = require("./albums.ios");
+    require("bundle-entry-points");
+}
+else {
+    var albumsModule = require("./albums");
+}
 function create(options) {
     if (true) {
         return new ImagePickerPH(options);
@@ -35,7 +37,7 @@ var ImagePicker = (function (_super) {
                 _this._resolve = resolve;
                 _this._reject = reject;
                 frame.topmost().navigate({
-                    moduleName: "./tns_modules/nativescript-imagepicker/albums",
+                    create: albumsModule.albumsPageFactory,
                     context: _this
                 });
             });
