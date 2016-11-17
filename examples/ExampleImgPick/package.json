@@ -10,14 +10,14 @@
   "nativescript": {
     "id": "org.nativescript.ExampleImgPick",
     "tns-android": {
-      "version": "2.3.0"
+      "version": "2.4.0"
     },
     "tns-ios": {
-      "version": "2.3.0"
+      "version": "2.4.0"
     }
   },
   "dependencies": {
-    "nativescript-imagepicker": "file:..\\..\\nativescript-imagepicker",
+    "nativescript-imagepicker": "file:../../nativescript-imagepicker",
     "tns-core-modules": "2.3.0"
   },
   "devDependencies": {

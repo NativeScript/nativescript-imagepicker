@@ -5,7 +5,8 @@ dist
 node_modules
 
 # Source, written in TypeScript so JavaScript is not necessary
-/nativescript-imagepicker/**/*.js
+nativescript-imagepicker/**/*.js
+nativescript-imagepicker/**/*.js.map
 
 # Example platforms
 /examples/ExampleImgPick/platforms/
