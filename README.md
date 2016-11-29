@@ -2,7 +2,7 @@
 An image picker control that supports multiple selection.
 
 ## Usage
-[Please check the follwing article.](source/README.md)
+[Please check the following article.](nativescript-imagepicker/README.md)
 
 ### Prerequisites
  - [nodejs](https://nodejs.org/)
