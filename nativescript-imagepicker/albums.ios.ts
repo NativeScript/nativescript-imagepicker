@@ -94,8 +94,8 @@ export function albumsPageFactory(): Page {
     listView.on(ListView.itemTapEvent, onAlbumsItemTap);
     listView.itemTemplate = 
         "<GridLayout rows=\"*, *\" columns=\"auto, *\" backgroundCount=\"red\">" +
-			"<Image rowSpan=\"2\" imageSource=\"{{ thumb }}\" width=\"80\" height=\"80\" margin=\"2\" />" +
-			"<Label row=\"0\" col=\"1\" text=\"{{ title }}\" verticalAlignment=\"bottom\" fontSize=\"16\" margin=\"0 12\" />" +
+			"<Image rowSpan=\"2\" src=\"{{ thumbAsset }}\" width=\"80\" height=\"80\" margin=\"2\" />" +
+			"<Label row=\"0\" col=\"1\" text=\"{{ title}}\" verticalAlignment=\"bottom\" fontSize=\"16\" margin=\"0 12\" />" +
 			"<Label row=\"1\" col=\"1\" text=\"{{ assets.length }}\" verticalAlignment=\"top\" fontSize=\"13\" margin=\"0 12\" />" +
 		"</GridLayout>";
 

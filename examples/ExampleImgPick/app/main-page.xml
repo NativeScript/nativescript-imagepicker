@@ -6,7 +6,7 @@
         <ListView id="urls-list">
             <ListView.itemTemplate>
                 <GridLayout columns="94, *" rows="*, *">
-                    <Image rowSpan="2" width="94" height="94" src="{{ thumb }}" />
+                    <Image rowSpan="2" width="80" height="80" src="{{ $value }}" />
                     <Label col="1" text="{{ uri }}" />
                     <Label col="1" row="1" text="{{ fileUri }}" />
                 </GridLayout>
