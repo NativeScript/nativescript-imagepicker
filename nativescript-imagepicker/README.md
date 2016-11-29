@@ -10,7 +10,7 @@ On Android it uses Intents to open the stock image or file pickers.
 
 Examples:
  - [Select and Upload](https://github.com/NativeScript/sample-ImageUpload)
- - [imagepicker](https://github.com/NativeScript/nativescript-imagepicker/tree/release/examples/ExampleImgPick/app)
+ - [ImagePicker](https://github.com/NativeScript/nativescript-imagepicker/tree/master/examples/ExampleImgPick/app)
 
 ## Installation
 
