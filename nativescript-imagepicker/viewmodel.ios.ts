@@ -1,6 +1,7 @@
 import data_observable = require("data/observable");
 import data_observablearray = require("data/observable-array");
 import frame = require("ui/frame");
+import imageAssetModule = require("image-asset");
 
 import image_source = require("image-source");
 
@@ -11,6 +12,9 @@ if (global.TNS_WEBPACK) {
 } else {
     var albumsModule = require("./albums");
 }
+
+const IMAGE_WIDTH = 80;
+const IMAGE_HEIGHT = 80;
 
 interface ImageOptions {
     maxWidth?: number;
@@ -113,6 +117,7 @@ export class Album extends data_observable.Observable {
     private _assets: data_observablearray.ObservableArray<Asset>;
     private _title: string;
     private _thumb: image_source.ImageSource;
+    private _thumbAsset: imageAssetModule.ImageAsset;
 
     constructor(imagePicker: ImagePicker, title: string) {
         super();
@@ -133,6 +138,7 @@ export class Album extends data_observable.Observable {
         return this._assets;
     }
 
+    //[Deprecated. Please use thumbAsset instead.]
     get thumb(): image_source.ImageSource {
         return this._thumb;
     }
@@ -141,9 +147,19 @@ export class Album extends data_observable.Observable {
         this._thumb = value;
         this.notifyPropertyChange("thumb", value);
     }
+
+    get thumbAsset(): imageAssetModule.ImageAsset {
+        return this._thumbAsset;
+    }
+
+    protected setThumbAsset(value: imageAssetModule.ImageAsset): void {
+        this._thumbAsset = value;
+        this.notifyPropertyChange("thumbAsset", value);
+    }
 }
 
-export class SelectedAsset extends data_observable.Observable {
+export class SelectedAsset extends imageAssetModule.ImageAsset {
+    // [Deprecated. SelectedAsset will be used directly as a source for the thumb image]
     get thumb(): image_source.ImageSource {
         return null;
     }
@@ -166,7 +182,6 @@ export class SelectedAsset extends data_observable.Observable {
 }
 
 export class Asset extends SelectedAsset {
-
     private _selected: boolean;
     private _album: Album;
 
@@ -174,8 +189,8 @@ export class Asset extends SelectedAsset {
     private _image: image_source.ImageSource;
     private _thumbRequested: boolean;
 
-    constructor(album: Album) {
-        super();
+    constructor(album: Album, asset: PHAsset | UIImage) {
+        super(asset);
         this._album = album;
         this._image = null;
     }
@@ -184,6 +199,7 @@ export class Asset extends SelectedAsset {
         return this._album;
     }
 
+    // [Deprecated. Asset will be used directly as a source for the thumb image]
     get thumb(): image_source.ImageSource {
         if (!this._thumbRequested) {
             this._thumbRequested = true;
@@ -241,7 +257,6 @@ class ImagePickerPH extends ImagePicker {
 
     private _thumbRequestOptions: PHImageRequestOptions;
     private _thumbRequestSize: CGSize;
-
     private _initialized: boolean;
 
     constructor(options) {
@@ -254,6 +269,7 @@ class ImagePickerPH extends ImagePicker {
         this._thumbRequestOptions.normalizedCropRect = CGRectMake(0, 0, 1, 1);
 
         this._thumbRequestSize = CGSizeMake(80, 80);
+        this._options = options;
 
         this._initialized = false;
     }
@@ -305,6 +321,19 @@ class ImagePickerPH extends ImagePicker {
             }.bind(this, target));
     }
 
+    createPHImageThumbAsset(target, asset: PHAsset): void {
+        PHImageManager.defaultManager().requestImageForAssetTargetSizeContentModeOptionsResultHandler(asset, this._thumbRequestSize, PHImageContentMode.AspectFill,
+            this._thumbRequestOptions, function (target, uiImage, info) {
+                var imageAsset = new imageAssetModule.ImageAsset(uiImage);
+                imageAsset.options = {
+                    width: this._options.maxWidth && this._options.maxWidth < IMAGE_WIDTH ? this._options.maxWidth : IMAGE_WIDTH,
+                    height: this._options.maxHeight && this._options.IMAGE_HEIGHT < 80 ? this._options.IMAGE_HEIGHT : IMAGE_HEIGHT,
+                    keepAspectRatio: true
+                };
+                target.setThumbAsset(imageAsset);
+            }.bind(this, target));
+    }
+
     /**
      * Creates a new ImageSource from the given image, using the given sizing options.
      * @param image   The image asset that should be put into an ImageSource.
@@ -333,7 +362,7 @@ class ImagePickerPH extends ImagePicker {
                     if (createdImage) {
                         var imageSource = new image_source.ImageSource();
                         imageSource.setNativeSource(createdImage);
-                        
+
                         // TODO: Determine whether runOnRunLoop is needed
                         //       for callback or not. (See the data() implementation in AssetPH below)
                         resolve(imageSource);
@@ -370,10 +399,12 @@ class ImagePickerPH extends ImagePicker {
 
 class AlbumPH extends Album {
     private _setThumb: boolean;
+    private _options: ImageOptions;
 
-    constructor(imagePicker: ImagePicker, title: string) {
+    constructor(imagePicker: ImagePicker, title: string, options?: ImageOptions) {
         super(imagePicker, title);
         this._setThumb = false;
+        this._options = options;
     }
 
     addAssetsForFetchResult(result: PHFetchResult<any>): void {
@@ -388,10 +419,13 @@ class AlbumPH extends Album {
     }
 
     addAsset(asset: PHAsset): void {
-        var item = new AssetPH(this, asset);
-        if (!this._setThumb) {
+        var imagePicker = <ImagePickerPH>this.imagePicker;
+        var item = new AssetPH(this, asset, this._options);
+        if (!this._setThumb && !imagePicker) {
             this._setThumb = true;
-            (<ImagePickerPH>this.imagePicker).createPHImageThumb(this, asset);
+            imagePicker.createPHImageThumb(this, asset);
+            imagePicker.createPHImageThumbAsset(this, asset);
+
         }
         if (this.imagePicker.newestFirst) {
             this.assets.unshift(item);
@@ -405,9 +439,10 @@ class AssetPH extends Asset {
     private _phAsset: PHAsset;
     private static _uriRequestOptions: PHImageRequestOptions;
 
-    constructor(album: AlbumPH, phAsset: PHAsset) {
-        super(album);
+    constructor(album: AlbumPH, phAsset: PHAsset, options?: ImageOptions) {
+        super(album, phAsset);
         this._phAsset = phAsset;
+        this._initializeOptions(options);
     }
 
     /**
@@ -424,6 +459,22 @@ class AssetPH extends Asset {
 
     get uri(): string {
         return this._phAsset.localIdentifier.toString();
+    }
+
+    private _initializeOptions(options: ImageOptions): void {
+        if (options) {
+            this.options = {
+                width: options.maxWidth && options.maxWidth < IMAGE_WIDTH ? options.maxWidth : IMAGE_WIDTH,
+                height: options.maxHeight && options.maxHeight < IMAGE_HEIGHT ? options.maxHeight : IMAGE_HEIGHT,
+                keepAspectRatio: true
+            };
+        } else {
+            this.options = {
+                width: IMAGE_WIDTH,
+                height: IMAGE_HEIGHT,
+                keepAspectRatio: true
+            };
+        }
     }
 
     getImage(options?: ImageOptions): Promise<image_source.ImageSource> {
@@ -457,9 +508,9 @@ class AssetPH extends Asset {
             var runloop = CFRunLoopGetCurrent();
             PHImageManager.defaultManager().requestImageDataForAssetOptionsResultHandler(this._phAsset, null, (data, dataUTI, orientation, info) => {
                 if (data) {
-                        resolve(data);
+                    resolve(data);
                 } else {
-                        reject(new Error("Failed to get image data."));
+                    reject(new Error("Failed to get image data."));
                 }
             });
         });

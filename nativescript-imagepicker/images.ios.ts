@@ -16,13 +16,13 @@ export function pageLoaded(args) {
     list = page.getViewById("images-list");
 
     // Get the current Size, and then adjust the number of columns based on it...
-    list.listViewLayout.spanCount = Math.floor(platform.screen.mainScreen.widthDIPs/80);
+    list.listViewLayout.spanCount = Math.floor(platform.screen.mainScreen.widthDIPs / 80);
 
-    application.on("orientationChanged", function(e:application.OrientationChangedEventData){
-            var currentPageWidth = platform.screen.mainScreen.heightDIPs
-            console.log(currentPageWidth);
-            console.log(currentPageWidth);
-            list.listViewLayout.spanCount = Math.floor(currentPageWidth/80);
+    application.on("orientationChanged", function (e: application.OrientationChangedEventData) {
+        var currentPageWidth = platform.screen.mainScreen.heightDIPs
+        console.log(currentPageWidth);
+        console.log(currentPageWidth);
+        list.listViewLayout.spanCount = Math.floor(currentPageWidth / 80);
     });
 }
 
@@ -38,7 +38,7 @@ export function imagesPageFactory(): Page {
     //<Page xmlns="http://www.nativescript.org/tns.xsd" loaded="pageLoaded" xmlns:lv="nativescript-telerik-ui/listview">
     let page = new Page();
     page.on(Page.loadedEvent, pageLoaded);
-
+    
     //<ActionBar title="{{ title }}">
     let actionBar = new ActionBar();
     actionBar.bind({ targetProperty: "title", sourceProperty: "title", twoWay: false });
@@ -55,8 +55,10 @@ export function imagesPageFactory(): Page {
     //</ActionBar.actionItems>
     let actionItems = new ActionItems();
     let item = new ActionItem();
-    item.bind({ targetProperty: "text", sourceProperty: "imagePicker.selection.length", twoWay: false,
-        expression: "imagePicker.doneText + (imagePicker.mode === 'single' ? '' : ' (' + imagePicker.selection.length + ')')" });
+    item.bind({
+        targetProperty: "text", sourceProperty: "imagePicker.selection.length", twoWay: false,
+        expression: "imagePicker.doneText + (imagePicker.mode === 'single' ? '' : ' (' + imagePicker.selection.length + ')')"
+    });
     item.ios.position = "right";
     item.on(ActionItem.tapEvent, done);
     actionBar.actionItems.addItem(item);
@@ -70,16 +72,13 @@ export function imagesPageFactory(): Page {
     //    <lv:ListViewGridLayout scrollDirection="Vertical" spanCount="4" itemHeight="80"/>
     //</lv:RadListView.listViewLayout>
     let listViewGridLayout = new ListViewGridLayout();
-    listViewGridLayout.scrollDirection="Vertical";
+    listViewGridLayout.scrollDirection = "Vertical";
     listViewGridLayout.spanCount = 4;
     listViewGridLayout.itemHeight = 80;
     listView.listViewLayout = listViewGridLayout;
-    listView.itemTemplate = 
+    listView.itemTemplate =
         "<GridLayout margin=\"1\" rows=\"auto\" tap=\"{{ toggleSelection }}\">" +
-            "<Image height=\"78\" width=\"78\" opacity=\"{{ selected ? 0.7 : 1 }}\" imageSource=\"{{ thumb }}\"/>" +
-            "<Border opacity=\"{{ selected ? 1 : 0 }}\" width=\"24\" height=\"24\" margin=\"2\" horizontalAlignment=\"right\"" +
-                "verticalAlignment=\"bottom\" borderWidth=\"1\" borderColor=\"white\" backgroundColor=\"blue\"" +
-                "borderRadius=\"12\"/>" +
+        "<Image height=\"78\" width=\"78\" opacity=\"{{ selected ? 0.7 : 1 }}\" src=\"{{ $value }}\"/>" +
         "</GridLayout>";
 
     page.content = listView;

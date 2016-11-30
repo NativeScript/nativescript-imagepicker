@@ -1,5 +1,6 @@
 import observable = require("data/observable");
 import imagesource = require("image-source");
+import imageAssetModule = require("image-asset");
 
 export interface ImageOptions {
     /**
@@ -14,8 +15,9 @@ export interface ImageOptions {
 }
 
 
-export class SelectedAsset extends observable.Observable {
+export class SelectedAsset extends imageAssetModule.ImageAsset {
     /**
+     * [Deprecated. SelectedAsset will be used directly as a source for the thumb image]
      * A 100x100 pixels thumb of the selected image.
      * This property will be initialized on demand. The first access will return undefined or null.
      * It will trigger an async load and when the thumb is obtained, a property changed notification will occur.

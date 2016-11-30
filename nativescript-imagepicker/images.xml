@@ -19,11 +19,8 @@
             <lv:ListViewGridLayout scrollDirection="Vertical" spanCount="4" itemHeight="80"/>
         </lv:RadListView.listViewLayout>
         <lv:RadListView.itemTemplate>
-            <GridLayout margin="1" rows="auto" tap="{{ toggleSelection }}">
-                <Image height="78" width="78" opacity="{{ selected ? 0.7 : 1 }}" imageSource="{{ thumb }}"/>
-                <Border opacity="{{ selected ? 1 : 0 }}" width="24" height="24" margin="2" horizontalAlignment="right"
-                        verticalAlignment="bottom" borderWidth="1" borderColor="white" backgroundColor="blue"
-                        borderRadius="12"/>
+            <GridLayout margin="1" tap="{{ toggleSelection }}">
+                <Image height="78" width="78" opacity="{{ selected ? 0.7 : 1 }}" src="{{ $value }}" />
             </GridLayout>
         </lv:RadListView.itemTemplate>
     </lv:RadListView>

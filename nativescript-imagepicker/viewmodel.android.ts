@@ -2,6 +2,7 @@ import * as observable from "data/observable";
 import * as imagesource from "image-source";
 import * as application from "application";
 import * as platform from "platform";
+import imageAssetModule = require("image-asset");
 
 interface ArrayBufferStatic extends ArrayBufferConstructor {
     from(buffer: java.nio.ByteBuffer): ArrayBuffer;
@@ -14,15 +15,16 @@ var DocumentsContract = (<any>android.provider).DocumentsContract;
 var BitmapFactory = android.graphics.BitmapFactory;
 var StaticArrayBuffer = <ArrayBufferStatic>ArrayBuffer;
 
-export class SelectedAsset extends observable.Observable {
+export class SelectedAsset extends imageAssetModule.ImageAsset {
     private _uri: android.net.Uri;
     private _thumb: imagesource.ImageSource;
     private _thumbRequested: boolean;
+    private _thumbAsset: imageAssetModule.ImageAsset;
     private _fileUri: string;
     private _data: ArrayBuffer;
 
     constructor(uri: android.net.Uri) {
-        super();
+        super(SelectedAsset._calculateFileUri(uri));
         this._uri = uri;
         this._thumbRequested = false;
     }
@@ -55,11 +57,21 @@ export class SelectedAsset extends observable.Observable {
         });
     }
 
+    //[Deprecated. Please use thumbAsset instead.]
     get thumb(): imagesource.ImageSource {
         if (!this._thumbRequested) {
             this.decodeThumbUri();
         }
         return this._thumb;
+    }
+
+    get thumbAsset(): imageAssetModule.ImageAsset {
+        return this._thumbAsset;
+    }
+
+    protected setThumbAsset(value: imageAssetModule.ImageAsset): void {
+        this._thumbAsset = value;
+        this.notifyPropertyChange("thumbAsset", value);
     }
 
     get uri(): string {
@@ -68,20 +80,18 @@ export class SelectedAsset extends observable.Observable {
 
     get fileUri(): string {
         if (!this._fileUri) {
-            this._fileUri = this._calculateFileUri();
+            this._fileUri = SelectedAsset._calculateFileUri(this._uri);
         }
         return this._fileUri;
     }
 
-    private _calculateFileUri() {
-        var _this = this;
-
+    private static _calculateFileUri(uri : android.net.Uri) {
         var isKitKat = android.os.Build.VERSION.SDK_INT >= 19;//android.os.Build.VERSION_CODES.KITKAT
 
-        if (isKitKat && DocumentsContract.isDocumentUri(application.android.context, this._uri)) {
+        if (isKitKat && DocumentsContract.isDocumentUri(application.android.context, uri)) {
             // ExternalStorageProvider
-            if (_this.isExternalStorageDocument(this._uri)) {
-                var docId = DocumentsContract.getDocumentId(this._uri);
+            if (SelectedAsset.isExternalStorageDocument(uri)) {
+                var docId = DocumentsContract.getDocumentId(uri);
                 var id = docId.split(":")[1];
                 var type = docId.split(":")[0];
 
@@ -92,16 +102,16 @@ export class SelectedAsset extends observable.Observable {
                 // TODO handle non-primary volumes
             }
             // DownloadsProvider
-            else if (_this.isDownloadsDocument(this._uri)) {
-                var id = DocumentsContract.getDocumentId(this._uri);
+            else if (SelectedAsset.isDownloadsDocument(uri)) {
+                var id = DocumentsContract.getDocumentId(uri);
                 var contentUri = android.content.ContentUris.withAppendedId(
                     android.net.Uri.parse("content://downloads/public_downloads"), long(id));
 
-                return _this.getDataColumn(contentUri, null, null);
+                return SelectedAsset.getDataColumn(contentUri, null, null);
             }
             // MediaProvider
-            else if (_this.isMediaDocument(this._uri)) {
-                var docId = DocumentsContract.getDocumentId(this._uri);
+            else if (SelectedAsset.isMediaDocument(uri)) {
+                var docId = DocumentsContract.getDocumentId(uri);
                 var split = docId.split(":");
                 var type = split[0];
                 var id = split[1];
@@ -118,24 +128,24 @@ export class SelectedAsset extends observable.Observable {
                 var selection = "_id=?";
                 var selectionArgs = [id];
 
-                return _this.getDataColumn(contentUri, selection, selectionArgs);
+                return SelectedAsset.getDataColumn(contentUri, selection, selectionArgs);
             }
         }
         else {
             // MediaStore (and general)
-            if ("content" === this._uri.getScheme()) {
-                return _this.getDataColumn(this._uri, null, null);
+            if ("content" === uri.getScheme()) {
+                return SelectedAsset.getDataColumn(uri, null, null);
             }
             // FILE
-            else if ("file" === this._uri.getScheme()) {
-                return this._uri.getPath();
+            else if ("file" === uri.getScheme()) {
+                return uri.getPath();
             }
         }
 
         return undefined;
     };
 
-    private getDataColumn(uri: android.net.Uri, selection, selectionArgs) {
+    private static getDataColumn(uri: android.net.Uri, selection, selectionArgs) {
 
         var cursor = null;
         var columns = [MediaStore.MediaColumns.DATA];
@@ -164,13 +174,13 @@ export class SelectedAsset extends observable.Observable {
         return undefined;
     };
 
-    private isExternalStorageDocument(uri: android.net.Uri) {
+    private static isExternalStorageDocument(uri: android.net.Uri) {
         return "com.android.externalstorage.documents" === uri.getAuthority();
     };
-    private isDownloadsDocument(uri: android.net.Uri) {
+    private static isDownloadsDocument(uri: android.net.Uri) {
         return "com.android.providers.downloads.documents" === uri.getAuthority();
     };
-    private isMediaDocument(uri: android.net.Uri) {
+    private static isMediaDocument(uri: android.net.Uri) {
         return "com.android.providers.media.documents" === uri.getAuthority();
     };
 
@@ -182,8 +192,20 @@ export class SelectedAsset extends observable.Observable {
         };
 
         // Decode with scale
-        this._thumb = this.decodeUri(this._uri, REQUIRED_SIZE);
-        this.notifyPropertyChange("thumb", this._thumb);
+         this._thumb = this.decodeUri(this._uri, REQUIRED_SIZE);
+         this.notifyPropertyChange("thumb", this._thumb);
+    }
+
+    private decodeThumbAssetUri(): void {
+        // Decode image size
+        var REQUIRED_SIZE = {
+            maxWidth: 100,
+            maxHeight: 100
+        };
+
+        // Decode with scale
+        this._thumbAsset = this.decodeUriForImageAsset(this._uri, REQUIRED_SIZE);
+        this.notifyPropertyChange("thumbAsset", this._thumbAsset);
     }
 
     /**
@@ -235,12 +257,24 @@ export class SelectedAsset extends observable.Observable {
     }
 
     /**
+     * Decodes the given URI using the given options.
+     * @param uri The URI that should be decoded into an ImageAsset.
+     * @param options The options that should be used to decode the image.
+     */
+    private decodeUriForImageAsset(uri: android.net.Uri, options?: { maxWidth: number, maxHeight: number }): imageAssetModule.ImageAsset {
+        var downsampleOptions = new BitmapFactory.Options();
+        downsampleOptions.inSampleSize = this.getSampleSize(uri, options);
+        var bitmap = BitmapFactory.decodeStream(this.openInputStream(uri), null, downsampleOptions);
+        return new imageAssetModule.ImageAsset(bitmap);
+    }
+
+    /**
      * Retrieves the raw data of the given file and exposes it as a byte buffer.
      */
     private getByteBuffer(uri: android.net.Uri): java.nio.ByteBuffer {
         var file: android.content.res.AssetFileDescriptor = null;
         try {
-            file = this.getContentResolver().openAssetFileDescriptor(uri, "r");
+            file = SelectedAsset.getContentResolver().openAssetFileDescriptor(uri, "r");
 
             // Determine how many bytes to allocate in memory based on the file length
             var length: number = file.getLength();
@@ -260,10 +294,10 @@ export class SelectedAsset extends observable.Observable {
     }
 
     private openInputStream(uri: android.net.Uri): java.io.InputStream {
-        return this.getContentResolver().openInputStream(uri);
+        return SelectedAsset.getContentResolver().openInputStream(uri);
     }
 
-    private getContentResolver(): android.content.ContentResolver {
+    private static getContentResolver(): android.content.ContentResolver {
         return application.android.nativeApp.getContentResolver();
     }
 }
