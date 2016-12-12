@@ -16,7 +16,7 @@
     "tns-core-modules": "*",
     "nativescript-telerik-ui": "*"
   },
-  "main": "viewmodel.js",
+  "main": "viewmodel",
   "devDependencies": {
     "tns-platform-declarations": "next",
     "typescript": "^2.0.3"
