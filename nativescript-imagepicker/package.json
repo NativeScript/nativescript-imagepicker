@@ -13,13 +13,13 @@
     }
   },
   "dependencies": {
-    "tns-core-modules": "*",
+    "tns-core-modules": ">=2.5.0",
     "nativescript-telerik-ui": "*"
   },
   "main": "viewmodel",
   "devDependencies": {
     "tns-platform-declarations": "next",
-    "typescript": "^2.0.3"
+    "typescript": "~2.0.10"
   },
   "scripts": {
     "tsc": "tsc",
