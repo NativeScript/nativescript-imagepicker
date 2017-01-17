@@ -20,8 +20,6 @@ export function pageLoaded(args) {
 
     application.on("orientationChanged", function (e: application.OrientationChangedEventData) {
         var currentPageWidth = platform.screen.mainScreen.heightDIPs
-        console.log(currentPageWidth);
-        console.log(currentPageWidth);
         list.listViewLayout.spanCount = Math.floor(currentPageWidth / 80);
     });
 }
