@@ -1,5 +1,6 @@
 import { Observable } from "data/observable";
 import { ImageSource } from "image-source";
+import { ImageAsset } from "image-asset";
 
 export interface ImageOptions {
     /**
@@ -14,7 +15,7 @@ export interface ImageOptions {
 }
 
 
-export class SelectedAsset extends Observable {
+export class SelectedAsset extends ImageAsset {
     /**
      * A 100x100 pixels thumb of the selected image.
      * This property will be initialized on demand. The first access will return undefined or null.
