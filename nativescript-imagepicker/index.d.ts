@@ -1,6 +1,5 @@
-import observable = require("data/observable");
-import imagesource = require("image-source");
-import imageAssetModule = require("image-asset");
+import { Observable } from "data/observable";
+import { ImageSource } from "image-source";
 
 export interface ImageOptions {
     /**
@@ -15,14 +14,13 @@ export interface ImageOptions {
 }
 
 
-export class SelectedAsset extends imageAssetModule.ImageAsset {
+export class SelectedAsset extends Observable {
     /**
-     * [Deprecated. SelectedAsset will be used directly as a source for the thumb image]
      * A 100x100 pixels thumb of the selected image.
      * This property will be initialized on demand. The first access will return undefined or null.
      * It will trigger an async load and when the thumb is obtained, a property changed notification will occur.
      */
-    thumb: imagesource.ImageSource;
+    thumb: ImageSource;
 
     /**
      * URI that identifies the image asset.
@@ -42,7 +40,7 @@ export class SelectedAsset extends imageAssetModule.ImageAsset {
      * Asynchronously retrieves an ImageSource object that represents this selected image.
      * Scaled to the given size. (Aspect-ratio is preserved by default)
      */
-    getImage(options?: ImageOptions): Promise<imagesource.ImageSource>;
+    getImage(options?: ImageOptions): Promise<ImageSource>;
 
     /**
      * Asynchronously retrieves an ArrayBuffer that represents the raw byte data from this selected image.
@@ -86,6 +84,11 @@ interface Options {
          */
         read_external_storage?: string;
     }
+
+    /**
+     * Indicates if images should be ordered as newest first
+     */
+    newestFirst?: boolean;
 }
 
 export function create(options?: Options): ImagePicker;
