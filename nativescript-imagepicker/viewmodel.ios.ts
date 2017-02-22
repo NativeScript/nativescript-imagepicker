@@ -1,9 +1,8 @@
-import data_observable = require("data/observable");
-import data_observablearray = require("data/observable-array");
-import frame = require("ui/frame");
-import imageAssetModule = require("image-asset");
-
-import image_source = require("image-source");
+import * as data_observable from "data/observable";
+import * as data_observablearray from "data/observable-array";
+import * as frame from "ui/frame";
+import * as imageAssetModule from "image-asset";
+import * as image_source from "image-source";
 
 if (global.TNS_WEBPACK) {
     var albumsModule = require("./albums.ios");
