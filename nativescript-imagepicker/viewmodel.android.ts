@@ -2,7 +2,7 @@ import * as observable from "data/observable";
 import * as imagesource from "image-source";
 import * as application from "application";
 import * as platform from "platform";
-import imageAssetModule = require("image-asset");
+import * as imageAssetModule from "image-asset";
 
 interface ArrayBufferStatic extends ArrayBufferConstructor {
     from(buffer: java.nio.ByteBuffer): ArrayBuffer;
