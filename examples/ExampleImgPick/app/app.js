@@ -1,3 +1,4 @@
+require("./bundle-config");
 var application = require("application");
 
 application.cssFile = "./app.css";
