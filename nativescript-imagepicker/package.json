@@ -12,6 +12,7 @@
       "ios": "3.0.0"
     }
   },
+  "author": "NativeScript Team",
   "main": "viewmodel",
   "devDependencies": {
     "nativescript-telerik-ui": "rc",
@@ -20,7 +21,8 @@
     "typescript": "^2.2.2"
   },
   "peerDependencies": {
-    "nativescript-telerik-ui": "rc"
+    "nativescript-telerik-ui": "rc",
+    "tns-core-modules": "^3.0.0 || ^3.0.0-rc.1"
   },
   "scripts": {
     "tsc": "tsc",
