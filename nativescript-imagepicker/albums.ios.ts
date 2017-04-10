@@ -83,7 +83,7 @@ export function albumsPageFactory(): Page {
     item.bind({ targetProperty: "text", sourceProperty: "selection.length", twoWay: false,
         expression: "doneText + (mode === 'single' ? '' : ' (' + selection.length + ')')" });
     item.ios.position = "right";
-    item.on(ActionItem.tapEvent, done);
+    item.on("tap", done);
     actionBar.actionItems.addItem(item);
     page.actionBar = actionBar;
 

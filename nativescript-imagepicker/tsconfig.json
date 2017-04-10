@@ -1,23 +1,29 @@
 {
-	"compilerOptions": {
-		"module": "commonjs",
-		"target": "es5",
-		"noImplicitAny": false,
-		"removeComments": true,
-		"preserveConstEnums": true,
-		"sourceMap": true,
-		"declaration": false,
-		"noEmitHelpers": true,
-		"experimentalDecorators": true,
-		"lib": [
-			"es2016"
-		]
-	},
-	"files": [
-		"reference.d.ts",
-		"images.ios.ts",
-		"albums.ios.ts",
-		"viewmodel.ios.ts",
-		"viewmodel.android.ts"
-	]
+    "compilerOptions": {
+        "module": "commonjs",
+        "target": "es5",
+        "noImplicitAny": false,
+        "removeComments": true,
+        "preserveConstEnums": true,
+        "sourceMap": false,
+        "declaration": false,
+        "noLib": false,
+        "noEmitHelpers": true,
+        "experimentalDecorators": true,
+        "lib": [
+            "es6",
+            "dom"
+        ],
+        "baseUrl": ".",
+        "paths": {
+            "*": [
+                "./node_modules/tns-core-modules/*",
+                "./node_modules/*"
+            ]
+        }
+    },
+    "exclude": [
+        "node_modules",
+        "platforms"
+    ]
 }

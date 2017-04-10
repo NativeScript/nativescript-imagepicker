@@ -5,21 +5,21 @@
     "url": "https://github.com/NativeScript/nativescript-imagepicker"
   },
   "name": "nativescript-imagepicker",
-  "version": "2.5.1",
+  "version": "3.0.0",
   "nativescript": {
     "platforms": {
-      "android": "2.4.0",
-      "ios": "2.4.0"
+      "android": "3.0.0",
+      "ios": "3.0.0"
     }
   },
-  "dependencies": {
-    "tns-core-modules": ">=2.5.0",
-    "nativescript-telerik-ui": "*"
-  },
   "main": "viewmodel",
+  "dependencies": {
+    "nativescript-telerik-ui": "rc"
+  },
   "devDependencies": {
-    "tns-platform-declarations": "next",
-    "typescript": "~2.0.10"
+    "tns-core-modules": "^3.0.0 || ^3.0.0-rc.1",
+    "tns-platform-declarations": "^3.0.0 || ^3.0.0-rc.1",
+    "typescript": "^2.2.2"
   },
   "scripts": {
     "tsc": "tsc",

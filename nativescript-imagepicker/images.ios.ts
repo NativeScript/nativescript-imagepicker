@@ -58,7 +58,7 @@ export function imagesPageFactory(): Page {
         expression: "imagePicker.doneText + (imagePicker.mode === 'single' ? '' : ' (' + imagePicker.selection.length + ')')"
     });
     item.ios.position = "right";
-    item.on(ActionItem.tapEvent, done);
+    item.on("tap", done);
     actionBar.actionItems.addItem(item);
     page.actionBar = actionBar;
 
