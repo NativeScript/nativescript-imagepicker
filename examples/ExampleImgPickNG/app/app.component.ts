@@ -37,7 +37,7 @@ export class AppComponent {
             })
             .then((selection) => {
                 console.log("Selection done:");
-                selection.forEach(function(selected) {
+                selection.forEach(function (selected) {
                     console.log("----------------");
                     console.log("uri: " + selected.uri);
                     console.log("fileUri: " + selected.fileUri);

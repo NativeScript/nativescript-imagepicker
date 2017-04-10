@@ -10,20 +10,20 @@
   "nativescript": {
     "id": "org.nativescript.ExampleImgPick",
     "tns-android": {
-      "version": "2.4.0"
+      "version": "3.0.0-rc.1"
     },
     "tns-ios": {
-      "version": "2.4.0"
+      "version": "3.0.0-rc.1"
     }
   },
   "dependencies": {
     "nativescript-imagepicker": "file:../../nativescript-imagepicker",
-    "tns-core-modules": "2.5.0"
+    "tns-core-modules": "^3.0.0 || ^3.0.0-rc.1"
   },
   "devDependencies": {
-    "babel-traverse": "6.15.0",
-    "babel-types": "6.15.0",
-    "babylon": "6.11.2",
+    "babel-traverse": "^6.24.1",
+    "babel-types": "^6.24.1",
+    "babylon": "^6.16.1",
     "lazy": "1.0.11"
   }
 }
