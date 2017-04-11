@@ -1,0 +1,9 @@
+android {  
+  defaultConfig {  
+    generatedDensities = []
+    applicationId = "org.nativescript.ExampleImgPick"  
+  }  
+  aaptOptions {  
+    additionalParameters "--no-version-vectors"  
+  }  
+} 
