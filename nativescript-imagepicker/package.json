@@ -22,7 +22,7 @@
   },
   "peerDependencies": {
     "nativescript-telerik-ui": "^1.7.0",
-    "tns-core-modules": "^3.0.0 || ^3.0.0-rc.1"
+    "tns-core-modules": "^3.0.0 || ^3.0.0-rc.1 || >=3.0.0-2017"
   },
   "scripts": {
     "tsc": "tsc",
