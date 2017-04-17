@@ -15,7 +15,7 @@
   "author": "NativeScript Team",
   "main": "viewmodel",
   "devDependencies": {
-    "nativescript-telerik-ui": "^1.7.0",
+    "nativescript-telerik-ui": "^1.7.0 || ^1.7.0-2017.4.4.1",
     "tns-core-modules": "^3.0.0 || ^3.0.0-rc.1",
     "tns-platform-declarations": "^3.0.0 || ^3.0.0-rc.1",
     "typescript": "^2.2.2"
