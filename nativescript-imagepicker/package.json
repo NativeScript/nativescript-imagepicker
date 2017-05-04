@@ -15,17 +15,16 @@
   "author": "NativeScript Team",
   "main": "viewmodel",
   "devDependencies": {
-    "nativescript-telerik-ui": "^1.7.0 || ^1.7.0-2017.4.4.1",
-    "tns-core-modules": "^3.0.0 || ^3.0.0-rc.1",
-    "tns-platform-declarations": "^3.0.0 || ^3.0.0-rc.1",
+    "nativescript-telerik-ui": "^2.0.0",
+    "tns-core-modules": "^3.0.0",
+    "tns-platform-declarations": "^3.0.0",
     "typescript": "^2.2.2"
   },
   "peerDependencies": {
-    "nativescript-telerik-ui": "^1.7.0 || >=1.7.0-2017",
-    "tns-core-modules": "^3.0.0 || ^3.0.0-rc.1 || >=3.0.0-2017"
+    "nativescript-telerik-ui": "^2.0.0",
+    "tns-core-modules": "^3.0.0 || >=3.0.0-2017"
   },
   "scripts": {
-    "tsc": "tsc",
     "prepublish": "tsc"
   }
 }
