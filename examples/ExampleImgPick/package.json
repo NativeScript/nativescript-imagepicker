@@ -9,11 +9,11 @@
   "version": "0.0.2",
   "nativescript": {
     "id": "org.nativescript.ExampleImgPick",
-    "tns-android": {
-      "version": "3.0.0-rc.1"
-    },
     "tns-ios": {
       "version": "3.0.0-rc.1"
+    },
+    "tns-android": {
+      "version": "3.0.0"
     }
   },
   "dependencies": {
@@ -24,15 +24,16 @@
     "babel-traverse": "^6.24.1",
     "babel-types": "^6.24.1",
     "babylon": "^6.16.1",
-    "copy-webpack-plugin": "~3.0.1",
-    "extract-text-webpack-plugin": "~2.0.0-beta.4",
+    "copy-webpack-plugin": "~4.0.1",
+    "extract-text-webpack-plugin": "~2.1.0",
     "lazy": "1.0.11",
     "nativescript-css-loader": "~0.26.0",
-    "nativescript-dev-webpack": "^0.3.7",
+    "nativescript-dev-webpack": "^0.4.0",
     "raw-loader": "~0.5.1",
-    "resolve-url-loader": "~1.6.0",
-    "webpack": "2.2.0",
-    "webpack-sources": "~0.1.3"
+    "resolve-url-loader": "~2.0.2",
+    "webpack": "~2.4.1",
+    "webpack-sources": "~0.2.3",
+    "awesome-typescript-loader": "~3.0.0-beta.9"
   },
   "scripts": {
     "ns-bundle": "ns-bundle",
