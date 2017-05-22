@@ -18,6 +18,7 @@
   },
   "dependencies": {
     "nativescript-imagepicker": "file:../../nativescript-imagepicker",
+    "nativescript-telerik-ui": "^2.0.1",
     "tns-core-modules": "^3.0.0 || ^3.0.0-rc.1"
   },
   "devDependencies": {
