@@ -85,6 +85,10 @@ export class ImagePicker extends data_observable.Observable {
         return this._options && this._options.mode && this._options.mode.toLowerCase() === 'single' ? 'single' : 'multiple';
     }
 
+    get mediaType(): string {
+        return this._options && this._options.mediaType && this._options.mediaType.toLowerCase() === 'image' ? 'image' : 'video';
+    }
+
     get newestFirst(): boolean {
         return this._options && !!this._options.newestFirst;
     }
@@ -292,9 +296,11 @@ class ImagePickerPH extends ImagePicker {
     }
 
     addAlbumsForFetchResult(result: PHFetchResult<any>): void {
-        for (var i = 0; i < result.count; i++) {
+        for (let i = 0; i < result.count; i++) {
             var item = result.objectAtIndex(i);
             if (item.isKindOfClass(PHAssetCollection)) {
+                let assetsFetchResult = PHAsset.fetchAssetsInAssetCollectionOptions(item, null);
+
                 this.addAlbumForAssetCollection(<PHAssetCollection>item);
             } else {
                 console.log("Ignored result: " + item);
@@ -303,8 +309,18 @@ class ImagePickerPH extends ImagePicker {
     }
 
     addAlbumForAssetCollection(assetCollection: PHAssetCollection): void {
+        let mediaType;
+        if (this.mediaType === 'image') {
+            mediaType = PHAssetMediaType.Image;
+        } else {
+            mediaType = PHAssetMediaType.Video;
+        }
+
+        var fetchOptions = PHFetchOptions.alloc().init();
+        fetchOptions.predicate = NSPredicate.predicateWithFormatArgumentArray("mediaType = %d", NSArray.arrayWithObject(mediaType));
+
         var album = new AlbumPH(this, assetCollection.localizedTitle);
-        var pfAssets = PHAsset.fetchAssetsInAssetCollectionOptions(assetCollection, null);
+        var pfAssets = PHAsset.fetchAssetsInAssetCollectionOptions(assetCollection, fetchOptions);
         album.addAssetsForFetchResult(pfAssets);
         if (album.assets.length > 0) {
             this.albums.push(album);
@@ -436,7 +452,8 @@ class AlbumPH extends Album {
 
 class AssetPH extends Asset {
     private _phAsset: PHAsset;
-    private static _uriRequestOptions: PHImageRequestOptions;
+    private static _uriImageRequestOptions: PHImageRequestOptions;
+    private static _uriVideoRequestOptions: PHVideoRequestOptions;
 
     constructor(album: AlbumPH, phAsset: PHAsset, options?: ImageOptions) {
         super(album, phAsset);
@@ -486,14 +503,20 @@ class AssetPH extends Asset {
         });
     }
 
+    getAssetURI(): Promise<String> {
+        return this.assetURI().then((uri: String) => {
+            return uri;
+        });
+    }
+
     get fileUri(): string {
-        if (!AssetPH._uriRequestOptions) {
-            AssetPH._uriRequestOptions = PHImageRequestOptions.alloc().init();
-            AssetPH._uriRequestOptions.synchronous = true;
+        if (!AssetPH._uriImageRequestOptions) {
+            AssetPH._uriImageRequestOptions = PHImageRequestOptions.alloc().init();
+            AssetPH._uriImageRequestOptions.synchronous = true;
         }
 
         var uri;
-        PHImageManager.defaultManager().requestImageDataForAssetOptionsResultHandler(this._phAsset, AssetPH._uriRequestOptions, (data, uti, orientation, info) => {
+        PHImageManager.defaultManager().requestImageDataForAssetOptionsResultHandler(this._phAsset, AssetPH._uriImageRequestOptions, (data, uti, orientation, info) => {
             uri = info.objectForKey("PHImageFileURLKey");
         });
         if (uri) {
@@ -512,6 +535,29 @@ class AssetPH extends Asset {
                     reject(new Error("Failed to get image data."));
                 }
             });
+        });
+    }
+
+    assetURI(): Promise<any> {
+        return new Promise((resolve, reject) => {
+            var runloop = CFRunLoopGetCurrent();
+
+            var uri;
+
+            if (this._phAsset.mediaType == PHAssetMediaType.Image) {
+                PHImageManager.defaultManager().requestImageDataForAssetOptionsResultHandler(this._phAsset, null, (data, dataUTI, orientation, info) => {
+                    let uri = info.objectForKey("PHImageFileURLKey");
+                    resolve(uri.toString());
+                });
+            } else if (this._phAsset.mediaType == PHAssetMediaType.Video) {
+                PHImageManager.defaultManager().requestAVAssetForVideoOptionsResultHandler(this._phAsset, AssetPH._uriVideoRequestOptions, (data, audioMix, info) => {
+                    let urlAsset = data as AVURLAsset;
+                    uri = urlAsset.URL;
+
+                    resolve(uri.toString());
+
+                });
+            }
         });
     }
 }
