@@ -74,11 +74,11 @@ export class ImagePicker extends data_observable.Observable {
     }
 
     get cancelText(): string {
-        return "Cancel";
+        return this._options && this._options.cancelText ? this._options.cancelText : "Cancel";
     }
 
     get albumsText(): string {
-        return "Albums";
+        return this._options && this._options.albumsText ? this._options.albumsText :  "Albums";
     }
 
     get mode(): string {

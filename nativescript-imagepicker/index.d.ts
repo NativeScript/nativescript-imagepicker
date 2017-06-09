@@ -80,7 +80,20 @@ interface Options {
      */
     mode?: string;
 
+    /**
+    * Set the text for the done button in iOS
+    */
     doneText?: string;
+
+    /**
+    * Set the text for the cancel button in iOS
+    */
+    cancelText?: string;
+
+    /**
+    * Set the text for the albums button in iOS
+    */
+    albumsText?: string;
 
     android?: {
         /**
