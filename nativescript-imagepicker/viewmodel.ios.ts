@@ -70,7 +70,7 @@ export class ImagePicker extends data_observable.Observable {
     }
 
     get doneText(): string {
-        return "Done";
+        return this._options && this._options.doneText ? this._options.doneText : "Done";
     }
 
     get cancelText(): string {

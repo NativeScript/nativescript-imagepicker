@@ -80,6 +80,8 @@ interface Options {
      */
     mode?: string;
 
+    doneText?: string;
+
     android?: {
         /**
          * Provide a reason for permission request to access external storage on api levels above 23.
