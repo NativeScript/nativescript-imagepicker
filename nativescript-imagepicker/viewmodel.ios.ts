@@ -3,6 +3,7 @@ import * as data_observablearray from "data/observable-array";
 import * as frame from "ui/frame";
 import * as imageAssetModule from "image-asset";
 import * as image_source from "image-source";
+import * as fs from "tns-core-modules/file-system"
 
 if (global.TNS_WEBPACK) {
     var albumsModule = require("./albums.ios");
@@ -260,6 +261,7 @@ class ImagePickerPH extends ImagePicker {
 
     private _thumbRequestOptions: PHImageRequestOptions;
     private _thumbRequestSize: CGSize;
+    private _imageRequestSize: CGSize;
     private _initialized: boolean;
 
     constructor(options) {
@@ -272,6 +274,7 @@ class ImagePickerPH extends ImagePicker {
         this._thumbRequestOptions.normalizedCropRect = CGRectMake(0, 0, 1, 1);
 
         this._thumbRequestSize = CGSizeMake(80, 80);
+        this._imageRequestSize = CGSizeMake(800, 800);
         this._options = options;
 
         this._initialized = false;
@@ -348,6 +351,31 @@ class ImagePickerPH extends ImagePicker {
                 target.setThumbAsset(imageAsset);
             }.bind(this, target));
     }
+
+    // saveAssetToFile(target, asset: PHAsset, folderName: String) {
+    //     console.log('saveAssetToFile()');
+    //     const documents = fs.knownFolders.documents();
+    //     let folder = documents.getFolder("temp-images");
+    //     let newFileName = "notification_img_" + Date.now() + ".png"                
+    //     let path = fs.path.join(folder.path, newFileName);
+    //     var fileManager = NSFileManager.defaultManager;
+
+    //     PHImageManager.defaultManager().requestImageForAssetTargetSizeContentModeOptionsResultHandler(asset, this._imageRequestSize, PHImageContentMode.AspectFit,
+    //         this._thumbRequestOptions, function (target, uiImage, info) {
+    //             console.log('createFileAtPathContentsAttributes()');
+
+    //             let imageData = UIImageJPEGRepresentation(uiImage, 0.5);
+    //             fileManager.createFileAtPathContentsAttributes(path, imageData, null);
+
+    //             // var imageAsset = new imageAssetModule.ImageAsset(uiImage);
+    //             // imageAsset.options = {
+    //             //     width: this._options.maxWidth && this._options.maxWidth < IMAGE_WIDTH ? this._options.maxWidth : IMAGE_WIDTH,
+    //             //     height: this._options.maxHeight && this._options.IMAGE_HEIGHT < 80 ? this._options.IMAGE_HEIGHT : IMAGE_HEIGHT,
+    //             //     keepAspectRatio: true
+    //             // };
+    //             // target.setThumbAsset(imageAsset);
+    //         }.bind(this, target));
+    // }
 
     /**
      * Creates a new ImageSource from the given image, using the given sizing options.
@@ -438,9 +466,9 @@ class AlbumPH extends Album {
         var item = new AssetPH(this, asset, this._options);
         if (!this._setThumb && imagePicker) {
             this._setThumb = true;
+            //imagePicker.saveAssetToFile(this, asset, 'path');
             imagePicker.createPHImageThumb(this, asset);
             imagePicker.createPHImageThumbAsset(this, asset);
-
         }
         if (this.imagePicker.newestFirst) {
             this.assets.unshift(item);
@@ -559,5 +587,80 @@ class AssetPH extends Asset {
                 });
             }
         });
+    }
+
+    saveAssetToFile(saveToFolder, saveWithFilename, newWidth, newHeight): Promise<any>  {
+        console.log('saveAssetToFile()');
+
+        const documents = fs.knownFolders.documents();
+        let folder = documents.getFolder(saveToFolder);
+        var newFilename;
+        var fileManager = NSFileManager.defaultManager;
+
+        if (this._phAsset.mediaType == PHAssetMediaType.Image) {
+            return new Promise((resolve, reject) => {
+                 // = newFileName ? newFileName : "notification_img_" + Date.now() + ".png";    
+
+                if (saveWithFilename) {
+                    newFilename = saveWithFilename;
+                } else {
+                    newFilename = "notification_img_" + Date.now() + ".png"
+                }
+
+                var path = fs.path.join(folder.path, newFilename);               
+
+                let imageRequestSize = CGSizeMake(newWidth, newHeight);
+                let imageRequestOptions: PHImageRequestOptions;
+
+                imageRequestOptions = PHImageRequestOptions.alloc().init();
+                imageRequestOptions.resizeMode = PHImageRequestOptionsResizeMode.Exact;
+                imageRequestOptions.synchronous = true;
+                imageRequestOptions.deliveryMode = PHImageRequestOptionsDeliveryMode.Opportunistic;
+                imageRequestOptions.normalizedCropRect = CGRectMake(0, 0, 1, 1);
+
+                PHImageManager.defaultManager().requestImageForAssetTargetSizeContentModeOptionsResultHandler(this._phAsset, imageRequestSize, PHImageContentMode.AspectFit,
+                    imageRequestOptions, function (uiImage, info) {
+                        console.log('createFileAtPathContentsAttributes()');
+
+                        let imageData = UIImageJPEGRepresentation(uiImage, 0.5);
+                        if (fileManager.createFileAtPathContentsAttributes(path, imageData, null)) {
+                            resolve(newFilename.toString());
+                        };             
+        
+                    }.bind(this));
+
+            });
+        } else { // ## VIDEO
+            return new Promise((resolve, reject) => {
+
+                if (saveWithFilename) {
+                    newFilename = saveWithFilename;
+                } else {
+                    newFilename = "notification_img_" + Date.now() + ".mp4"
+                }
+
+                var path = fs.path.join(folder.path, newFilename);
+
+                let videoRequestOptions: PHVideoRequestOptions;
+                videoRequestOptions = PHVideoRequestOptions.alloc().init();
+                videoRequestOptions.version = PHVideoRequestOptionsVersion.Original;
+                
+                PHImageManager.defaultManager().requestAVAssetForVideoOptionsResultHandler(this._phAsset, videoRequestOptions, function(avAsset, avAudioMix, info) {
+                    console.log('requestAVAssetForVideoOptionsResultHandler()');
+
+                    console.log(typeof avAsset.isKindOfClass);
+                    console.log(avAsset.isKindOfClass(AVComposition));         
+
+                    let urlAsset = avAsset as AVURLAsset;
+                    let assetURL = urlAsset.URL;
+                    let videoData = NSData.dataWithContentsOfURL(assetURL);
+
+                    if (fileManager.createFileAtPathContentsAttributes(path, videoData, null)) {
+                        resolve(newFilename.toString());
+                    }; 
+                })
+            });
+        }
+        
     }
 }
