@@ -644,20 +644,42 @@ class AssetPH extends Asset {
                 let videoRequestOptions: PHVideoRequestOptions;
                 videoRequestOptions = PHVideoRequestOptions.alloc().init();
                 videoRequestOptions.version = PHVideoRequestOptionsVersion.Original;
+                videoRequestOptions.networkAccessAllowed = true; // ## Allows access to iCloud assets
                 
                 PHImageManager.defaultManager().requestAVAssetForVideoOptionsResultHandler(this._phAsset, videoRequestOptions, function(avAsset, avAudioMix, info) {
-                    console.log('requestAVAssetForVideoOptionsResultHandler()');
 
-                    console.log(typeof avAsset.isKindOfClass);
-                    console.log(avAsset.isKindOfClass(AVComposition));         
+                    try {
+                        if (avAsset instanceof AVAsset) {
+                            let urlAsset = avAsset as AVURLAsset;
+                            let assetURL = urlAsset.URL;
+                            let videoData = NSData.dataWithContentsOfURL(assetURL);
 
-                    let urlAsset = avAsset as AVURLAsset;
-                    let assetURL = urlAsset.URL;
-                    let videoData = NSData.dataWithContentsOfURL(assetURL);
+                            if (fileManager.createFileAtPathContentsAttributes(path, videoData, null)) {
+                                resolve(newFilename.toString());
+                            }; 
+                        } 
+                        // else { // ## Slo-mo video ?
+                        //     let avComposition = avAsset as AVComposition;
 
-                    if (fileManager.createFileAtPathContentsAttributes(path, videoData, null)) {
-                        resolve(newFilename.toString());
-                    }; 
+                        //     let exporter: AVAssetExportSession;
+                        //     exporter = new AVAssetExportSession({asset: avComposition, presetName: AVAssetExportPresetHighestQuality});
+
+                        //     console.log('exporter instanceof AVAssetExportSession', exporter instanceof AVAssetExportSession);
+
+                        //     exporter.outputURL = NSURL.URLWithString(path);
+                        //     exporter.outputFileType = AVFileTypeQuickTimeMovie;
+                        //     exporter.shouldOptimizeForNetworkUse = true;
+                        //     exporter.exportAsynchronouslyWithCompletionHandler(function() {
+                        //         if (exporter.status == AVAssetExportSessionStatus.Completed) {
+                        //             resolve(newFilename.toString());
+                        //         }
+                        //     })
+
+                        // }
+                    } catch(e) {
+                        console.log(e);
+                    }
+                    
                 })
             });
         }
