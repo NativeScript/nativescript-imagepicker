@@ -617,6 +617,7 @@ class AssetPH extends Asset {
                 imageRequestOptions.synchronous = true;
                 imageRequestOptions.deliveryMode = PHImageRequestOptionsDeliveryMode.Opportunistic;
                 imageRequestOptions.normalizedCropRect = CGRectMake(0, 0, 1, 1);
+                imageRequestOptions.networkAccessAllowed = true;
 
                 PHImageManager.defaultManager().requestImageForAssetTargetSizeContentModeOptionsResultHandler(this._phAsset, imageRequestSize, PHImageContentMode.AspectFit,
                     imageRequestOptions, function (uiImage, info) {
