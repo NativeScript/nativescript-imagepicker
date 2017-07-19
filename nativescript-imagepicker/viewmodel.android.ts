@@ -313,12 +313,19 @@ export class ImagePicker {
         return this._options && this._options.mode && this._options.mode.toLowerCase() === 'single' ? 'single' : 'multiple';
     }
 
+    get mediaType(): string {
+        return this._options && this._options.mediaType && this._options.mediaType.toLowerCase() === 'image' ? 'image' : 'video';
+    }
+
     authorize(): Promise<void> {
         return Promise.resolve();
     }
 
     present(): Promise<SelectedAsset[]> {
         return new Promise((resolve, reject) => {
+
+            console.log('present() this.mode', this.mode);
+            console.log('present() this.mediaType', this.mediaType);
 
             // WARNING: If we want to support multiple pickers we will need to have a range of IDs here:
             var RESULT_CODE_PICKER_IMAGES = 9192;
@@ -374,7 +381,13 @@ export class ImagePicker {
             };
 
             var intent = new Intent();
-            intent.setType("image/*");
+            //intent.setType("image/*");
+
+            if (this.mediaType === 'video') {
+                intent.setType("video/*");
+            } else {
+                intent.setType("image/*");
+            }
 
             // TODO: Use (<any>android).content.Intent.EXTRA_ALLOW_MULTIPLE
             if (this.mode === 'multiple') {

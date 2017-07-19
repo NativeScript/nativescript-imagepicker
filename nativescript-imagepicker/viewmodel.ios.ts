@@ -3,6 +3,7 @@ import * as data_observablearray from "data/observable-array";
 import * as frame from "ui/frame";
 import * as imageAssetModule from "image-asset";
 import * as image_source from "image-source";
+import * as fs from "tns-core-modules/file-system"
 
 if (global.TNS_WEBPACK) {
     var albumsModule = require("./albums.ios");
@@ -83,6 +84,10 @@ export class ImagePicker extends data_observable.Observable {
 
     get mode(): string {
         return this._options && this._options.mode && this._options.mode.toLowerCase() === 'single' ? 'single' : 'multiple';
+    }
+
+    get mediaType(): string {
+        return this._options && this._options.mediaType && this._options.mediaType.toLowerCase() === 'image' ? 'image' : 'video';
     }
 
     get newestFirst(): boolean {
@@ -256,6 +261,7 @@ class ImagePickerPH extends ImagePicker {
 
     private _thumbRequestOptions: PHImageRequestOptions;
     private _thumbRequestSize: CGSize;
+    private _imageRequestSize: CGSize;
     private _initialized: boolean;
 
     constructor(options) {
@@ -268,6 +274,7 @@ class ImagePickerPH extends ImagePicker {
         this._thumbRequestOptions.normalizedCropRect = CGRectMake(0, 0, 1, 1);
 
         this._thumbRequestSize = CGSizeMake(80, 80);
+        this._imageRequestSize = CGSizeMake(800, 800);
         this._options = options;
 
         this._initialized = false;
@@ -292,9 +299,11 @@ class ImagePickerPH extends ImagePicker {
     }
 
     addAlbumsForFetchResult(result: PHFetchResult<any>): void {
-        for (var i = 0; i < result.count; i++) {
+        for (let i = 0; i < result.count; i++) {
             var item = result.objectAtIndex(i);
             if (item.isKindOfClass(PHAssetCollection)) {
+                let assetsFetchResult = PHAsset.fetchAssetsInAssetCollectionOptions(item, null);
+
                 this.addAlbumForAssetCollection(<PHAssetCollection>item);
             } else {
                 console.log("Ignored result: " + item);
@@ -303,8 +312,18 @@ class ImagePickerPH extends ImagePicker {
     }
 
     addAlbumForAssetCollection(assetCollection: PHAssetCollection): void {
+        let mediaType;
+        if (this.mediaType === 'image') {
+            mediaType = PHAssetMediaType.Image;
+        } else {
+            mediaType = PHAssetMediaType.Video;
+        }
+
+        var fetchOptions = PHFetchOptions.alloc().init();
+        fetchOptions.predicate = NSPredicate.predicateWithFormatArgumentArray("mediaType = %d", NSArray.arrayWithObject(mediaType));
+
         var album = new AlbumPH(this, assetCollection.localizedTitle);
-        var pfAssets = PHAsset.fetchAssetsInAssetCollectionOptions(assetCollection, null);
+        var pfAssets = PHAsset.fetchAssetsInAssetCollectionOptions(assetCollection, fetchOptions);
         album.addAssetsForFetchResult(pfAssets);
         if (album.assets.length > 0) {
             this.albums.push(album);
@@ -332,6 +351,31 @@ class ImagePickerPH extends ImagePicker {
                 target.setThumbAsset(imageAsset);
             }.bind(this, target));
     }
+
+    // saveAssetToFile(target, asset: PHAsset, folderName: String) {
+    //     console.log('saveAssetToFile()');
+    //     const documents = fs.knownFolders.documents();
+    //     let folder = documents.getFolder("temp-images");
+    //     let newFileName = "notification_img_" + Date.now() + ".png"                
+    //     let path = fs.path.join(folder.path, newFileName);
+    //     var fileManager = NSFileManager.defaultManager;
+
+    //     PHImageManager.defaultManager().requestImageForAssetTargetSizeContentModeOptionsResultHandler(asset, this._imageRequestSize, PHImageContentMode.AspectFit,
+    //         this._thumbRequestOptions, function (target, uiImage, info) {
+    //             console.log('createFileAtPathContentsAttributes()');
+
+    //             let imageData = UIImageJPEGRepresentation(uiImage, 0.5);
+    //             fileManager.createFileAtPathContentsAttributes(path, imageData, null);
+
+    //             // var imageAsset = new imageAssetModule.ImageAsset(uiImage);
+    //             // imageAsset.options = {
+    //             //     width: this._options.maxWidth && this._options.maxWidth < IMAGE_WIDTH ? this._options.maxWidth : IMAGE_WIDTH,
+    //             //     height: this._options.maxHeight && this._options.IMAGE_HEIGHT < 80 ? this._options.IMAGE_HEIGHT : IMAGE_HEIGHT,
+    //             //     keepAspectRatio: true
+    //             // };
+    //             // target.setThumbAsset(imageAsset);
+    //         }.bind(this, target));
+    // }
 
     /**
      * Creates a new ImageSource from the given image, using the given sizing options.
@@ -420,11 +464,11 @@ class AlbumPH extends Album {
     addAsset(asset: PHAsset): void {
         var imagePicker = <ImagePickerPH>this.imagePicker;
         var item = new AssetPH(this, asset, this._options);
-        if (!this._setThumb && !imagePicker) {
+        if (!this._setThumb && imagePicker) {
             this._setThumb = true;
+            //imagePicker.saveAssetToFile(this, asset, 'path');
             imagePicker.createPHImageThumb(this, asset);
             imagePicker.createPHImageThumbAsset(this, asset);
-
         }
         if (this.imagePicker.newestFirst) {
             this.assets.unshift(item);
@@ -436,7 +480,8 @@ class AlbumPH extends Album {
 
 class AssetPH extends Asset {
     private _phAsset: PHAsset;
-    private static _uriRequestOptions: PHImageRequestOptions;
+    private static _uriImageRequestOptions: PHImageRequestOptions;
+    private static _uriVideoRequestOptions: PHVideoRequestOptions;
 
     constructor(album: AlbumPH, phAsset: PHAsset, options?: ImageOptions) {
         super(album, phAsset);
@@ -486,14 +531,20 @@ class AssetPH extends Asset {
         });
     }
 
+    getAssetURI(): Promise<String> {
+        return this.assetURI().then((uri: String) => {
+            return uri;
+        });
+    }
+
     get fileUri(): string {
-        if (!AssetPH._uriRequestOptions) {
-            AssetPH._uriRequestOptions = PHImageRequestOptions.alloc().init();
-            AssetPH._uriRequestOptions.synchronous = true;
+        if (!AssetPH._uriImageRequestOptions) {
+            AssetPH._uriImageRequestOptions = PHImageRequestOptions.alloc().init();
+            AssetPH._uriImageRequestOptions.synchronous = true;
         }
 
         var uri;
-        PHImageManager.defaultManager().requestImageDataForAssetOptionsResultHandler(this._phAsset, AssetPH._uriRequestOptions, (data, uti, orientation, info) => {
+        PHImageManager.defaultManager().requestImageDataForAssetOptionsResultHandler(this._phAsset, AssetPH._uriImageRequestOptions, (data, uti, orientation, info) => {
             uri = info.objectForKey("PHImageFileURLKey");
         });
         if (uri) {
@@ -513,5 +564,126 @@ class AssetPH extends Asset {
                 }
             });
         });
+    }
+
+    assetURI(): Promise<any> {
+        return new Promise((resolve, reject) => {
+            var runloop = CFRunLoopGetCurrent();
+
+            var uri;
+
+            if (this._phAsset.mediaType == PHAssetMediaType.Image) {
+                PHImageManager.defaultManager().requestImageDataForAssetOptionsResultHandler(this._phAsset, null, (data, dataUTI, orientation, info) => {
+                    let uri = info.objectForKey("PHImageFileURLKey");
+                    resolve(uri.toString());
+                });
+            } else if (this._phAsset.mediaType == PHAssetMediaType.Video) {
+                PHImageManager.defaultManager().requestAVAssetForVideoOptionsResultHandler(this._phAsset, AssetPH._uriVideoRequestOptions, (data, audioMix, info) => {
+                    let urlAsset = data as AVURLAsset;
+                    uri = urlAsset.URL;
+
+                    resolve(uri.toString());
+
+                });
+            }
+        });
+    }
+
+    saveAssetToFile(saveToFolder, saveWithFilename, newWidth, newHeight): Promise<any>  {
+        console.log('saveAssetToFile()');
+
+        const documents = fs.knownFolders.documents();
+        let folder = documents.getFolder(saveToFolder);
+        var newFilename;
+        var fileManager = NSFileManager.defaultManager;
+
+        if (this._phAsset.mediaType == PHAssetMediaType.Image) {
+            return new Promise((resolve, reject) => {
+                 // = newFileName ? newFileName : "notification_img_" + Date.now() + ".png";    
+
+                if (saveWithFilename) {
+                    newFilename = saveWithFilename;
+                } else {
+                    newFilename = "notification_img_" + Date.now() + ".png"
+                }
+
+                var path = fs.path.join(folder.path, newFilename);               
+
+                let imageRequestSize = CGSizeMake(newWidth, newHeight);
+                let imageRequestOptions: PHImageRequestOptions;
+
+                imageRequestOptions = PHImageRequestOptions.alloc().init();
+                imageRequestOptions.resizeMode = PHImageRequestOptionsResizeMode.Exact;
+                imageRequestOptions.synchronous = true;
+                imageRequestOptions.deliveryMode = PHImageRequestOptionsDeliveryMode.Opportunistic;
+                imageRequestOptions.normalizedCropRect = CGRectMake(0, 0, 1, 1);
+                imageRequestOptions.networkAccessAllowed = true;
+
+                PHImageManager.defaultManager().requestImageForAssetTargetSizeContentModeOptionsResultHandler(this._phAsset, imageRequestSize, PHImageContentMode.AspectFit,
+                    imageRequestOptions, function (uiImage, info) {
+                        console.log('createFileAtPathContentsAttributes()');
+
+                        let imageData = UIImageJPEGRepresentation(uiImage, 0.5);
+                        if (fileManager.createFileAtPathContentsAttributes(path, imageData, null)) {
+                            resolve(newFilename.toString());
+                        };             
+        
+                    }.bind(this));
+
+            });
+        } else { // ## VIDEO
+            return new Promise((resolve, reject) => {
+
+                if (saveWithFilename) {
+                    newFilename = saveWithFilename;
+                } else {
+                    newFilename = "notification_img_" + Date.now() + ".mp4"
+                }
+
+                var path = fs.path.join(folder.path, newFilename);
+
+                let videoRequestOptions: PHVideoRequestOptions;
+                videoRequestOptions = PHVideoRequestOptions.alloc().init();
+                videoRequestOptions.version = PHVideoRequestOptionsVersion.Original;
+                videoRequestOptions.networkAccessAllowed = true; // ## Allows access to iCloud assets
+                
+                PHImageManager.defaultManager().requestAVAssetForVideoOptionsResultHandler(this._phAsset, videoRequestOptions, function(avAsset, avAudioMix, info) {
+
+                    try {
+                        if (avAsset instanceof AVAsset) {
+                            let urlAsset = avAsset as AVURLAsset;
+                            let assetURL = urlAsset.URL;
+                            let videoData = NSData.dataWithContentsOfURL(assetURL);
+
+                            if (fileManager.createFileAtPathContentsAttributes(path, videoData, null)) {
+                                resolve(newFilename.toString());
+                            }; 
+                        } 
+                        // else { // ## Slo-mo video ?
+                        //     let avComposition = avAsset as AVComposition;
+
+                        //     let exporter: AVAssetExportSession;
+                        //     exporter = new AVAssetExportSession({asset: avComposition, presetName: AVAssetExportPresetHighestQuality});
+
+                        //     console.log('exporter instanceof AVAssetExportSession', exporter instanceof AVAssetExportSession);
+
+                        //     exporter.outputURL = NSURL.URLWithString(path);
+                        //     exporter.outputFileType = AVFileTypeQuickTimeMovie;
+                        //     exporter.shouldOptimizeForNetworkUse = true;
+                        //     exporter.exportAsynchronouslyWithCompletionHandler(function() {
+                        //         if (exporter.status == AVAssetExportSessionStatus.Completed) {
+                        //             resolve(newFilename.toString());
+                        //         }
+                        //     })
+
+                        // }
+                    } catch(e) {
+                        console.log(e);
+                    }
+                    
+                })
+            });
+        }
+        
     }
 }
