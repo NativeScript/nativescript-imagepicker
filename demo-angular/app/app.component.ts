@@ -1,7 +1,7 @@
 import { Component, ChangeDetectorRef } from "@angular/core";
 import { ListView } from "tns-core-modules/ui/list-view";
 
-let imagepicker = require("nativescript-imagepicker");
+import * as imagepicker from "nativescript-imagepicker";
 
 @Component({
     selector: "my-app",

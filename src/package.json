@@ -16,7 +16,7 @@
     },
     "scripts": {
         "ngc": "node --max-old-space-size=8192 ./node_modules/.bin/ngc",
-        "build": "npm i && tsc && npm run ngc",
+        "build": "npm i && tsc", 
         "prepublishOnly": "npm run build",
         "ci.tslint": "npm i && tslint '**/*.ts' --config '../tslint.json' --exclude '**/node_modules/**'",
         "tsc": "tsc -skipLibCheck",
@@ -47,8 +47,7 @@
         "tns-core-modules": "^3.1.0",
         "tns-platform-declarations": "^3.0.0",
         "typescript": "~2.3.0",
-        "tslint": "^5.0.0",
-        "nativescript-angular": "^3.1.0 || >3.2.0-"
+        "tslint": "~5.4.3"
     },
     "dependencies": {
         "nativescript-telerik-ui": "^3.0.0",

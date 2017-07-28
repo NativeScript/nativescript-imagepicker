@@ -65,7 +65,7 @@ export class ImagePicker {
 
     /**
      * Present the image picker UI.
-     * The result will be an array of SelectedAsset instances provided when the promise is fulfiled. 
+     * The result will be an array of SelectedAsset instances provided when the promise is fulfiled.
      */
     present(): Promise<SelectedAsset[]>;
 }
@@ -99,7 +99,7 @@ interface Options {
          * Provide a reason for permission request to access external storage on api levels above 23.
          */
         read_external_storage?: string;
-    }
+    };
 }
 
 export function create(options?: Options): ImagePicker;

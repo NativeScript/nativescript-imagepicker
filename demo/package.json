@@ -21,12 +21,12 @@
     "copy-webpack-plugin": "~4.0.1",
     "extract-text-webpack-plugin": "~2.1.0",
     "nativescript-css-loader": "~0.26.0",
-    "nativescript-dev-webpack": "^0.4.0",
+    "nativescript-dev-webpack": "^0.7.3",
     "raw-loader": "~0.5.1",
     "resolve-url-loader": "~2.0.2",
-    "webpack": "~2.4.1",
+    "webpack": "~3.2.0",
     "webpack-sources": "~0.2.3",
-    "awesome-typescript-loader": "~3.0.0-beta.9",
+    "awesome-typescript-loader": "~3.1.2",
     "filewalker": "0.1.2",
     "jasmine-core": "^2.5.2",
     "karma": "^1.3.0",
@@ -34,7 +34,9 @@
     "karma-nativescript-launcher": "^0.4.0",
     "lazy": "1.0.11",
     "nativescript-dev-typescript": "libs",
-    "typescript": "~2.3.0"
+    "typescript": "~2.3.0",
+    "tslint": "~5.4.3",
+    "webpack-bundle-analyzer": "^2.8.2"
   },
   "scripts": {
     "build.plugin": "cd ../src && npm run build",
@@ -42,8 +44,10 @@
     "ci.android.build": "npm run build.plugin && tns build android",
     "ci.ios.build": "npm run build.plugin && tns build ios",
     "ns-bundle": "ns-bundle",
-    "start-android-bundle": "npm run ns-bundle --android --start-app",
-    "start-ios-bundle": "npm run ns-bundle --ios --start-app",
+    "publish-ios-bundle": "npm run ns-bundle --ios --publish-app",
+    "generate-android-snapshot": "generate-android-snapshot --targetArchs arm,arm64,ia32 --install",
+    "start-android-bundle": "npm run ns-bundle --android --run-app",
+    "start-ios-bundle": "npm run ns-bundle --ios --run-app",
     "build-android-bundle": "npm run ns-bundle --android --build-app",
     "build-ios-bundle": "npm run ns-bundle --ios --build-app"
   }

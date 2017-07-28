@@ -1,9 +1,9 @@
-var frame = require("ui/frame");
-var platform = require("platform");
-var imagepicker = require("nativescript-imagepicker");
+let frame = require("ui/frame");
+let platform = require("platform");
+import * as imagepicker from "nativescript-imagepicker";
 
-var page;
-var list;
+let page;
+let list;
 
 function pageLoaded(args) {
     page = args.object;
@@ -12,13 +12,13 @@ function pageLoaded(args) {
 exports.pageLoaded = pageLoaded;
 
 function onSelectMultipleTap(args) {
-    var context = imagepicker.create({ mode: "multiple" });
+    let context = imagepicker.create({ mode: "multiple" });
     startSelection(context);
 }
 exports.onSelectMultipleTap = onSelectMultipleTap;
 
 function onSelectSingleTap(args) {
-    var context = imagepicker.create({ mode: "single" });
+    let context = imagepicker.create({ mode: "single" });
     startSelection(context);
 }
 exports.onSelectSingleTap = onSelectSingleTap;
