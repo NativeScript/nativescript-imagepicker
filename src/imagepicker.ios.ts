@@ -4,13 +4,13 @@ import * as frame from "tns-core-modules/ui/frame";
 import * as imageAssetModule from "tns-core-modules/image-asset";
 import * as image_source from "tns-core-modules/image-source";
 
-
+let albumsModule;
 if (global.TNS_WEBPACK) {
-    var albumsModule = require("./albums.ios");
+    albumsModule = require("./albums.ios");
 
     require("bundle-entry-points");
 } else {
-    var albumsModule = require("./albums");
+    albumsModule = require("./albums");
 }
 
 const IMAGE_WIDTH = 80;
@@ -138,7 +138,7 @@ export class Album extends data_observable.Observable {
         return this._assets;
     }
 
-    //[Deprecated. Please use thumbAsset instead.]
+    // [Deprecated. Please use thumbAsset instead.]
     get thumb(): image_source.ImageSource {
         return this._thumb;
     }
@@ -213,8 +213,8 @@ export class Asset extends SelectedAsset {
     }
 
     set selected(value: boolean) {
-        if (!!value == this.selected) return;
-        var index = this.album.imagePicker.selection.indexOf(this);
+        if (!!value === this.selected) return;
+        let index = this.album.imagePicker.selection.indexOf(this);
         if (value) {
             this._selected = true;
             if (this.album.imagePicker.mode === "single") {
@@ -276,7 +276,7 @@ class ImagePickerPH extends ImagePicker {
 
     authorize(): Promise<void> {
         return new Promise<void>((resolve, reject) => {
-            var runloop = CFRunLoopGetCurrent();
+            let runloop = CFRunLoopGetCurrent();
             PHPhotoLibrary.requestAuthorization(function (result) {
                 if (result === PHAuthorizationStatus.Authorized) {
                     resolve();
@@ -293,8 +293,8 @@ class ImagePickerPH extends ImagePicker {
     }
 
     addAlbumsForFetchResult(result: PHFetchResult<any>): void {
-        for (var i = 0; i < result.count; i++) {
-            var item = result.objectAtIndex(i);
+        for (let i = 0; i < result.count; i++) {
+            let item = result.objectAtIndex(i);
             if (item.isKindOfClass(PHAssetCollection)) {
                 this.addAlbumForAssetCollection(<PHAssetCollection>item);
             } else {
@@ -304,8 +304,8 @@ class ImagePickerPH extends ImagePicker {
     }
 
     addAlbumForAssetCollection(assetCollection: PHAssetCollection): void {
-        var album = new AlbumPH(this, assetCollection.localizedTitle);
-        var pfAssets = PHAsset.fetchAssetsInAssetCollectionOptions(assetCollection, null);
+        let album = new AlbumPH(this, assetCollection.localizedTitle);
+        let pfAssets = PHAsset.fetchAssetsInAssetCollectionOptions(assetCollection, null);
         album.addAssetsForFetchResult(pfAssets);
         if (album.assets.length > 0) {
             this.albums.push(album);
@@ -315,7 +315,7 @@ class ImagePickerPH extends ImagePicker {
     createPHImageThumb(target, asset: PHAsset): void {
         PHImageManager.defaultManager().requestImageForAssetTargetSizeContentModeOptionsResultHandler(asset, this._thumbRequestSize, PHImageContentMode.AspectFill,
             this._thumbRequestOptions, function (target, uiImage, info) {
-                var imageSource = new image_source.ImageSource();
+                let imageSource = new image_source.ImageSource();
                 imageSource.setNativeSource(uiImage);
                 target.setThumb(imageSource);
             }.bind(this, target));
@@ -324,7 +324,7 @@ class ImagePickerPH extends ImagePicker {
     createPHImageThumbAsset(target, asset: PHAsset): void {
         PHImageManager.defaultManager().requestImageForAssetTargetSizeContentModeOptionsResultHandler(asset, this._thumbRequestSize, PHImageContentMode.AspectFill,
             this._thumbRequestOptions, function (target, uiImage, info) {
-                var imageAsset = new imageAssetModule.ImageAsset(uiImage);
+                let imageAsset = new imageAssetModule.ImageAsset(uiImage);
                 imageAsset.options = {
                     width: this._options.maxWidth && this._options.maxWidth < IMAGE_WIDTH ? this._options.maxWidth : IMAGE_WIDTH,
                     height: this._options.maxHeight && this._options.IMAGE_HEIGHT < 80 ? this._options.IMAGE_HEIGHT : IMAGE_HEIGHT,
@@ -337,12 +337,12 @@ class ImagePickerPH extends ImagePicker {
     /**
      * Creates a new ImageSource from the given image, using the given sizing options.
      * @param image   The image asset that should be put into an ImageSource.
-     * @param options The options that should be used to create the ImageSource. 
+     * @param options The options that should be used to create the ImageSource.
      */
     createPHImage(image: PHAsset, options?: ImageOptions): Promise<image_source.ImageSource> {
         return new Promise<image_source.ImageSource>((resolve, reject) => {
-            var size: CGSize = options ? CGSizeMake(options.maxWidth, options.maxHeight) : PHImageManagerMaximumSize;
-            var resizeMode = PHImageRequestOptions.alloc().init();
+            let size: CGSize = options ? CGSizeMake(options.maxWidth, options.maxHeight) : PHImageManagerMaximumSize;
+            let resizeMode = PHImageRequestOptions.alloc().init();
 
             // TODO: Decide whether it is benefical to use PHImageRequestOptionsResizeModeFast
             //       Accuracy vs Performance. It is probably best to expose these as iOS specific options.
@@ -360,7 +360,7 @@ class ImagePickerPH extends ImagePicker {
                 resizeMode,
                 (createdImage, data) => {
                     if (createdImage) {
-                        var imageSource = new image_source.ImageSource();
+                        let imageSource = new image_source.ImageSource();
                         imageSource.setNativeSource(createdImage);
 
                         // TODO: Determine whether runOnRunLoop is needed
@@ -375,8 +375,8 @@ class ImagePickerPH extends ImagePicker {
     }
 
     done(): void {
-        var result = [];
-        for (var i = 0; i < this.selection.length; ++i) {
+        let result = [];
+        for (let i = 0; i < this.selection.length; ++i) {
             result.push(this.selection.getItem(i));
         }
         this.notifySelection(result);
@@ -389,10 +389,10 @@ class ImagePickerPH extends ImagePicker {
 
         this._initialized = true;
 
-        var smart = PHAssetCollection.fetchAssetCollectionsWithTypeSubtypeOptions(PHAssetCollectionType.SmartAlbum, PHAssetCollectionSubtype.AlbumRegular, null);
+        let smart = PHAssetCollection.fetchAssetCollectionsWithTypeSubtypeOptions(PHAssetCollectionType.SmartAlbum, PHAssetCollectionSubtype.AlbumRegular, null);
         this.addAlbumsForFetchResult(smart);
 
-        var user = PHCollection.fetchTopLevelUserCollectionsWithOptions(null);
+        let user = PHCollection.fetchTopLevelUserCollectionsWithOptions(null);
         this.addAlbumsForFetchResult(user);
     }
 }
@@ -408,8 +408,8 @@ class AlbumPH extends Album {
     }
 
     addAssetsForFetchResult(result: PHFetchResult<any>): void {
-        for (var i = 0; i < result.count; i++) {
-            var asset = result.objectAtIndex(i);
+        for (let i = 0; i < result.count; i++) {
+            let asset = result.objectAtIndex(i);
             if (asset.isKindOfClass(PHAsset)) {
                 this.addAsset(<PHAsset>asset);
             } else {
@@ -419,8 +419,8 @@ class AlbumPH extends Album {
     }
 
     addAsset(asset: PHAsset): void {
-        var imagePicker = <ImagePickerPH>this.imagePicker;
-        var item = new AssetPH(this, asset, this._options);
+        let imagePicker = <ImagePickerPH>this.imagePicker;
+        let item = new AssetPH(this, asset, this._options);
         if (!this._setThumb && !imagePicker) {
             this._setThumb = true;
             imagePicker.createPHImageThumb(this, asset);
@@ -493,7 +493,7 @@ class AssetPH extends Asset {
             AssetPH._uriRequestOptions.synchronous = true;
         }
 
-        var uri;
+        let uri;
         PHImageManager.defaultManager().requestImageDataForAssetOptionsResultHandler(this._phAsset, AssetPH._uriRequestOptions, (data, uti, orientation, info) => {
             uri = info.objectForKey("PHImageFileURLKey");
         });
@@ -505,7 +505,7 @@ class AssetPH extends Asset {
 
     data(): Promise<any> {
         return new Promise((resolve, reject) => {
-            var runloop = CFRunLoopGetCurrent();
+            let runloop = CFRunLoopGetCurrent();
             PHImageManager.defaultManager().requestImageDataForAssetOptionsResultHandler(this._phAsset, null, (data, dataUTI, orientation, info) => {
                 if (data) {
                     resolve(data);

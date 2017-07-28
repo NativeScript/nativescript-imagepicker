@@ -14,7 +14,6 @@ export interface ImageOptions {
     maxHeight?: number;
 }
 
-
 export class SelectedAsset extends imageAssetModule.ImageAsset {
     /**
      * [Deprecated. SelectedAsset will be used directly as a source for the thumb image]
