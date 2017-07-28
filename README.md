@@ -1,40 +1,26 @@
-# Your Plugin Name
+# NativeScript Image Picker
+An image picker control that supports multiple selection.
 
-Add your plugin badges here. See [nativescript-urlhandler](https://github.com/hypery2k/nativescript-urlhandler) for example.
+For iOS it supports iOS8+ (read: it does not work for iOS7). It is implemented using the [Photos Framework](https://developer.apple.com/library/prerelease/ios//documentation/Photos/Reference/Photos_Framework/index.html) backed up by UI implemented using the NativeScript UI modules.
 
-Then describe what's the purpose of your plugin. 
+On Android it uses Intents to open the stock image or file pickers. 
 
-In case you develop UI plugin, this is where you can add some screenshots.
+ - [Source](https://github.com/NativeScript/nativescript-imagepicker/src)
+ - [Issues](https://github.com/NativeScript/nativescript-imagepicker/issues)
 
-## (Optional) Prerequisites / Requirements
-
-Describe the prerequisites that the user need to have installed before using your plugin. See [nativescript-firebase plugin](https://github.com/eddyverbruggen/nativescript-plugin-firebase) for example.
+Examples:
+ - [Select and Upload Photo](https://github.com/NativeScript/sample-ImageUpload) using [nativescript-background-http](https://github.com/NativeScript/nativescript-background-http)
+ - [ImagePicker Plain NativeScript Demo](https://github.com/NativeScript/nativescript-imagepicker/tree/master/demo/app)
+ - [ImagePicker Angular Demo](https://github.com/NativeScript/nativescript-imagepicker/tree/master/demo/app)
 
 ## Installation
 
-Describe your plugin installation steps. Ideally it would be something like:
-
-```javascript
-tns plugin add <your-plugin-name>
+### Install plugin using NativeScript CLI
+From the command prompt go to your app's root folder and execute:
+```
+tns plugin add nativescript-imagepicker
 ```
 
-## Usage 
+## Usage
 
-Describe any usage specifics for your plugin. Give examples for Android, iOS, Angular if needed. See [nativescript-drop-down](https://www.npmjs.com/package/nativescript-drop-down) for example.
-	
-	```javascript
-    Usage code snippets here
-    ```)
-
-## API
-
-Describe your plugin methods and properties here. See [nativescript-feedback](https://github.com/EddyVerbruggen/nativescript-feedback) for example.
-    
-| Property | Default | Description |
-| --- | --- | --- |
-| some property | property default value | property description, default values, etc.. |
-| another property | property default value | property description, default values, etc.. |
-    
-## License
-
-Apache License Version 2.0, January 2004
+See the examples mentioned above
