@@ -1,0 +1,54 @@
+{
+    "name": "nativescript-imagepicker",
+    "version": "1.0.0",
+    "description": "A plugin for the NativeScript framework implementing multiple image picker",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/NativeScript/nativescript-imagepicker"
+    },
+    "main": "imagepicker",
+    "typings": "index.d.ts",
+    "nativescript": {
+        "platforms": {
+            "android": "3.0.0",
+            "ios": "3.0.0"
+        }
+    },
+    "scripts": {
+        "tsc": "tsc -skipLibCheck",
+        "postclone": "npm i && node scripts/postclone.js && cd ../demo && npm i && cd ../src && npm run plugin.link",
+        "test.android": "npm i && npm run tsc && npm run tslint && cd ../demo && tns build android && tns test android --justlaunch",
+        "test.ios": "npm i && npm run tsc && npm run tslint && cd ../demo && tns build ios && tns test ios --justlaunch",
+        "tslint": "cd .. && tslint \"**/*.ts\" --config tslint.json --exclude \"**/node_modules/**\"",
+        "plugin.link": "npm link && cd ../demo && npm link nativescript-imagepicker && cd ../src",
+        "plugin.tscwatch": "npm run tsc -- -w",
+        "demo.ios": "npm i && npm run tsc && cd ../demo && tns run ios --syncAllFiles",
+        "demo.android": "npm i && npm run tsc && cd ../demo && tns run android --syncAllFiles",
+        "clean": "rm -rf node_modules && cd ../demo && rm -rf hooks node_modules platforms && cd ../src && npm run plugin.link"
+    },
+    "keywords": [
+        "NativeScript",
+        "JavaScript",
+        "Android",
+        "iOS"
+    ],
+    "author": "NativeScript Team",
+    "bugs": {
+        "url": "https://github.com/NativeScript/nativescript-imagepicker/issues"
+    },
+    "license": "Apache-2.0",
+    "homepage": "https://github.com/NativeScript/nativescript-imagepicker",
+    "readmeFilename": "README.md",
+    "devDependencies": {
+        "tns-core-modules": "^3.1.0",
+        "tns-platform-declarations": "^3.0.0",
+        "typescript": "~2.3.0",
+        "tslint": "^5.0.0",
+        "nativescript-angular": "^3.1.0 || >3.2.0-"
+    },
+    "dependencies": {
+        "nativescript-telerik-ui": "^3.0.0",
+        "nativescript-permissions": "~1.2.3"
+    },
+    "bootstrapper": "nativescript-plugin-seed"
+}

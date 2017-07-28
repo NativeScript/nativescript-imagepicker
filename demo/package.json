@@ -1,0 +1,46 @@
+{
+  "nativescript": {
+    "id": "org.nativescript.imagepickerdemo",
+    "tns-ios": {
+      "version": "3.1.0"
+    },
+    "tns-android": {
+      "version": "3.1.1"
+    }
+  },
+  "dependencies": {
+    "nativescript-imagepicker": "../src",
+    "nativescript-theme-core": "^1.0.4",
+    "nativescript-unit-test-runner": "^0.3.4",
+    "tns-core-modules": "^3.1.0"
+  },
+  "devDependencies": {
+    "babel-traverse": "6.12.0",
+    "babel-types": "6.11.1",
+    "babylon": "6.8.4",
+    "copy-webpack-plugin": "~4.0.1",
+    "extract-text-webpack-plugin": "~2.1.0",
+    "nativescript-css-loader": "~0.26.0",
+    "nativescript-dev-webpack": "^0.4.0",
+    "raw-loader": "~0.5.1",
+    "resolve-url-loader": "~2.0.2",
+    "webpack": "~2.4.1",
+    "webpack-sources": "~0.2.3",
+    "awesome-typescript-loader": "~3.0.0-beta.9",
+    "filewalker": "0.1.2",
+    "jasmine-core": "^2.5.2",
+    "karma": "^1.3.0",
+    "karma-jasmine": "^1.0.2",
+    "karma-nativescript-launcher": "^0.4.0",
+    "lazy": "1.0.11",
+    "nativescript-dev-typescript": "libs",
+    "typescript": "~2.3.0"
+  },
+  "scripts": {
+    "ns-bundle": "ns-bundle",
+    "start-android-bundle": "npm run ns-bundle --android --start-app",
+    "start-ios-bundle": "npm run ns-bundle --ios --start-app",
+    "build-android-bundle": "npm run ns-bundle --android --build-app",
+    "build-ios-bundle": "npm run ns-bundle --ios --build-app"
+  }
+}

@@ -1,18 +1,29 @@
-# Output
-dist
-
-# Dev dependencies
-node_modules
-
-# Source, written in TypeScript so JavaScript is not necessary
-nativescript-imagepicker/**/*.js
-nativescript-imagepicker/**/*.js.map
-
-# Example platforms
-/examples/ExampleImgPick/platforms/
-/examples/ExampleImgPick/lib/
-/examples/ExampleImgPickNG/platforms/
-/examples/ExampleImgPickNG/lib/
-/examples/ExampleImgPickNG/**/*.js
-/examples/ExampleImgPickNG/**/*.js.map
+.vscode
+.idea
 .DS_Store
+*.js
+*.js.map
+*.log
+!src/scripts/*.js
+!seed-tests/*.js
+seed-tests/seed-copy/**/*.*
+seed-tests/seed-copy-new-git-repo/**/*.*
+demo/app/*.js
+!demo/karma.conf.js
+!demo/app/tests/*.js
+demo/*.d.ts
+!demo/references.d.ts
+demo/lib
+demo/platforms
+demo/node_modules
+demo-angular/app/*.js
+!demo-angular/karma.conf.js
+!demo-angular/app/tests/*.js
+demo-angular/*.d.ts
+!demo-angular/references.d.ts
+demo-angular/lib
+demo-angular/platforms
+demo-angular/node_modules
+node_modules
+publish/src
+publish/package
