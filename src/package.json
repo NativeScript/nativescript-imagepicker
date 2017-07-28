@@ -15,6 +15,10 @@
         }
     },
     "scripts": {
+        "ngc": "node --max-old-space-size=8192 ./node_modules/.bin/ngc",
+        "build": "npm i && tsc && npm run ngc",
+        "prepublishOnly": "npm run build",
+        "ci.tslint": "npm i && tslint '**/*.ts' --config '../tslint.json' --exclude '**/node_modules/**'",
         "tsc": "tsc -skipLibCheck",
         "postclone": "npm i && node scripts/postclone.js && cd ../demo && npm i && cd ../src && npm run plugin.link",
         "test.android": "npm i && npm run tsc && npm run tslint && cd ../demo && tns build android && tns test android --justlaunch && cd ../demo-angular && tns build android && tns test android --justlaunch",
