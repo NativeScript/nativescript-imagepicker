@@ -421,7 +421,8 @@ class AlbumPH extends Album {
     addAsset(asset: PHAsset): void {
         let imagePicker = <ImagePickerPH>this.imagePicker;
         let item = new AssetPH(this, asset, this._options);
-        if (!this._setThumb && !imagePicker) {
+
+        if (!this._setThumb && imagePicker) {
             this._setThumb = true;
             imagePicker.createPHImageThumb(this, asset);
             imagePicker.createPHImageThumbAsset(this, asset);
