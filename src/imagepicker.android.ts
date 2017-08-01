@@ -3,7 +3,6 @@ import * as imagesource from "tns-core-modules/image-source";
 import * as application from "tns-core-modules/application";
 import * as platform from "tns-core-modules/platform";
 import * as imageAssetModule from "tns-core-modules/image-asset";
-import * as permissions from "nativescript-permissions";
 
 interface ArrayBufferStatic extends ArrayBufferConstructor {
     from(buffer: java.nio.ByteBuffer): ArrayBuffer;
@@ -318,10 +317,6 @@ export class ImagePicker {
     }
 
     authorize(): Promise<void> {
-        if (android.os.Build.VERSION.SDK_INT >= 23) {
-            return permissions.requestPermission([(<any>android).Manifest.permission.READ_EXTERNAL_STORAGE]);
-        }
-
         return Promise.resolve();
     }
 

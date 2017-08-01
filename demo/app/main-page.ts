@@ -1,6 +1,7 @@
-let frame = require("ui/frame");
-let platform = require("platform");
+import * as frame from "tns-core-modules/ui/frame";
+import * as platform from "tns-core-modules/platform";
 import * as imagepicker from "nativescript-imagepicker";
+import * as permissions from "nativescript-permissions";
 
 let page;
 let list;
@@ -24,20 +25,34 @@ function onSelectSingleTap(args) {
 exports.onSelectSingleTap = onSelectSingleTap;
 
 function startSelection(context) {
-    context
-        .authorize()
+    requestPermissions()
         .then(function() {
-            list.items = [];
-            return context.present();
-        })
-        .then(function(selection) {
-            console.log("Selection done:");
-            selection.forEach(function(selected) {
-                console.log("----------------");
-                console.log("uri: " + selected.uri);
-            });
-            list.items = selection;
+            context
+                .authorize()
+                .then(function() {
+                    list.items = [];
+                    return context.present();
+                })
+                .then(function(selection) {
+                    console.log("Selection done:");
+                    selection.forEach(function(selected) {
+                        console.log("----------------");
+                        console.log("uri: " + selected.uri);
+                    });
+                    list.items = selection;
+                }).catch(function (e) {
+                    console.log(e);
+                });
         }).catch(function (e) {
             console.log(e);
         });
 }
+
+function requestPermissions() {
+    if (platform.isAndroid && (<any>android).os.Build.VERSION.SDK_INT >= 23) {
+        return permissions.requestPermission([(<any>android).Manifest.permission.READ_EXTERNAL_STORAGE]);
+    } else {
+        return Promise.resolve();
+    }
+}
+exports.requestPermissions = requestPermissions;
