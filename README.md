@@ -5,29 +5,108 @@
 [![npm](https://img.shields.io/npm/dm/nativescript-imagepicker.svg)](https://www.npmjs.com/package/nativescript-imagepicker)
 [![Build Status](https://travis-ci.org/NativeScript/nativescript-imagepicker.svg?branch=master)](https://travis-ci.org/NativeScript/nativescript-imagepicker)
 
-
-An image picker control that supports multiple selection.
-
-For iOS it supports iOS8+ (read: it does not work for iOS7). It is implemented using the [Photos Framework](https://developer.apple.com/library/prerelease/ios//documentation/Photos/Reference/Photos_Framework/index.html) backed up by UI implemented using the NativeScript UI modules.
-
-On Android it uses Intents to open the stock image or file pickers. 
-
- - [Source](https://github.com/NativeScript/nativescript-imagepicker/src)
- - [Issues](https://github.com/NativeScript/nativescript-imagepicker/issues)
-
-Examples:
- - [Select and Upload Photo](https://github.com/NativeScript/sample-ImageUpload) using [nativescript-background-http](https://github.com/NativeScript/nativescript-background-http)
- - [ImagePicker Plain NativeScript Demo](https://github.com/NativeScript/nativescript-imagepicker/tree/master/demo/app)
- - [ImagePicker Angular Demo](https://github.com/NativeScript/nativescript-imagepicker/tree/master/demo/app)
+Imagepicker plugin supporting both single and multiple selection.
+<br />Plugin supports **iOS8+** and uses [Photos Framework](https://developer.apple.com/library/prerelease/ios//documentation/Photos/Reference/Photos_Framework/index.html).
+<br />For **Android** it uses Intents to open the stock images or file pickers. For Android 6 (API 23) and above the permissions to read file storage should be explicitly required. See demo for implementation details.
 
 ## Installation
 
-### Install plugin using NativeScript CLI
-From the command prompt go to your app's root folder and execute:
+In Command prompt / Terminal navigate to your application root folder and run:
+
 ```
-tns plugin add nativescript-imagepicker
+tns plugin add <your-plugin-name>
 ```
 
-## Usage
+## Usage 
 
-See the examples mentioned above
+The best way to explore the usage of the plugin is to inspect both demo apps in the plugin repository. 
+In `demo` folder you can find the usage of the plugin for TypeScript non-Angular application. Refer to `demo/app/main-page.ts`.
+In `demo-angular` is the usage in an Angular app. Refer to `demo-angular/app/app.component.ts`.
+
+In addition to the plugin usage, both apps are webpack configured.
+
+In short here are the steps:
+
+### Import the plugin
+
+*TypeScript*
+``` 
+import * as imagepicker from "nativescript-imagepicker";
+```
+
+*Javascript*
+``` 
+var imagepicker = require("nativescript-imagepicker");
+```
+
+### Create imagepicker
+
+Create imagepicker in `single` or `multiple` mode to specifiy if the imagepicker will be used for single or multiple selection of images
+
+*TypeScript*
+``` 
+let context = imagepicker.create({
+    mode: "single" // use "multiple" for multiple selection
+});
+````
+
+*Javascript*
+````
+var context = imagepicker.create({ mode: "single" }); // use "multiple" for multiple selection
+````
+
+### Request permissions, show the images list and process the selection
+
+``` 
+requestPermissions()
+.then(function() {
+    context
+        .authorize()
+        .then(function() {
+            return context.present();
+        })
+        .then(function(selection) {
+            selection.forEach(function(selected) {
+                // process the selected image
+            });
+            list.items = selection;
+        }).catch(function (e) {
+            // process error
+        });
+}).catch(function (e) {
+    // process error
+});
+```
+
+`requestPermissions` is used to request Android specific permissions which is required for Android 6+ (API 23+). We use [nativescript-permissions](https://www.npmjs.com/package/nativescript-permissions) plugin to do so. Review the demo projects for detailed implementation.
+
+## API
+
+### Methods
+
+* create(options) - creates instance of the imagepicker. Possible options are:
+
+| Option | Platform | Default | Description |
+| --- |  --- | --- | --- |
+| mode | both | multiple | The mode if the imagepicker. Possible values are `single` for single selection and `multiple` for multiple selection. |
+| doneText | iOS | Done | The text of the "Done" button on top right. |
+| cancelText |  iOS | Cancel | The text of the "Cancel" button on top left. |
+| albumsText | iOS | Albums | The title of the "Albums" screen from where the selection of album and images can be done. |
+| newestFirst | iOS | false | Set to `true` to sort the images in an album by newest first. |
+
+* authorize() - request iOS specific permissions.
+* present() - show the albums to present the user the ability to select images. Returns an array of the selected images.
+* cancel() - cancel selection. iOS only.
+* done() - confirm the selection is ready. iOS only.
+
+
+### Properties
+| Property | Default | Description |
+| --- | --- | --- |
+| selection | null | An array of selected image assets. |
+| albums | null | Albums from where the images are picked. |
+
+
+## License
+
+2015, Telerik AD

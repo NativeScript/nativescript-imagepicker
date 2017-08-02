@@ -31,7 +31,8 @@ export class AppComponent {
 
     startSelection(context) {
         let _that = this;
-        this.requestPermissions().then(function(){
+        this.requestPermissions()
+        .then(function(){
             context
             .authorize()
             .then(() => {
