@@ -50,7 +50,8 @@
         "tslint": "~5.4.3"
     },
     "dependencies": {
-        "nativescript-telerik-ui": "^3.0.0"
+        "nativescript-telerik-ui": "^3.0.0",
+        "nativescript-permissions": "~1.2.3"
     },
     "bootstrapper": "nativescript-plugin-seed"
 }

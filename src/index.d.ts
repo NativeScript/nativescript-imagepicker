@@ -93,13 +93,6 @@ interface Options {
     * Set the text for the albums button in iOS
     */
     albumsText?: string;
-
-    android?: {
-        /**
-         * Provide a reason for permission request to access external storage on api levels above 23.
-         */
-        read_external_storage?: string;
-    };
 }
 
 export function create(options?: Options): ImagePicker;

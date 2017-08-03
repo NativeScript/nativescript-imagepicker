@@ -58,27 +58,22 @@ var context = imagepicker.create({ mode: "single" }); // use "multiple" for mult
 ### Request permissions, show the images list and process the selection
 
 ``` 
-requestPermissions()
-.then(function() {
-    context
-        .authorize()
-        .then(function() {
-            return context.present();
-        })
-        .then(function(selection) {
-            selection.forEach(function(selected) {
-                // process the selected image
-            });
-            list.items = selection;
-        }).catch(function (e) {
-            // process error
+context
+    .authorize()
+    .then(function() {
+        return context.present();
+    })
+    .then(function(selection) {
+        selection.forEach(function(selected) {
+            // process the selected image
         });
-}).catch(function (e) {
-    // process error
-});
+        list.items = selection;
+    }).catch(function (e) {
+        // process error
+    });
 ```
 
-`requestPermissions` is used to request Android specific permissions which is required for Android 6+ (API 23+). We use [nativescript-permissions](https://www.npmjs.com/package/nativescript-permissions) plugin to do so. Review the demo projects for detailed implementation.
+> **NOTE**: To request permissions for Android 6+ (API 23+) we use [nativescript-permissions](https://www.npmjs.com/package/nativescript-permissions).
 
 ## API
 
