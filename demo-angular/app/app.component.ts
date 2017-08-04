@@ -30,7 +30,7 @@ export class AppComponent {
 
     startSelection(context) {
         let _that = this;
-        
+
         context
         .authorize()
         .then(() => {
