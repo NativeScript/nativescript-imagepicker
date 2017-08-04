@@ -1,0 +1,17 @@
+<ActionBar>
+    <ActionBar title="Image Picker"></ActionBar>
+</ActionBar>
+
+<GridLayout rows="*, auto, auto">
+    <ScrollView>
+        <StackLayout>
+            <GridLayout height="94" columns="94, *" rows="*, *" *ngFor="let item of items">
+                <Image rowSpan="2" width="94" height="94" [src]="item"></Image>
+                <Label col="1" [text]="item.uri"></Label>
+                <Label col="1" row="1" [text]="item.fileUri"></Label>
+            </GridLayout>
+        </StackLayout>
+    </ScrollView>
+    <Button row="1" text="Pick Single" (tap)="onSelectSingleTap()" horizontalAlignment="center"></Button>
+    <Button row="2" text="Pick Multiple" (tap)="onSelectMultipleTap()" horizontalAlignment="center"></Button>
+</GridLayout>
