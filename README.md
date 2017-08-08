@@ -14,7 +14,7 @@ Imagepicker plugin supporting both single and multiple selection.
 In Command prompt / Terminal navigate to your application root folder and run:
 
 ```
-tns plugin add <your-plugin-name>
+tns plugin add nativescript-imagepicker
 ```
 
 ## Usage 
