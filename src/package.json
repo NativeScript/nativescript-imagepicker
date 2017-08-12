@@ -28,7 +28,8 @@
         "plugin.tscwatch": "npm run tsc -- -w",
         "demo.ios": "npm i && npm run tsc && cd ../demo && tns run ios --syncAllFiles",
         "demo.android": "npm i && npm run tsc && cd ../demo && tns run android --syncAllFiles",
-        "clean": "rm -rf node_modules && cd ../demo && rm -rf hooks node_modules platforms && cd ../src && npm run plugin.link"
+        "clean": "rm -rf node_modules && cd ../demo && rm -rf hooks node_modules platforms && cd ../src && npm run plugin.link",
+        "postinstall": "node scripts/require-nativescript-telerik-ui.js"
     },
     "keywords": [
         "NativeScript",
@@ -44,13 +45,13 @@
     "homepage": "https://github.com/NativeScript/nativescript-imagepicker",
     "readmeFilename": "README.md",
     "devDependencies": {
+        "nativescript-telerik-ui": "^3.0.0",
         "tns-core-modules": "^3.1.0",
         "tns-platform-declarations": "^3.0.0",
         "typescript": "~2.3.0",
         "tslint": "~5.4.3"
     },
     "dependencies": {
-        "nativescript-telerik-ui": "^3.0.0",
         "nativescript-permissions": "~1.2.3"
     },
     "bootstrapper": "nativescript-plugin-seed"
