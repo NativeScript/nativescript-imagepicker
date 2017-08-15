@@ -1,5 +1,4 @@
 var path = require("path"),
-    fs = require("fs"),
     projectPackageJsonFilename = path.join(__dirname, "..", "..", "..", "package.json"),
     projectPackageJson;
 
@@ -18,8 +17,8 @@ if (telerikui === undefined && telerikuipro === undefined) {
   var pluginPackageJson = require(path.join(__dirname, "..", "package.json"));
   var telerikuiversion = pluginPackageJson.devDependencies["nativescript-telerik-ui"];
 
-  projectPackageJson.dependencies["nativescript-telerik-ui"] = telerikuiversion;
-  fs.writeFileSync(projectPackageJsonFilename, JSON.stringify(projectPackageJson, null, 2));
-
-  console.log("The nativescript-imagepicker plugin added the nativescript-telerik-ui@" + telerikuiversion + " dependency to your app's package.json.");
+  // give the user a bit of feedback as installing this dependency take a while to complete.
+  console.log("The nativescript-imagepicker plugin requires nativescript-telerik-ui. Please wait while it's being added to your project...");
+  require('child_process').execSync('npm i --save nativescript-telerik-ui@' + telerikuiversion, { cwd: path.join(__dirname, "..", "..")});
+  console.log("nativescript-telerik-ui@" + telerikuiversion + " has been successfully installed and was added to your app's package.json.");
 }
