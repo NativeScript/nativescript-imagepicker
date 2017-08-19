@@ -93,6 +93,11 @@ interface Options {
     * Set the text for the albums button in iOS
     */
     albumsText?: string;
+
+    /**
+     * Indicates images should be sorted newest-first (iOS only, default false).
+     */
+    newestFirst?: boolean;
 }
 
 export function create(options?: Options): ImagePicker;
