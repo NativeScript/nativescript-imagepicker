@@ -405,6 +405,12 @@ export class SelectedAsset extends imageAssetModule.ImageAsset {
 
                 destinationFile.writeSync(source, e=> { error = e; });
 
+                try {
+                    console.log('error', JSON.stringify(error));
+                } catch (error) {
+                    console.log(error);
+                }
+
                 resolve(newFilename.toString());
 
                 // if (saveWithFilename) {
