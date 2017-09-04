@@ -3,6 +3,7 @@ import * as imagesource from "image-source";
 import * as application from "application";
 import * as platform from "platform";
 import * as imageAssetModule from "image-asset";
+import * as fs from "tns-core-modules/file-system"
 
 interface ArrayBufferStatic extends ArrayBufferConstructor {
     from(buffer: java.nio.ByteBuffer): ArrayBuffer;
@@ -22,6 +23,7 @@ export class SelectedAsset extends imageAssetModule.ImageAsset {
     private _thumbAsset: imageAssetModule.ImageAsset;
     private _fileUri: string;
     private _data: ArrayBuffer;
+    private _mediaType: string;
 
     constructor(uri: android.net.Uri) {
         super(SelectedAsset._calculateFileUri(uri));
@@ -83,6 +85,14 @@ export class SelectedAsset extends imageAssetModule.ImageAsset {
             this._fileUri = SelectedAsset._calculateFileUri(this._uri);
         }
         return this._fileUri;
+    }
+
+    get mediaType(): string {
+        return this._mediaType;
+    }
+    protected setMediaType(value: string): void {
+        this._mediaType = value;
+        this.notifyPropertyChange("mediaType", value);
     }
 
     private static _calculateFileUri(uri : android.net.Uri) {
@@ -299,6 +309,155 @@ export class SelectedAsset extends imageAssetModule.ImageAsset {
 
     private static getContentResolver(): android.content.ContentResolver {
         return application.android.nativeApp.getContentResolver();
+    }
+
+    saveAssetToFile(saveToFolder, saveWithFilename, newWidth, newHeight): Promise<any>  {
+        console.log('saveAssetToFile()');
+        console.log('saveToFolder', saveToFolder);
+        console.log('saveWithFilename', saveWithFilename);
+        console.log('newWidth', newWidth);
+        console.log('newHeight', newHeight);
+        console.log('mediaType', this.mediaType);
+
+
+        const documents = fs.knownFolders.documents();
+        let folder = documents.getFolder(saveToFolder);
+        var newFilename;
+        //var fileManager = NSFileManager.defaultManager;
+
+
+        if (this.mediaType == 'image') {
+            return new Promise((resolve, reject) => {
+                 // = newFileName ? newFileName : "notification_img_" + Date.now() + ".png";    
+
+                 var REQUIRED_SIZE = {
+                    maxWidth: 1000,
+                    maxHeight: 1000
+                };
+
+                if (saveWithFilename) {
+                    newFilename = saveWithFilename;
+                } else {
+                    newFilename = "notification_img_" + Date.now() + ".png"
+                }
+
+                var path = fs.path.join(folder.path, newFilename);
+        
+                var imageAsset = this.decodeUriForImageAsset(this._uri, REQUIRED_SIZE);
+
+                imagesource.fromAsset(imageAsset)
+                .then(imageSource => {
+                     imageSource.saveToFile(path, "png");
+                 });
+
+                resolve(newFilename.toString());
+
+
+                // if (saveWithFilename) {
+                //     newFilename = saveWithFilename;
+                // } else {
+                //     newFilename = "notification_img_" + Date.now() + ".png"
+                // }
+
+                // var path = fs.path.join(folder.path, newFilename);               
+
+                // let imageRequestSize = CGSizeMake(newWidth, newHeight);
+                // let imageRequestOptions: PHImageRequestOptions;
+
+                // imageRequestOptions = PHImageRequestOptions.alloc().init();
+                // imageRequestOptions.resizeMode = PHImageRequestOptionsResizeMode.Exact;
+                // imageRequestOptions.synchronous = true;
+                // imageRequestOptions.deliveryMode = PHImageRequestOptionsDeliveryMode.Opportunistic;
+                // imageRequestOptions.normalizedCropRect = CGRectMake(0, 0, 1, 1);
+                // imageRequestOptions.networkAccessAllowed = true;
+
+                // PHImageManager.defaultManager().requestImageForAssetTargetSizeContentModeOptionsResultHandler(this._phAsset, imageRequestSize, PHImageContentMode.AspectFit,
+                //     imageRequestOptions, function (uiImage, info) {
+                //         console.log('createFileAtPathContentsAttributes()');
+
+                //         let imageData = UIImageJPEGRepresentation(uiImage, 0.5);
+                //         if (fileManager.createFileAtPathContentsAttributes(path, imageData, null)) {
+                //             resolve(newFilename.toString());
+                //         };             
+        
+                //     }.bind(this));
+
+            });
+        } else { // ## VIDEO
+            return new Promise((resolve, reject) => {
+
+                if (saveWithFilename) {
+                    newFilename = saveWithFilename;
+                } else {
+                    newFilename = "notification_img_" + Date.now() + ".mp4"
+                }
+
+                //var path = fs.path.join(folder.path, newFilename);
+
+                var error;
+
+                var currentPath = this._fileUri;
+
+                var sourceFile = fs.File.fromPath(currentPath)
+                var destinationFile = fs.knownFolders.documents().getFile(newFilename);
+
+                var source = sourceFile.readSync(e=> { error = e; });
+
+                destinationFile.writeSync(source, e=> { error = e; });
+
+                resolve(newFilename.toString());
+
+                // if (saveWithFilename) {
+                //     newFilename = saveWithFilename;
+                // } else {
+                //     newFilename = "notification_img_" + Date.now() + ".mp4"
+                // }
+
+                // var path = fs.path.join(folder.path, newFilename);
+
+                // let videoRequestOptions: PHVideoRequestOptions;
+                // videoRequestOptions = PHVideoRequestOptions.alloc().init();
+                // videoRequestOptions.version = PHVideoRequestOptionsVersion.Original;
+                // videoRequestOptions.networkAccessAllowed = true; // ## Allows access to iCloud assets
+                
+                // PHImageManager.defaultManager().requestAVAssetForVideoOptionsResultHandler(this._phAsset, videoRequestOptions, function(avAsset, avAudioMix, info) {
+
+                //     try {
+                //         if (avAsset instanceof AVAsset) {
+                //             let urlAsset = avAsset as AVURLAsset;
+                //             let assetURL = urlAsset.URL;
+                //             let videoData = NSData.dataWithContentsOfURL(assetURL);
+
+                //             if (fileManager.createFileAtPathContentsAttributes(path, videoData, null)) {
+                //                 resolve(newFilename.toString());
+                //             }; 
+                //         } 
+                //         // else { // ## Slo-mo video ?
+                //         //     let avComposition = avAsset as AVComposition;
+
+                //         //     let exporter: AVAssetExportSession;
+                //         //     exporter = new AVAssetExportSession({asset: avComposition, presetName: AVAssetExportPresetHighestQuality});
+
+                //         //     console.log('exporter instanceof AVAssetExportSession', exporter instanceof AVAssetExportSession);
+
+                //         //     exporter.outputURL = NSURL.URLWithString(path);
+                //         //     exporter.outputFileType = AVFileTypeQuickTimeMovie;
+                //         //     exporter.shouldOptimizeForNetworkUse = true;
+                //         //     exporter.exportAsynchronouslyWithCompletionHandler(function() {
+                //         //         if (exporter.status == AVAssetExportSessionStatus.Completed) {
+                //         //             resolve(newFilename.toString());
+                //         //         }
+                //         //     })
+
+                //         // }
+                //     } catch(e) {
+                //         console.log(e);
+                //     }
+                    
+                // })
+            });
+        }
+        
     }
 }
 

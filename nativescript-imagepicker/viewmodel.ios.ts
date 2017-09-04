@@ -591,6 +591,10 @@ class AssetPH extends Asset {
 
     saveAssetToFile(saveToFolder, saveWithFilename, newWidth, newHeight): Promise<any>  {
         console.log('saveAssetToFile()');
+        console.log('saveToFolder', saveToFolder);
+        console.log('saveWithFilename', saveWithFilename);
+        console.log('newWidth', newWidth);
+        console.log('newHeight', newHeight);
 
         const documents = fs.knownFolders.documents();
         let folder = documents.getFolder(saveToFolder);
