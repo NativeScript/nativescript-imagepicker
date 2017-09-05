@@ -392,25 +392,67 @@ export class SelectedAsset extends imageAssetModule.ImageAsset {
                     newFilename = "notification_img_" + Date.now() + ".mp4"
                 }
 
-                //var path = fs.path.join(folder.path, newFilename);
+                var path = fs.path.join(folder.path, newFilename);
 
                 var error;
 
-                var currentPath = this._fileUri;
+                var currentPath = this.fileUri;
+                console.log('currentPath', currentPath);
 
                 var sourceFile = fs.File.fromPath(currentPath)
-                var destinationFile = fs.knownFolders.documents().getFile(newFilename);
+                console.log('got source file');
+
+                var destinationFile = fs.File.fromPath(path); //fs.knownFolders.documents().getFile(newFilename);
+                console.log('got destination file');
 
                 var source = sourceFile.readSync(e=> { error = e; });
+                console.log('read source file');
 
                 destinationFile.writeSync(source, e=> { error = e; });
+                console.log('wrote destination file');
 
-                try {
-                    console.log('error', JSON.stringify(error));
-                } catch (error) {
-                    console.log(error);
+                // ## Create thumbnail image
+                var thumbFileName = saveWithFilename.substring(0, saveWithFilename.length-4) + '.jpg';
+                var thumbFolder = folder.getFolder('thumbs');
+                var thumbPath = fs.path.join(thumbFolder.path, thumbFileName);      
+                
+                var destinationThumbFile = fs.File.fromPath(thumbPath);
+                console.log('got destination thumb file');
+
+                console.log('thumbPath', thumbPath);
+
+                var thumb = android.media.ThumbnailUtils.createVideoThumbnail(path, MediaStore.Images.Thumbnails.MINI_KIND);    
+
+                var thumbImage = new imagesource.ImageSource();
+                thumbImage.setNativeSource(thumb);
+
+                let saved = thumbImage.saveToFile(
+                    thumbPath,
+                    'jpeg'
+                );
+
+                if (saved) {
+                    console.log('thumb was saved');
+                } else {
+                    console.log('thumb was not saved');
                 }
 
+                // if (thumb != null) {
+                //     destinationThumbFile.writeSync(thumb.getRowBytes, e=> { error = e; });
+                //     console.log('wrote thumb destination file');
+                // } else {
+                //     console.log('thumb from video failed');
+                // }
+
+                // try {
+                //     if (error) {
+                //         console.log('error');
+                //     }
+                // } catch (error) {
+                //     console.log(error);
+                // }
+
+                console.log('resolving');
                 resolve(newFilename.toString());
 
                 // if (saveWithFilename) {
