@@ -238,8 +238,7 @@ export class SelectedAsset extends imageAssetModule.ImageAsset {
             //       Right now, it just selects the smallest of the two sizes
             //       and scales the image proportionally to that.
             var targetSize = options.maxWidth < options.maxHeight ? options.maxWidth : options.maxHeight;
-            while (!(this.matchesSize(targetSize, outWidth) ||
-                this.matchesSize(targetSize, outHeight))) {
+            while (!(this.matchesSize(targetSize, outWidth) || this.matchesSize(targetSize, outHeight))) {
                 outWidth /= 2;
                 outHeight /= 2;
                 scale *= 2;
@@ -249,7 +248,8 @@ export class SelectedAsset extends imageAssetModule.ImageAsset {
     }
 
     private matchesSize(targetSize: number, actualSize: number): boolean {
-        return targetSize && actualSize / 2 < targetSize;
+        //return targetSize && actualSize / 2 < targetSize;
+        return targetSize && actualSize < targetSize;
     }
 
     /**
@@ -260,6 +260,11 @@ export class SelectedAsset extends imageAssetModule.ImageAsset {
     private decodeUri(uri: android.net.Uri, options?: { maxWidth: number, maxHeight: number }): imagesource.ImageSource {
         var downsampleOptions = new BitmapFactory.Options();
         downsampleOptions.inSampleSize = this.getSampleSize(uri, options);
+
+        console.log('options.maxWidth', options.maxWidth);
+        console.log('options.maxHeight', options.maxHeight);
+        console.log('inSampleSize', downsampleOptions.inSampleSize);
+
         var bitmap = BitmapFactory.decodeStream(this.openInputStream(uri), null, downsampleOptions);
         var image = new imagesource.ImageSource();
         image.setNativeSource(bitmap);
@@ -319,7 +324,6 @@ export class SelectedAsset extends imageAssetModule.ImageAsset {
         console.log('newHeight', newHeight);
         console.log('mediaType', this.mediaType);
 
-
         const documents = fs.knownFolders.documents();
         let folder = documents.getFolder(saveToFolder);
         var newFilename;
@@ -330,9 +334,14 @@ export class SelectedAsset extends imageAssetModule.ImageAsset {
             return new Promise((resolve, reject) => {
                  // = newFileName ? newFileName : "notification_img_" + Date.now() + ".png";    
 
-                 var REQUIRED_SIZE = {
+                var REQUIRED_SIZE = {
                     maxWidth: 1000,
                     maxHeight: 1000
+                };
+
+                var REQUIRED_THUMB_SIZE = {
+                    maxWidth: 400,
+                    maxHeight: 400
                 };
 
                 if (saveWithFilename) {
@@ -341,51 +350,129 @@ export class SelectedAsset extends imageAssetModule.ImageAsset {
                     newFilename = "notification_img_" + Date.now() + ".png"
                 }
 
-                var path = fs.path.join(folder.path, newFilename);
-        
-                var imageAsset = this.decodeUriForImageAsset(this._uri, REQUIRED_SIZE);
+                console.log(saveWithFilename);
 
-                imagesource.fromAsset(imageAsset)
-                .then(imageSource => {
-                     imageSource.saveToFile(path, "png");
-                 });
+                var path = fs.path.join(folder.path, newFilename);
+                console.log('got path', path);
+        
+                // var imageAsset = this.decodeUriForImageAsset(this._uri, REQUIRED_SIZE);
+                // console.log('decoded uri for image asset', this._uri.toString());
+
+                this.getImage({maxWidth: 1200, maxHeight: 1200}).then(function(imageSource) {
+
+                    console.log('imageSource.width', imageSource.width);
+                    console.log('imageSource.height', imageSource.height);
+
+                    let saved = imageSource.saveToFile(
+                        path,
+                        'jpg'
+                    );
+
+                    if (saved) {
+                        console.log('image was saved');
+
+                        var thumbFileName = saveWithFilename.substring(0, saveWithFilename.length-4) + '.jpg';
+                        var thumbFolder = folder.getFolder('thumbs');
+                        var thumbPath = fs.path.join(thumbFolder.path, thumbFileName);
+
+                        var resizedBitmap = android.graphics.Bitmap.createScaledBitmap(imageSource.android, 400, 400, true);
+                        let thumb_image = imagesource.fromNativeSource(resizedBitmap);
+
+                        let saved = thumb_image.saveToFile(
+                            thumbPath,
+                            'jpg'
+                        );
+
+                        if (saved) {
+                            console.log('thumb was saved');
+                        } else {
+                            console.log('thumbs was not saved');
+                        }
+
+                    } else {
+                        console.log('image was not saved');
+                    }
+
+                });
+
+                /* WORKS */
+                // console.log('fileUri', this.fileUri);
+
+                // var image = imagesource.fromFile(this.fileUri);             
+
+                // let saved = image.saveToFile(
+                //     path,
+                //     'jpg'
+                // );
+
+                // if (saved) {
+                //     console.log('image was saved');
+
+                //     //## Create thumbnail image
+                //     var thumbFileName = saveWithFilename.substring(0, saveWithFilename.length-4) + '.jpg';
+                //     var thumbFolder = folder.getFolder('thumbs');
+                //     var thumbPath = fs.path.join(thumbFolder.path, thumbFileName);
+
+                //     var thumb = android.graphics.Bitmap.createScaledBitmap(image.android, REQUIRED_THUMB_SIZE.maxWidth, REQUIRED_THUMB_SIZE.maxHeight, true);
+
+                //     var thumbImage = new imagesource.ImageSource();
+                //     thumbImage.setNativeSource(thumb);
+    
+                //     let saved = thumbImage.saveToFile(
+                //         thumbPath,
+                //         'jpeg'
+                //     );
+    
+                //     if (saved) {
+                //         console.log('thumb was saved');
+                //     } else {
+                //         console.log('thumb was not saved');
+                //     }
+                // } else {
+                //     console.log('image was not saved');
+                // }
+                
+                /* end WORKS */
 
                 resolve(newFilename.toString());
 
+                // debugger;
 
-                // if (saveWithFilename) {
-                //     newFilename = saveWithFilename;
-                // } else {
-                //     newFilename = "notification_img_" + Date.now() + ".png"
-                // }
+                // imagesource.fromAsset(imageAsset)
+                // .then(imageSource => {
+                //     console.log('got imageSource from imageAsset');
 
-                // var path = fs.path.join(folder.path, newFilename);               
+                //     // let saved = imageSource.saveToFile(
+                //     //     path,
+                //     //     'jpg'
+                //     // );
 
-                // let imageRequestSize = CGSizeMake(newWidth, newHeight);
-                // let imageRequestOptions: PHImageRequestOptions;
+                //     // if (saved) {
+                //     //     console.log('image was saved');
+                //     // } else {
+                //     //     console.log('image was not saved');
+                //     // }
 
-                // imageRequestOptions = PHImageRequestOptions.alloc().init();
-                // imageRequestOptions.resizeMode = PHImageRequestOptionsResizeMode.Exact;
-                // imageRequestOptions.synchronous = true;
-                // imageRequestOptions.deliveryMode = PHImageRequestOptionsDeliveryMode.Opportunistic;
-                // imageRequestOptions.normalizedCropRect = CGRectMake(0, 0, 1, 1);
-                // imageRequestOptions.networkAccessAllowed = true;
+                //     //  // ## Create thumbnail image
+                //     // var thumbFolder = folder.getFolder('thumbs');
+                //     // var thumbPath = fs.path.join(thumbFolder.path, newFilename); 
 
-                // PHImageManager.defaultManager().requestImageForAssetTargetSizeContentModeOptionsResultHandler(this._phAsset, imageRequestSize, PHImageContentMode.AspectFit,
-                //     imageRequestOptions, function (uiImage, info) {
-                //         console.log('createFileAtPathContentsAttributes()');
+                //     // imageAsset = this.decodeUriForImageAsset(this._uri, REQUIRED_THUMB_SIZE);
 
-                //         let imageData = UIImageJPEGRepresentation(uiImage, 0.5);
-                //         if (fileManager.createFileAtPathContentsAttributes(path, imageData, null)) {
-                //             resolve(newFilename.toString());
-                //         };             
-        
-                //     }.bind(this));
+                //     // imagesource.fromAsset(imageAsset)
+                //     // .then(imageSource => {
+                //     //     imageSource.saveToFile(path, "jpg");
+
+                //     //     resolve(newFilename.toString());
+                //     // });
+                  
+                // });
 
             });
         } else { // ## VIDEO
             return new Promise((resolve, reject) => {
 
+                // ## Copy video to documents folder
                 if (saveWithFilename) {
                     newFilename = saveWithFilename;
                 } else {
@@ -437,72 +524,8 @@ export class SelectedAsset extends imageAssetModule.ImageAsset {
                     console.log('thumb was not saved');
                 }
 
-                // if (thumb != null) {
-                //     destinationThumbFile.writeSync(thumb.getRowBytes, e=> { error = e; });
-                //     console.log('wrote thumb destination file');
-                // } else {
-                //     console.log('thumb from video failed');
-                // }
-
-                // try {
-                //     if (error) {
-                //         console.log('error');
-                //     }
-                // } catch (error) {
-                //     console.log(error);
-                // }
-
-                console.log('resolving');
                 resolve(newFilename.toString());
 
-                // if (saveWithFilename) {
-                //     newFilename = saveWithFilename;
-                // } else {
-                //     newFilename = "notification_img_" + Date.now() + ".mp4"
-                // }
-
-                // var path = fs.path.join(folder.path, newFilename);
-
-                // let videoRequestOptions: PHVideoRequestOptions;
-                // videoRequestOptions = PHVideoRequestOptions.alloc().init();
-                // videoRequestOptions.version = PHVideoRequestOptionsVersion.Original;
-                // videoRequestOptions.networkAccessAllowed = true; // ## Allows access to iCloud assets
-                
-                // PHImageManager.defaultManager().requestAVAssetForVideoOptionsResultHandler(this._phAsset, videoRequestOptions, function(avAsset, avAudioMix, info) {
-
-                //     try {
-                //         if (avAsset instanceof AVAsset) {
-                //             let urlAsset = avAsset as AVURLAsset;
-                //             let assetURL = urlAsset.URL;
-                //             let videoData = NSData.dataWithContentsOfURL(assetURL);
-
-                //             if (fileManager.createFileAtPathContentsAttributes(path, videoData, null)) {
-                //                 resolve(newFilename.toString());
-                //             }; 
-                //         } 
-                //         // else { // ## Slo-mo video ?
-                //         //     let avComposition = avAsset as AVComposition;
-
-                //         //     let exporter: AVAssetExportSession;
-                //         //     exporter = new AVAssetExportSession({asset: avComposition, presetName: AVAssetExportPresetHighestQuality});
-
-                //         //     console.log('exporter instanceof AVAssetExportSession', exporter instanceof AVAssetExportSession);
-
-                //         //     exporter.outputURL = NSURL.URLWithString(path);
-                //         //     exporter.outputFileType = AVFileTypeQuickTimeMovie;
-                //         //     exporter.shouldOptimizeForNetworkUse = true;
-                //         //     exporter.exportAsynchronouslyWithCompletionHandler(function() {
-                //         //         if (exporter.status == AVAssetExportSessionStatus.Completed) {
-                //         //             resolve(newFilename.toString());
-                //         //         }
-                //         //     })
-
-                //         // }
-                //     } catch(e) {
-                //         console.log(e);
-                //     }
-                    
-                // })
             });
         }
         
@@ -587,7 +610,7 @@ export class ImagePicker {
                 }
             };
 
-            var intent = new Intent();
+            var intent = new Intent(Intent.ACTION_GET_CONTENT);
             //intent.setType("image/*");
 
             if (this.mediaType === 'video') {
@@ -598,7 +621,9 @@ export class ImagePicker {
 
             // TODO: Use (<any>android).content.Intent.EXTRA_ALLOW_MULTIPLE
             if (this.mode === 'multiple') {
+                console.log('multiple mode selected. Setting intent');
                 intent.putExtra("android.intent.extra.ALLOW_MULTIPLE", true);
+                //intent.putExtra(Intent.actio)
             }
 
             intent.setAction(Intent.ACTION_GET_CONTENT);
