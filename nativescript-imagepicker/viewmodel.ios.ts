@@ -657,10 +657,26 @@ class AssetPH extends Asset {
                         if (avAsset instanceof AVAsset) {
                             let urlAsset = avAsset as AVURLAsset;
                             let assetURL = urlAsset.URL;
-                            let videoData = NSData.dataWithContentsOfURL(assetURL);
+                            let videoData = NSData.dataWithContentsOfURL(assetURL);                       
 
                             if (fileManager.createFileAtPathContentsAttributes(path, videoData, null)) {
-                                resolve(newFilename.toString());
+                                // ## Create thumbnail first frame of video
+                                let imageGenerator = new AVAssetImageGenerator({asset: avAsset});
+                                let cgImage = imageGenerator.copyCGImageAtTimeActualTimeError(CMTimeMake(0, 1), null)
+                                let uiImage = new UIImage(cgImage);
+
+                                var thumbFileName = newFilename.substring(0, newFilename.length-4) + '.jpg';
+                                var thumbFolder = folder.getFolder('thumbs');
+                                let thumbPath = fs.path.join(thumbFolder.path, thumbFileName);
+
+                                console.log(thumbPath);
+
+                                let imageData = UIImageJPEGRepresentation(uiImage, 0.5);
+                                if (fileManager.createFileAtPathContentsAttributes(thumbPath, imageData, null)) {
+                                    resolve(newFilename.toString());
+                                }; 
+
+                                //resolve(newFilename.toString());
                             }; 
                         } 
                         // else { // ## Slo-mo video ?
