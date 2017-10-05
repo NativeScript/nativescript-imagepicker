@@ -1,5 +1,5 @@
 <Page xmlns="http://www.nativescript.org/tns.xsd" loaded="pageLoaded"
-      xmlns:lv="nativescript-telerik-ui/listview">
+      xmlns:lv="nativescript-pro-ui/listview">
 
     <Page.actionBar>
         <ActionBar title="{{ title }}">
