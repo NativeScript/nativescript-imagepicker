@@ -266,6 +266,7 @@ class ImagePickerPH extends ImagePicker {
         this._thumbRequestOptions.resizeMode = PHImageRequestOptionsResizeMode.Exact;
         this._thumbRequestOptions.synchronous = false;
         this._thumbRequestOptions.deliveryMode = PHImageRequestOptionsDeliveryMode.Opportunistic;
+        this._thumbRequestOptions.networkAccessAllowed = true; // needed for retrieving iCloud images
         this._thumbRequestOptions.normalizedCropRect = CGRectMake(0, 0, 1, 1);
 
         this._thumbRequestSize = CGSizeMake(80, 80);
