@@ -35,7 +35,7 @@ function startSelection(context, isSingle) {
                 console.log("----------------");
                 console.log("uri: " + selected.uri);
                 if(isSingle){
-                    selected.getImage({ maxWidth: 200, maxHeight: 200, iosAspectRatio: 'fit' })
+                    selected.getImage({ maxWidth: 200, maxHeight: 200, aspectRatio: 'fill' })
                     .then((imageSource) => {
                         imageSrc.src = imageSource;
                     });

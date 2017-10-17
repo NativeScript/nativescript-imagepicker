@@ -130,7 +130,7 @@ Once image is picked some options can be applied to it  before it is used:
 | --- | --- | --- |
 | maxWidth | null | Image max width |
 | maxHeight | null | Image max height |
-| iosAspectRatio | fill | iOS only. Possible values are `fit` and `fill`. [Read more](https://developer.apple.com/documentation/photos/phimagecontentmode) |
+| aspectRatio | fit | iOS only. Possible values are `fit` and `fill`. [Read more](https://developer.apple.com/documentation/photos/phimagecontentmode) |
 
 ## License
 

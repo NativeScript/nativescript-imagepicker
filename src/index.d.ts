@@ -14,9 +14,9 @@ export interface ImageOptions {
     maxHeight?: number;
 
     /**
-     * iOS only. The image aspect ratio. Default value: fill.
+     * iOS only. The image aspect ratio. Default value: fit.
      */
-    iosAspectRatio?: "fill" | "fit";
+    aspectRatio?: "fill" | "fit";
 }
 
 export class SelectedAsset extends imageAssetModule.ImageAsset {
