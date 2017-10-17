@@ -345,7 +345,7 @@ class ImagePickerPH extends ImagePicker {
         return new Promise<image_source.ImageSource>((resolve, reject) => {
             let size: CGSize = options ? CGSizeMake(options.maxWidth, options.maxHeight) : PHImageManagerMaximumSize;
             let resizeMode = PHImageRequestOptions.alloc().init();
-            let aspectRatio = (options && options.iosAspectRatio && options.iosAspectRatio == 'fit') ? PHImageContentMode.AspectFit : PHImageContentMode.AspectFill;
+            let aspectRatio = (options && options.iosAspectRatio && options.iosAspectRatio === 'fit') ? PHImageContentMode.AspectFit : PHImageContentMode.AspectFill;
 
             // TODO: Decide whether it is benefical to use PHImageRequestOptionsResizeModeFast
             //       Accuracy vs Performance. It is probably best to expose these as iOS specific options.
