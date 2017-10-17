@@ -1,0 +1,38 @@
+{
+        "android23.local": {
+                "platformName": "Android",
+                "platformVersion": "6.0",
+                "deviceName": "Emulator_Api23_Default",
+                "avd": "Emulator_Api23_Default",
+                "noReset": true
+        },
+        "android23": {
+                "platformName": "Android",
+                "platformVersion": "6.0",
+                "deviceName": "Android Emulator",
+                "appium-version": "1.7.1",
+                "noReset": true
+        },
+        "sim11iPhone6": {
+                "platformName": "iOS",
+                "platformVersion": "11.0",
+                "deviceName": "iPhone 6",
+                "appium-version": "1.7.1",
+                "app": ""
+        },
+        "sim103iPhone6": {
+                "browserName": "",
+                "appium-version": "1.7.1",
+                "platformName": "iOS",
+                "platformVersion": "10.3",
+                "deviceName": "iPhone 6",
+                "app": ""
+        },
+        "sim10iPhone6": {
+                "platformName": "iOS",
+                "platformVersion": "10.0",
+                "deviceName": "iPhone 6",
+                "appium-version": "1.7.1",
+                "app": ""
+        }
+}

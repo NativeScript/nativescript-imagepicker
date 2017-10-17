@@ -1,0 +1,22 @@
+{
+    "compilerOptions": {
+        "module": "commonjs",
+        "target": "es6",
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true,
+        "importHelpers": false,
+        "sourceMap":true,
+        "types": [
+            "node",
+            "mocha",
+            "chai"
+        ],
+        "lib": [
+            "dom",
+            "es2015.core",
+            "es2015.iterable",
+            "es2016.array.include",
+            "es2015"
+        ]
+    }
+}
