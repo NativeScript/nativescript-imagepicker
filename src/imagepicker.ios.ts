@@ -357,7 +357,7 @@ class ImagePickerPH extends ImagePicker {
             PHImageManager.defaultManager().requestImageForAssetTargetSizeContentModeOptionsResultHandler(
                 image,
                 size,
-                PHImageContentMode.AspectFill,
+                PHImageContentMode.AspectFit, // Scales the image so that its larger dimension fits the target size
                 resizeMode,
                 (createdImage, data) => {
                     if (createdImage) {

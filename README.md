@@ -75,6 +75,26 @@ context
 
 > **NOTE**: To request permissions for Android 6+ (API 23+) we use [nativescript-permissions](https://www.npmjs.com/package/nativescript-permissions).
 
+### Process the selection with scaling images to specified dimensions and returning ImageSource object
+
+```
+context
+    .authorize()
+    .then(function() {
+        return context.present();
+    })
+    .then(function(selection) {
+        selection.forEach((selectedPhoto) => {
+            selectedPhoto.getImage({ maxWidth: 500, maxHeight: 500 }) // maintains aspect ratio
+            .then((imageSource) => {
+                // process the selected image
+            });
+        });
+    }).catch(function (e) {
+        // process error
+    });
+```
+
 ## API
 
 ### Methods
