@@ -34,7 +34,7 @@ function startSelection(context, isSingle) {
             selection.forEach(function(selected) {
                 console.log("----------------");
                 console.log("uri: " + selected.uri);
-                if(isSingle){
+                if (isSingle) {
                     selected.getImage({ maxWidth: 200, maxHeight: 200, aspectRatio: 'fill' })
                     .then((imageSource) => {
                         imageSrc.src = imageSource;
