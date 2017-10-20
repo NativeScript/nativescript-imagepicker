@@ -122,6 +122,16 @@ context
 | albums | null | Albums from where the images are picked. |
 
 
+### Image properties
+
+Once image is picked some options can be applied to it  before it is used:
+
+| Option | Default | Description |
+| --- | --- | --- |
+| maxWidth | null | Image max width |
+| maxHeight | null | Image max height |
+| aspectRatio | fit | iOS only. Possible values are `fit` and `fill`. [Read more](https://developer.apple.com/documentation/photos/phimagecontentmode) |
+
 ## License
 
 2015, Telerik AD
