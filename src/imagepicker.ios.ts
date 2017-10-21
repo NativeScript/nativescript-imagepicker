@@ -139,11 +139,6 @@ export class Album extends data_observable.Observable {
         return this._assets;
     }
 
-    // [Deprecated. Please use thumbAsset instead.]
-    get thumb(): image_source.ImageSource {
-        return this._thumb;
-    }
-
     protected setThumb(value: image_source.ImageSource): void {
         this._thumb = value;
         this.notifyPropertyChange("thumb", value);
@@ -160,11 +155,6 @@ export class Album extends data_observable.Observable {
 }
 
 export class SelectedAsset extends imageAssetModule.ImageAsset {
-    // [Deprecated. SelectedAsset will be used directly as a source for the thumb image]
-    get thumb(): image_source.ImageSource {
-        return null;
-    }
-
     get uri(): string {
         return null;
     }
@@ -198,15 +188,6 @@ export class Asset extends SelectedAsset {
 
     get album(): Album {
         return this._album;
-    }
-
-    // [Deprecated. Asset will be used directly as a source for the thumb image]
-    get thumb(): image_source.ImageSource {
-        if (!this._thumbRequested) {
-            this._thumbRequested = true;
-            this.onThumbRequest();
-        }
-        return this._thumb;
     }
 
     get selected(): boolean {

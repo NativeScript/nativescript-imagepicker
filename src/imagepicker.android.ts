@@ -58,14 +58,6 @@ export class SelectedAsset extends imageAssetModule.ImageAsset {
         });
     }
 
-    // [Deprecated. Please use thumbAsset instead.]
-    get thumb(): imagesource.ImageSource {
-        if (!this._thumbRequested) {
-            this.decodeThumbUri();
-        }
-        return this._thumb;
-    }
-
     get thumbAsset(): imageAssetModule.ImageAsset {
         return this._thumbAsset;
     }
