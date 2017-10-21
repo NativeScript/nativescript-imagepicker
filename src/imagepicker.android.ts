@@ -18,8 +18,6 @@ let StaticArrayBuffer = <ArrayBufferStatic>ArrayBuffer;
 
 export class SelectedAsset extends imageAssetModule.ImageAsset {
     private _uri: android.net.Uri;
-    private _thumb: imagesource.ImageSource;
-    private _thumbRequested: boolean;
     private _thumbAsset: imageAssetModule.ImageAsset;
     private _fileUri: string;
     private _data: ArrayBuffer;
@@ -27,7 +25,6 @@ export class SelectedAsset extends imageAssetModule.ImageAsset {
     constructor(uri: android.net.Uri) {
         super(SelectedAsset._calculateFileUri(uri));
         this._uri = uri;
-        this._thumbRequested = false;
     }
 
     data(): Promise<any> {
@@ -178,18 +175,6 @@ export class SelectedAsset extends imageAssetModule.ImageAsset {
 
     private static isMediaDocument(uri: android.net.Uri) {
         return "com.android.providers.media.documents" === uri.getAuthority();
-    }
-
-    private decodeThumbUri(): void {
-        // Decode image size
-        let REQUIRED_SIZE = {
-            maxWidth: 100,
-            maxHeight: 100
-        };
-
-        // Decode with scale
-         this._thumb = this.decodeUri(this._uri, REQUIRED_SIZE);
-         this.notifyPropertyChange("thumb", this._thumb);
     }
 
     private decodeThumbAssetUri(): void {

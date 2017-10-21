@@ -117,7 +117,6 @@ export class Album extends data_observable.Observable {
     private _imagePicker: ImagePicker;
     private _assets: data_observablearray.ObservableArray<Asset>;
     private _title: string;
-    private _thumb: image_source.ImageSource;
     private _thumbAsset: imageAssetModule.ImageAsset;
 
     constructor(imagePicker: ImagePicker, title: string) {
@@ -137,11 +136,6 @@ export class Album extends data_observable.Observable {
 
     get assets(): data_observablearray.ObservableArray<Asset> {
         return this._assets;
-    }
-
-    protected setThumb(value: image_source.ImageSource): void {
-        this._thumb = value;
-        this.notifyPropertyChange("thumb", value);
     }
 
     get thumbAsset(): imageAssetModule.ImageAsset {
@@ -176,9 +170,7 @@ export class Asset extends SelectedAsset {
     private _selected: boolean;
     private _album: Album;
 
-    private _thumb: image_source.ImageSource;
     private _image: image_source.ImageSource;
-    private _thumbRequested: boolean;
 
     constructor(album: Album, asset: PHAsset | UIImage) {
         super(asset);
@@ -223,14 +215,6 @@ export class Asset extends SelectedAsset {
 
     data(): Promise<any> {
         return Promise.reject(new Error("Not implemented."));
-    }
-
-    protected setThumb(value: image_source.ImageSource): void {
-        this._thumb = value;
-        this.notifyPropertyChange("thumb", this._thumb);
-    }
-
-    protected onThumbRequest(): void {
     }
 }
 
@@ -293,15 +277,6 @@ class ImagePickerPH extends ImagePicker {
         if (album.assets.length > 0) {
             this.albums.push(album);
         }
-    }
-
-    createPHImageThumb(target, asset: PHAsset): void {
-        PHImageManager.defaultManager().requestImageForAssetTargetSizeContentModeOptionsResultHandler(asset, this._thumbRequestSize, PHImageContentMode.AspectFill,
-            this._thumbRequestOptions, function (target, uiImage, info) {
-                let imageSource = new image_source.ImageSource();
-                imageSource.setNativeSource(uiImage);
-                target.setThumb(imageSource);
-            }.bind(this, target));
     }
 
     createPHImageThumbAsset(target, asset: PHAsset): void {
@@ -408,7 +383,6 @@ class AlbumPH extends Album {
 
         if (!this._setThumb && imagePicker) {
             this._setThumb = true;
-            imagePicker.createPHImageThumb(this, asset);
             imagePicker.createPHImageThumbAsset(this, asset);
 
         }
@@ -435,11 +409,6 @@ class AssetPH extends Asset {
      */
     public get ios(): any {
         return this._phAsset;
-    }
-
-    protected onThumbRequest(): void {
-        super.onThumbRequest();
-        (<ImagePickerPH>(<AlbumPH>this.album).imagePicker).createPHImageThumb(this, this._phAsset);
     }
 
     get uri(): string {
