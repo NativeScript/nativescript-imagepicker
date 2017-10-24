@@ -14,7 +14,7 @@ matrix:
       before_script:
         - cd ../demo && tns platform add ios@next
         - cd ../demo-angular && tns platform add ios@next
-      script: cd ../demo && npm run build.plugin && npm i && npm run build-ios-bundle && cd ../demo-angular && npm i && npm run build-ios-bundle
+      script: cd ../demo && npm run build.plugin && npm i && npm run ns-bundle --ios --build-app --uglify && cd ../demo-angular && npm i && npm run ns-bundle --ios --build-app --uglify
     - language: android
       os: linux
       env:
@@ -24,7 +24,7 @@ matrix:
       before_script:
         - cd ../demo && tns platform add android@next
         - cd ../demo-angular && tns platform add android@next
-      script: cd ../demo && npm run build.plugin && npm i && npm run build-android-bundle && cd ../demo-angular && npm i && npm run build-android-bundle
+      script: cd ../demo && npm run build.plugin && npm i && npm run ns-bundle --android --build-app --uglify --snapshot && cd ../demo-angular && npm i && npm run ns-bundle --android --build-app --uglify --snapshot
     - os: linux
       env: 
         - Android="25"
