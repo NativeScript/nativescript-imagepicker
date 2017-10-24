@@ -103,7 +103,7 @@ interface Options {
          * Provide a reason for permission request to access external storage on api levels above 23.
          */
         read_external_storage?: string;
-    }
+    };
 
     /**
      * Indicates images should be sorted newest-first (iOS only, default false).
