@@ -208,12 +208,16 @@ export class SelectedAsset extends imageAssetModule.ImageAsset {
             // TODO: Refactor to accomodate different scaling options
             //       Right now, it just selects the smallest of the two sizes
             //       and scales the image proportionally to that.
-            let targetSize = options.maxWidth < options.maxHeight ? options.maxWidth : options.maxHeight;
-            while (!(this.matchesSize(targetSize, outWidth) ||
-                this.matchesSize(targetSize, outHeight))) {
-                outWidth /= 2;
-                outHeight /= 2;
-                scale *= 2;
+            let targetSize = !options.maxWidth && options.maxHeight ? options.maxHeight :
+                (!options.maxHeight && options.maxWidth ? options.maxWidth :
+                    (options.maxWidth < options.maxHeight ? options.maxWidth : options.maxHeight));
+            if (targetSize) {
+                while (!(this.matchesSize(targetSize, outWidth) ||
+                    this.matchesSize(targetSize, outHeight))) {
+                    outWidth /= 2;
+                    outHeight /= 2;
+                    scale *= 2;
+                }
             }
         }
         return scale;
