@@ -17,6 +17,9 @@ In Command prompt / Terminal navigate to your application root folder and run:
 tns plugin add nativescript-imagepicker
 ```
 
+## Configuration
+No additional configuration required!
+
 ## Usage 
 
 The best way to explore the usage of the plugin is to inspect both demo apps in the plugin repository. 
