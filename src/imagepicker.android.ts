@@ -18,8 +18,6 @@ let StaticArrayBuffer = <ArrayBufferStatic>ArrayBuffer;
 
 export class SelectedAsset extends imageAssetModule.ImageAsset {
     private _uri: android.net.Uri;
-    private _thumb: imagesource.ImageSource;
-    private _thumbRequested: boolean;
     private _thumbAsset: imageAssetModule.ImageAsset;
     private _fileUri: string;
     private _data: ArrayBuffer;
@@ -27,7 +25,6 @@ export class SelectedAsset extends imageAssetModule.ImageAsset {
     constructor(uri: android.net.Uri) {
         super(SelectedAsset._calculateFileUri(uri));
         this._uri = uri;
-        this._thumbRequested = false;
     }
 
     data(): Promise<any> {
@@ -56,14 +53,6 @@ export class SelectedAsset extends imageAssetModule.ImageAsset {
                 reject(ex);
             }
         });
-    }
-
-    // [Deprecated. Please use thumbAsset instead.]
-    get thumb(): imagesource.ImageSource {
-        if (!this._thumbRequested) {
-            this.decodeThumbUri();
-        }
-        return this._thumb;
     }
 
     get thumbAsset(): imageAssetModule.ImageAsset {
@@ -188,18 +177,6 @@ export class SelectedAsset extends imageAssetModule.ImageAsset {
         return "com.android.providers.media.documents" === uri.getAuthority();
     }
 
-    private decodeThumbUri(): void {
-        // Decode image size
-        let REQUIRED_SIZE = {
-            maxWidth: 100,
-            maxHeight: 100
-        };
-
-        // Decode with scale
-         this._thumb = this.decodeUri(this._uri, REQUIRED_SIZE);
-         this.notifyPropertyChange("thumb", this._thumb);
-    }
-
     private decodeThumbAssetUri(): void {
         // Decode image size
         let REQUIRED_SIZE = {
@@ -231,12 +208,16 @@ export class SelectedAsset extends imageAssetModule.ImageAsset {
             // TODO: Refactor to accomodate different scaling options
             //       Right now, it just selects the smallest of the two sizes
             //       and scales the image proportionally to that.
-            let targetSize = options.maxWidth < options.maxHeight ? options.maxWidth : options.maxHeight;
-            while (!(this.matchesSize(targetSize, outWidth) ||
-                this.matchesSize(targetSize, outHeight))) {
-                outWidth /= 2;
-                outHeight /= 2;
-                scale *= 2;
+            let targetSize = !options.maxWidth && options.maxHeight ? options.maxHeight :
+                (!options.maxHeight && options.maxWidth ? options.maxWidth :
+                    (options.maxWidth < options.maxHeight ? options.maxWidth : options.maxHeight));
+            if (targetSize) {
+                while (!(this.matchesSize(targetSize, outWidth) ||
+                    this.matchesSize(targetSize, outHeight))) {
+                    outWidth /= 2;
+                    outHeight /= 2;
+                    scale *= 2;
+                }
             }
         }
         return scale;

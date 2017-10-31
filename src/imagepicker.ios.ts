@@ -19,6 +19,7 @@ const IMAGE_HEIGHT = 80;
 interface ImageOptions {
     maxWidth?: number;
     maxHeight?: number;
+    aspectRatio?: "fill" | "fit";
 }
 
 export function create(options?): ImagePicker {
@@ -116,7 +117,6 @@ export class Album extends data_observable.Observable {
     private _imagePicker: ImagePicker;
     private _assets: data_observablearray.ObservableArray<Asset>;
     private _title: string;
-    private _thumb: image_source.ImageSource;
     private _thumbAsset: imageAssetModule.ImageAsset;
 
     constructor(imagePicker: ImagePicker, title: string) {
@@ -138,16 +138,6 @@ export class Album extends data_observable.Observable {
         return this._assets;
     }
 
-    // [Deprecated. Please use thumbAsset instead.]
-    get thumb(): image_source.ImageSource {
-        return this._thumb;
-    }
-
-    protected setThumb(value: image_source.ImageSource): void {
-        this._thumb = value;
-        this.notifyPropertyChange("thumb", value);
-    }
-
     get thumbAsset(): imageAssetModule.ImageAsset {
         return this._thumbAsset;
     }
@@ -159,11 +149,6 @@ export class Album extends data_observable.Observable {
 }
 
 export class SelectedAsset extends imageAssetModule.ImageAsset {
-    // [Deprecated. SelectedAsset will be used directly as a source for the thumb image]
-    get thumb(): image_source.ImageSource {
-        return null;
-    }
-
     get uri(): string {
         return null;
     }
@@ -185,9 +170,7 @@ export class Asset extends SelectedAsset {
     private _selected: boolean;
     private _album: Album;
 
-    private _thumb: image_source.ImageSource;
     private _image: image_source.ImageSource;
-    private _thumbRequested: boolean;
 
     constructor(album: Album, asset: PHAsset | UIImage) {
         super(asset);
@@ -197,15 +180,6 @@ export class Asset extends SelectedAsset {
 
     get album(): Album {
         return this._album;
-    }
-
-    // [Deprecated. Asset will be used directly as a source for the thumb image]
-    get thumb(): image_source.ImageSource {
-        if (!this._thumbRequested) {
-            this._thumbRequested = true;
-            this.onThumbRequest();
-        }
-        return this._thumb;
     }
 
     get selected(): boolean {
@@ -242,14 +216,6 @@ export class Asset extends SelectedAsset {
     data(): Promise<any> {
         return Promise.reject(new Error("Not implemented."));
     }
-
-    protected setThumb(value: image_source.ImageSource): void {
-        this._thumb = value;
-        this.notifyPropertyChange("thumb", this._thumb);
-    }
-
-    protected onThumbRequest(): void {
-    }
 }
 
 // iOS8+ Photo framework based view model implementation...
@@ -266,6 +232,7 @@ class ImagePickerPH extends ImagePicker {
         this._thumbRequestOptions.resizeMode = PHImageRequestOptionsResizeMode.Exact;
         this._thumbRequestOptions.synchronous = false;
         this._thumbRequestOptions.deliveryMode = PHImageRequestOptionsDeliveryMode.Opportunistic;
+        this._thumbRequestOptions.networkAccessAllowed = true; // needed for retrieving iCloud images
         this._thumbRequestOptions.normalizedCropRect = CGRectMake(0, 0, 1, 1);
 
         this._thumbRequestSize = CGSizeMake(80, 80);
@@ -312,15 +279,6 @@ class ImagePickerPH extends ImagePicker {
         }
     }
 
-    createPHImageThumb(target, asset: PHAsset): void {
-        PHImageManager.defaultManager().requestImageForAssetTargetSizeContentModeOptionsResultHandler(asset, this._thumbRequestSize, PHImageContentMode.AspectFill,
-            this._thumbRequestOptions, function (target, uiImage, info) {
-                let imageSource = new image_source.ImageSource();
-                imageSource.setNativeSource(uiImage);
-                target.setThumb(imageSource);
-            }.bind(this, target));
-    }
-
     createPHImageThumbAsset(target, asset: PHAsset): void {
         PHImageManager.defaultManager().requestImageForAssetTargetSizeContentModeOptionsResultHandler(asset, this._thumbRequestSize, PHImageContentMode.AspectFill,
             this._thumbRequestOptions, function (target, uiImage, info) {
@@ -343,6 +301,7 @@ class ImagePickerPH extends ImagePicker {
         return new Promise<image_source.ImageSource>((resolve, reject) => {
             let size: CGSize = options ? CGSizeMake(options.maxWidth, options.maxHeight) : PHImageManagerMaximumSize;
             let resizeMode = PHImageRequestOptions.alloc().init();
+            let aspectRatio = (options && options.aspectRatio && options.aspectRatio === 'fill') ? PHImageContentMode.AspectFill : PHImageContentMode.AspectFit;
 
             // TODO: Decide whether it is benefical to use PHImageRequestOptionsResizeModeFast
             //       Accuracy vs Performance. It is probably best to expose these as iOS specific options.
@@ -356,7 +315,7 @@ class ImagePickerPH extends ImagePicker {
             PHImageManager.defaultManager().requestImageForAssetTargetSizeContentModeOptionsResultHandler(
                 image,
                 size,
-                PHImageContentMode.AspectFill,
+                aspectRatio,
                 resizeMode,
                 (createdImage, data) => {
                     if (createdImage) {
@@ -424,7 +383,6 @@ class AlbumPH extends Album {
 
         if (!this._setThumb && imagePicker) {
             this._setThumb = true;
-            imagePicker.createPHImageThumb(this, asset);
             imagePicker.createPHImageThumbAsset(this, asset);
 
         }
@@ -451,11 +409,6 @@ class AssetPH extends Asset {
      */
     public get ios(): any {
         return this._phAsset;
-    }
-
-    protected onThumbRequest(): void {
-        super.onThumbRequest();
-        (<ImagePickerPH>(<AlbumPH>this.album).imagePicker).createPHImageThumb(this, this._phAsset);
     }
 
     get uri(): string {

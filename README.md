@@ -17,6 +17,9 @@ In Command prompt / Terminal navigate to your application root folder and run:
 tns plugin add nativescript-imagepicker
 ```
 
+## Configuration
+No additional configuration required!
+
 ## Usage 
 
 The best way to explore the usage of the plugin is to inspect both demo apps in the plugin repository. 
@@ -101,6 +104,16 @@ context
 | selection | null | An array of selected image assets. |
 | albums | null | Albums from where the images are picked. |
 
+
+### Image properties
+
+Once image is picked some options can be applied to it  before it is used:
+
+| Option | Default | Description |
+| --- | --- | --- |
+| maxWidth | null | Image max width |
+| maxHeight | null | Image max height |
+| aspectRatio | fit | iOS only. Possible values are `fit` and `fill`. [Read more](https://developer.apple.com/documentation/photos/phimagecontentmode) |
 
 ## License
 
