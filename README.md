@@ -20,6 +20,11 @@ tns plugin add nativescript-imagepicker
 ## Configuration
 No additional configuration required!
 
+## Migrating from 3.x.x to 4.x.x
+With the **4.x.x** major update to the plugin there is a related dependency which needs to be updated inside your project. The plugin uses internally the `nativescript-pro-ui` plugin (previously known as `nativescript-telerik-ui`) which has bee updated and made 100% free. This means that if your project is using the deprecated `nativescript-telerik-ui`/`pro` plugins adding the latest version of the `nativescript-imagepicker` plugin will cause your project to throw an build error when working with iOS. This is because the `nativescript-imagepicker` has a dependency to the new `nativescript-pro-ui` plugin and when your project also depends on the old `nativescript-telerik-ui` plugin there is a native frameworks collision.
+
+In order to solve this you simply have to update to the latest `nativescript-pro-ui`, more details on how to migrate from `nativescript-telerik-ui`/`pro` to `nativescript-pro-ui` can be found [here](http://docs.telerik.com/devtools/nativescript-ui/migration).
+
 ## Usage 
 
 The best way to explore the usage of the plugin is to inspect both demo apps in the plugin repository. 
