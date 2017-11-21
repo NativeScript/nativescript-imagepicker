@@ -13,6 +13,13 @@
                 "appium-version": "1.7.1",
                 "noReset": true
         },
+        "android25": {
+                "platformName": "Android",
+                "platformVersion": "7.1",
+                "deviceName": "Android GoogleAPI Emulator",
+                "appium-version": "1.7.1",
+                "noReset": true
+        },
         "sim11iPhone6": {
                 "platformName": "iOS",
                 "platformVersion": "11.0",
