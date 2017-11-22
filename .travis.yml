@@ -61,7 +61,6 @@ matrix:
       os: linux
       node_js: "6"
       script:
-        - export ANDROID_HOME=/home/travis/Library/Android/sdk #temporary fix until dev-appium new version is released
         - npm i -g appium
         - cd demo && npm i
         - travis_retry npm run e2e -- --runType android23 --sauceLab --appPath $ANDROID_PACKAGE
@@ -71,7 +70,6 @@ matrix:
       language: node_js 
       node_js: "6"
       script: 
-        - export ANDROID_HOME=/home/travis/Library/Android/sdk #temporary fix until dev-appium new version is released
         - npm i -g appium
         - cd demo && npm i
         - travis_wait travis_retry npm run e2e -- --runType sim11iPhone6 --sauceLab --appPath $IOS_PACKAGE
