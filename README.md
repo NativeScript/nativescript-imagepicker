@@ -97,7 +97,7 @@ context
 | albumsText | iOS | Albums | The title of the "Albums" screen from where the selection of album and images can be done. |
 | newestFirst | iOS | false | Set to `true` to sort the images in an album by newest first. |
 
-* authorize() - request iOS specific permissions.
+* authorize() - request the required permissions.
 * present() - show the albums to present the user the ability to select images. Returns an array of the selected images.
 * cancel() - cancel selection. iOS only.
 * done() - confirm the selection is ready. iOS only.

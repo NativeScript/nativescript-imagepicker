@@ -23,9 +23,7 @@ interface ImageOptions {
 }
 
 export function create(options?): ImagePicker {
-    if (true /* TODO: iOS8+, consider implementation for iOS7. */) {
-        return new ImagePickerPH(options);
-    }
+    return new ImagePickerPH(options);
 }
 
 export class ImagePicker extends data_observable.Observable {
@@ -80,7 +78,7 @@ export class ImagePicker extends data_observable.Observable {
     }
 
     get albumsText(): string {
-        return this._options && this._options.albumsText ? this._options.albumsText :  "Albums";
+        return this._options && this._options.albumsText ? this._options.albumsText : "Albums";
     }
 
     get mode(): string {
