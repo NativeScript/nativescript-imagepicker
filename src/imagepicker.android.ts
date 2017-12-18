@@ -356,7 +356,8 @@ export class ImagePicker {
                 }
             }
 
-            let intent = new android.content.Intent();
+            let Intent = android.content.Intent;
+            let intent = new Intent();
             intent.setType("image/*");
 
             // TODO: Use (<any>android).content.Intent.EXTRA_ALLOW_MULTIPLE
@@ -364,9 +365,9 @@ export class ImagePicker {
                 intent.putExtra("android.intent.extra.ALLOW_MULTIPLE", true);
             }
 
-            intent.setAction(android.content.Intent.ACTION_GET_CONTENT);
+            intent.setAction(Intent.ACTION_GET_CONTENT);
 
-            let chooser = android.content.Intent.createChooser(intent, "Select Picture");
+            let chooser = Intent.createChooser(intent, "Select Picture");
             application.android.foregroundActivity.startActivityForResult(intent, RESULT_CODE_PICKER_IMAGES);
         });
     }
