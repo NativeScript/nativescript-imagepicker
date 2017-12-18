@@ -69,7 +69,7 @@ export class ImagePicker {
 
     /**
      * Present the image picker UI.
-     * The result will be an array of SelectedAsset instances provided when the promise is fulfiled.
+     * The result will be an array of SelectedAsset instances provided when the promise is fulfilled.
      */
     present(): Promise<SelectedAsset[]>;
 }

@@ -6,7 +6,6 @@ const isSauceRun = isSauceLab;
 const isAndroid: string = runType.includes("android");
 
 describe("Imagepicker", async function () {
-    const imagesFolderName = "Images";
     const imagesFolderNameIos = "Camera Roll";
     const doneButtonText = "Done";
     let driver: AppiumDriver;
@@ -41,14 +40,7 @@ describe("Imagepicker", async function () {
         const confirmButton = await driver.findElementByText(confirmButtonText);
         await confirmButton.click();
 
-        if (isAndroid) {
-            if (isSauceRun) {
-                const imagesFolder = await driver.findElementByText(imagesFolderName);
-                await imagesFolder.click();
-                const downloadFolder = await driver.findElementByClassName(driver.locators.image);
-                await downloadFolder.click();
-            }
-        } else {
+        if (!isAndroid) {
             const cameraRollFolder = await driver.findElementByText(imagesFolderNameIos);
             await cameraRollFolder.click();
         }
@@ -66,7 +58,7 @@ describe("Imagepicker", async function () {
     });
 
     it("should pick multiple images", async function () {
-        let openImagesButtonText = isAndroid ? "Sort by" : doneButtonText;
+        let openImagesButtonText = isAndroid ? "Open" : doneButtonText;
         let uploadPicVerification;
         if (isAndroid) {
             uploadPicVerification = isSauceRun ? "sauce_logo_red.png" : "pic2.jpeg";
@@ -75,7 +67,7 @@ describe("Imagepicker", async function () {
         }
         let uploadPicVerification2;
         if (isAndroid) {
-            uploadPicVerification2 = isSauceRun ? "saucelabs_sauce.png" : "pic3.jpeg";
+            uploadPicVerification2 = isSauceRun ? "sauce_logo.png" : "pic3.jpeg";
         } else {
             uploadPicVerification2 = "IMG_0002.JPG";
         }
