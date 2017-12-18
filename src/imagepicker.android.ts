@@ -9,13 +9,6 @@ interface ArrayBufferStatic extends ArrayBufferConstructor {
     from(buffer: java.nio.ByteBuffer): ArrayBuffer;
 }
 
-let Intent = android.content.Intent;
-let Activity = android.app.Activity;
-let MediaStore = android.provider.MediaStore;
-let DocumentsContract = (<any>android.provider).DocumentsContract;
-let BitmapFactory = android.graphics.BitmapFactory;
-let StaticArrayBuffer = <ArrayBufferStatic>ArrayBuffer;
-
 export class SelectedAsset extends imageAssetModule.ImageAsset {
     private _uri: android.net.Uri;
     private _thumbAsset: imageAssetModule.ImageAsset;
@@ -46,7 +39,7 @@ export class SelectedAsset extends imageAssetModule.ImageAsset {
             try {
                 if (!this._data) {
                     let bb = this.getByteBuffer(this._uri);
-                    this._data = StaticArrayBuffer.from(bb);
+                    this._data = (<ArrayBufferStatic>ArrayBuffer).from(bb);
                 }
                 resolve(this._data);
             } catch (ex) {
@@ -76,6 +69,7 @@ export class SelectedAsset extends imageAssetModule.ImageAsset {
     }
 
     private static _calculateFileUri(uri: android.net.Uri) {
+        let DocumentsContract = (<any>android.provider).DocumentsContract;
         let isKitKat = android.os.Build.VERSION.SDK_INT >= 19; // android.os.Build.VERSION_CODES.KITKAT
 
         if (isKitKat && DocumentsContract.isDocumentUri(application.android.context, uri)) {
@@ -110,11 +104,11 @@ export class SelectedAsset extends imageAssetModule.ImageAsset {
                 id = split[1];
 
                 if ("image" === type) {
-                    contentUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+                    contentUri = android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
                 } else if ("video" === type) {
-                    contentUri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
+                    contentUri = android.provider.MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
                 } else if ("audio" === type) {
-                    contentUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
+                    contentUri = android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
                 }
 
                 let selection = "_id=?";
@@ -140,7 +134,7 @@ export class SelectedAsset extends imageAssetModule.ImageAsset {
     private static getDataColumn(uri: android.net.Uri, selection, selectionArgs) {
 
         let cursor = null;
-        let columns = [MediaStore.MediaColumns.DATA];
+        let columns = [android.provider.MediaStore.MediaColumns.DATA];
         let filePath;
 
         try {
@@ -196,9 +190,9 @@ export class SelectedAsset extends imageAssetModule.ImageAsset {
      * @param options The options that should be used to produce the correct image scale.
      */
     private getSampleSize(uri: android.net.Uri, options?: { maxWidth: number, maxHeight: number }): number {
-        let boundsOptions = new BitmapFactory.Options();
+        let boundsOptions = new android.graphics.BitmapFactory.Options();
         boundsOptions.inJustDecodeBounds = true;
-        BitmapFactory.decodeStream(this.openInputStream(uri), null, boundsOptions);
+        android.graphics.BitmapFactory.decodeStream(this.openInputStream(uri), null, boundsOptions);
 
         // Find the correct scale value. It should be the power of 2.
         let outWidth = boundsOptions.outWidth;
@@ -233,9 +227,9 @@ export class SelectedAsset extends imageAssetModule.ImageAsset {
      * @param options The options that should be used to decode the image.
      */
     private decodeUri(uri: android.net.Uri, options?: { maxWidth: number, maxHeight: number }): imagesource.ImageSource {
-        let downsampleOptions = new BitmapFactory.Options();
+        let downsampleOptions = new android.graphics.BitmapFactory.Options();
         downsampleOptions.inSampleSize = this.getSampleSize(uri, options);
-        let bitmap = BitmapFactory.decodeStream(this.openInputStream(uri), null, downsampleOptions);
+        let bitmap = android.graphics.BitmapFactory.decodeStream(this.openInputStream(uri), null, downsampleOptions);
         let image = new imagesource.ImageSource();
         image.setNativeSource(bitmap);
         return image;
@@ -322,7 +316,7 @@ export class ImagePicker {
                 let data = args.intent;
 
                 if (requestCode === RESULT_CODE_PICKER_IMAGES) {
-                    if (resultCode === Activity.RESULT_OK) {
+                    if (resultCode === android.app.Activity.RESULT_OK) {
 
                         try {
                             let results = [];
@@ -362,7 +356,7 @@ export class ImagePicker {
                 }
             }
 
-            let intent = new Intent();
+            let intent = new android.content.Intent();
             intent.setType("image/*");
 
             // TODO: Use (<any>android).content.Intent.EXTRA_ALLOW_MULTIPLE
@@ -370,9 +364,9 @@ export class ImagePicker {
                 intent.putExtra("android.intent.extra.ALLOW_MULTIPLE", true);
             }
 
-            intent.setAction(Intent.ACTION_GET_CONTENT);
+            intent.setAction(android.content.Intent.ACTION_GET_CONTENT);
 
-            let chooser = Intent.createChooser(intent, "Select Picture");
+            let chooser = android.content.Intent.createChooser(intent, "Select Picture");
             application.android.foregroundActivity.startActivityForResult(intent, RESULT_CODE_PICKER_IMAGES);
         });
     }
