@@ -241,9 +241,9 @@ export class SelectedAsset extends imageAssetModule.ImageAsset {
      * @param options The options that should be used to decode the image.
      */
     private decodeUriForImageAsset(uri: android.net.Uri, options?: { maxWidth: number, maxHeight: number }): imageAssetModule.ImageAsset {
-        let downsampleOptions = new BitmapFactory.Options();
+        let downsampleOptions = new android.graphics.BitmapFactory.Options();
         downsampleOptions.inSampleSize = this.getSampleSize(uri, options);
-        let bitmap = BitmapFactory.decodeStream(this.openInputStream(uri), null, downsampleOptions);
+        let bitmap = android.graphics.BitmapFactory.decodeStream(this.openInputStream(uri), null, downsampleOptions);
         return new imageAssetModule.ImageAsset(bitmap);
     }
 
