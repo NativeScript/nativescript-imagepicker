@@ -70,7 +70,7 @@ matrix:
       node_js: "6"
       script:
         - npm i -g appium
-        - cd demo && npm i
+        - cd ../demo && npm i
         - travis_retry npm run e2e -- --runType android23 --sauceLab --appPath $ANDROID_PACKAGE_NEXT
     - os: linux
       env: 
@@ -79,7 +79,7 @@ matrix:
       node_js: "6"
       script: 
         - npm i -g appium
-        - cd demo && npm i
+        - cd ../demo && npm i
         - travis_wait travis_retry npm run e2e -- --runType sim11iPhone6 --sauceLab --appPath $IOS_PACKAGE_NEXT
 
 android:
