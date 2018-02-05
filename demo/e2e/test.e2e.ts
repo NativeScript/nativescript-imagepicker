@@ -9,6 +9,7 @@ describe("Imagepicker", async function () {
     const imagesFolderName = "Images";
     const imagesFolderNameIos = "Camera Roll";
     const doneButtonText = "Done";
+    let isOlderEmulator;
     let driver: AppiumDriver;
 
     before(async () => {
@@ -27,6 +28,7 @@ describe("Imagepicker", async function () {
     });
 
     it("should pick one image", async function () {
+        //await driver.driver.resetApp();
         const pickSingleButtonText = "Pick Single";
         let confirmButtonText = isAndroid ? "Allow" : "OK";
         let uploadPicVerification;
@@ -40,10 +42,14 @@ describe("Imagepicker", async function () {
         await pickSingleButton.click();
         const confirmButton = await driver.findElementByText(confirmButtonText);
         await confirmButton.click();
-
+        
         if (isAndroid) {
-            if (isSauceRun) {
-                const imagesFolder = await driver.findElementByText(imagesFolderName);
+            var imagesFolderXpath = await driver.elementHelper.getXPathByText(imagesFolderName, SearchOptions.contains);
+            await driver.driver.sleep(3000);
+            const imagesFolder = await driver.driver.elementByXPathIfExists(imagesFolderXpath, 10000);
+
+            if (isSauceRun && imagesFolder) {
+                isOlderEmulator = true;
                 await imagesFolder.click();
                 const downloadFolder = await driver.findElementByClassName(driver.locators.image);
                 await downloadFolder.click();
@@ -52,7 +58,7 @@ describe("Imagepicker", async function () {
             const cameraRollFolder = await driver.findElementByText(imagesFolderNameIos);
             await cameraRollFolder.click();
         }
-
+        
         const pickedImage = await driver.findElementByClassName(driver.locators.image);
         await pickedImage.click();
 
@@ -68,17 +74,16 @@ describe("Imagepicker", async function () {
     it("should pick multiple images", async function () {
         let openImagesButtonText = isAndroid ? "Open" : doneButtonText;
         let uploadPicVerification;
+        let uploadPicVerification2;
+
         if (isAndroid) {
             uploadPicVerification = isSauceRun ? "sauce_logo_red.png" : "pic2.jpeg";
+            uploadPicVerification2 = isSauceRun ? "sauce_logo.png" : "pic3.jpeg";
         } else {
             uploadPicVerification = "IMG_0001.JPG";
-        }
-        let uploadPicVerification2;
-        if (isAndroid) {
-            uploadPicVerification2 = isSauceRun ? "saucelabs_sauce.png" : "pic3.jpeg";
-        } else {
             uploadPicVerification2 = "IMG_0002.JPG";
         }
+
         const pickMultipleButtonText = "Pick Multiple";
         const pickMultipleButton = await driver.findElementByText(pickMultipleButtonText, SearchOptions.contains);
         await pickMultipleButton.click();
@@ -102,6 +107,11 @@ describe("Imagepicker", async function () {
         await openImagesButton.click();
         const img = await driver.findElementByText(uploadPicVerification, SearchOptions.contains);
         expect(img).to.exist;
+
+        if(isOlderEmulator){
+            uploadPicVerification2 = "saucelabs_sauce.png";
+        }
+
         const img1 = await driver.findElementByText(uploadPicVerification2, SearchOptions.contains);
         expect(img1).to.exist;
     });
