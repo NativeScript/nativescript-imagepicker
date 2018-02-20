@@ -28,6 +28,8 @@
         "plugin.tscwatch": "npm run tsc -- -w",
         "demo.ios": "npm i && npm run tsc && cd ../demo && tns run ios --syncAllFiles",
         "demo.android": "npm i && npm run tsc && cd ../demo && tns run android --syncAllFiles",
+        "demo.ng.ios": "npm i && npm run tsc && cd ../demo-angular && tns run ios --syncAllFiles",
+        "demo.ng.android": "npm i && npm run tsc && cd ../demo-angular && tns run android --syncAllFiles",
         "clean": "rm -rf node_modules && cd ../demo && rm -rf hooks node_modules platforms && cd ../src && npm run plugin.link"
     },
     "keywords": [
