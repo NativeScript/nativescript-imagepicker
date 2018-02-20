@@ -4,10 +4,6 @@
 
 - [Prerequisites](#prerequisites)
 - [Develop locally](#develop-locally)
-- [Run locally](#run-locally)
-    - [Install dependencies](#install-dependencies)
-    - [Transpile TypeScript](#transpile-typescript)
-    - [Run any of the demo apps](#run-any-of-the-demo-apps)
 - [Run UI Tests](#run-ui-tests)
 
 <!-- /TOC -->
@@ -15,7 +11,7 @@
 
 ## Prerequisites
 
-* Install your native toolchain and NativeScript as [described in the docs](https://docs.nativescript.org/plugins/plugins)
+* Install your native toolchain and NativeScript as [described in the docs](https://docs.nativescript.org/start/quick-setup)
 
 * Review [NativeScript plugins documentation](https://docs.nativescript.org/plugins/plugins) for more details on plugins development
 
@@ -24,12 +20,21 @@
 
 For local development we recommend using the npm commands provided in the plugin's package.json
 
-Basically executing the commands below will be enough for you to start making changes to the plugin and see them live synced in the demo:
+Basically executing a bunch of commands will be enough for you to start making changes to the plugin and see them live synced in the demo. It's up to you to decide which demo to use for development - TypeScript or TypeScript + Angular.
 
+
+To run and develop using TypeScript demo:
 ```bash
 $ cd nativescript-imagepicker/src
 $ npm run demo.ios
 $ npm run demo.android
+```
+
+To run and develop using TypeScript + Angular demo:
+```bash
+$ cd nativescript-imagepicker/src
+$ npm run demo.ng.ios
+$ npm run demo.ng.android
 ```
 
 After all the changes are done make sure to 
@@ -38,29 +43,6 @@ After all the changes are done make sure to
 
 For details on plugins development workflow, read [NativeScript plugins documentation](https://docs.nativescript.org/plugins/building-plugins#step-2-set-up-a-development-workflow) covering that topic.
 
-## Run locally
-
-### Install dependencies
-
-```
-$ cd nativescript-imagepicker/src
-$ npm install
-```
-
-### Transpile TypeScript
-```
-$ cd nativescript-imagepicker/src
-$ npm run tsc
-```
-
-### Run any of the demo apps
-
-The plugin has multiple demo apps added. To run any of them use the following commands:
-```
-$ cd nativescript-imagepicker/<demo-folder>
-$ tns run ios
-$ tns run android
-```
 
 ## Run UI Tests
 
