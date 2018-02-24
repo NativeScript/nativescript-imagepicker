@@ -1,6 +1,6 @@
-import observable = require("tns-core-modules/data/observable");
-import imagesource = require("tns-core-modules/image-source");
-import imageAssetModule = require("tns-core-modules/image-asset");
+import { Observable } from "tns-core-modules/data/observable";
+import { ImageSource } from "tns-core-modules/image-source";
+import { ImageAsset } from "tns-core-modules/image-asset";
 
 export interface ImageOptions {
     /**
@@ -12,16 +12,20 @@ export interface ImageOptions {
      * The maximum height that the image is allowed to be.
      */
     maxHeight?: number;
+
+    /**
+     * iOS only. The image aspect ratio. Default value: fit.
+     */
+    aspectRatio?: "fill" | "fit";
 }
 
-export class SelectedAsset extends imageAssetModule.ImageAsset {
+export class SelectedAsset extends ImageAsset {
     /**
-     * [Deprecated. SelectedAsset will be used directly as a source for the thumb image]
      * A 100x100 pixels thumb of the selected image.
      * This property will be initialized on demand. The first access will return undefined or null.
      * It will trigger an async load and when the thumb is obtained, a property changed notification will occur.
      */
-    thumb: imagesource.ImageSource;
+    thumb: ImageSource;
 
     /**
      * URI that identifies the image asset.
@@ -41,7 +45,7 @@ export class SelectedAsset extends imageAssetModule.ImageAsset {
      * Asynchronously retrieves an ImageSource object that represents this selected image.
      * Scaled to the given size. (Aspect-ratio is preserved by default)
      */
-    getImage(options?: ImageOptions): Promise<imagesource.ImageSource>;
+    getImage(options?: ImageOptions): Promise<ImageSource>;
 
     /**
      * Asynchronously retrieves an ArrayBuffer that represents the raw byte data from this selected image.
@@ -65,7 +69,7 @@ export class ImagePicker {
 
     /**
      * Present the image picker UI.
-     * The result will be an array of SelectedAsset instances provided when the promise is fulfiled.
+     * The result will be an array of SelectedAsset instances provided when the promise is fulfilled.
      */
     present(): Promise<SelectedAsset[]>;
 }
@@ -93,6 +97,18 @@ interface Options {
     * Set the text for the albums button in iOS
     */
     albumsText?: string;
+
+    android?: {
+        /**
+         * Provide a reason for permission request to access external storage on api levels above 23.
+         */
+        read_external_storage?: string;
+    };
+
+    /**
+     * Indicates images should be sorted newest-first (iOS only, default false).
+     */
+    newestFirst?: boolean;
 }
 
 export function create(options?: Options): ImagePicker;

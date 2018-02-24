@@ -1,6 +1,6 @@
 {
     "name": "nativescript-imagepicker",
-    "version": "3.0.4",
+    "version": "4.0.1",
     "description": "A plugin for the NativeScript framework implementing multiple image picker",
     "repository": {
         "type": "git",
@@ -16,7 +16,7 @@
     },
     "scripts": {
         "ngc": "node --max-old-space-size=8192 ./node_modules/.bin/ngc",
-        "build": "npm i && tsc", 
+        "build": "npm i && tsc",
         "prepublishOnly": "npm run build",
         "ci.tslint": "npm i && tslint '**/*.ts' --config '../tslint.json' --exclude '**/node_modules/**'",
         "tsc": "tsc -skipLibCheck",
@@ -28,8 +28,9 @@
         "plugin.tscwatch": "npm run tsc -- -w",
         "demo.ios": "npm i && npm run tsc && cd ../demo && tns run ios --syncAllFiles",
         "demo.android": "npm i && npm run tsc && cd ../demo && tns run android --syncAllFiles",
-        "clean": "rm -rf node_modules && cd ../demo && rm -rf hooks node_modules platforms && cd ../src && npm run plugin.link",
-        "postinstall": "node scripts/require-nativescript-telerik-ui.js"
+        "demo.ng.ios": "npm i && npm run tsc && cd ../demo-angular && tns run ios --syncAllFiles",
+        "demo.ng.android": "npm i && npm run tsc && cd ../demo-angular && tns run android --syncAllFiles",
+        "clean": "rm -rf node_modules && cd ../demo && rm -rf hooks node_modules platforms && cd ../src && npm run plugin.link"
     },
     "keywords": [
         "NativeScript",
@@ -45,13 +46,13 @@
     "homepage": "https://github.com/NativeScript/nativescript-imagepicker",
     "readmeFilename": "README.md",
     "devDependencies": {
-        "nativescript-telerik-ui": "^3.0.0",
         "tns-core-modules": "^3.1.0",
         "tns-platform-declarations": "^3.0.0",
         "typescript": "~2.3.0",
         "tslint": "~5.4.3"
     },
     "dependencies": {
+        "nativescript-ui-listview": "^3.5.0",
         "nativescript-permissions": "~1.2.3"
     },
     "bootstrapper": "nativescript-plugin-seed"

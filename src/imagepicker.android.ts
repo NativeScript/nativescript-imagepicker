@@ -9,17 +9,8 @@ interface ArrayBufferStatic extends ArrayBufferConstructor {
     from(buffer: java.nio.ByteBuffer): ArrayBuffer;
 }
 
-let Intent = android.content.Intent;
-let Activity = android.app.Activity;
-let MediaStore = android.provider.MediaStore;
-let DocumentsContract = (<any>android.provider).DocumentsContract;
-let BitmapFactory = android.graphics.BitmapFactory;
-let StaticArrayBuffer = <ArrayBufferStatic>ArrayBuffer;
-
 export class SelectedAsset extends imageAssetModule.ImageAsset {
     private _uri: android.net.Uri;
-    private _thumb: imagesource.ImageSource;
-    private _thumbRequested: boolean;
     private _thumbAsset: imageAssetModule.ImageAsset;
     private _fileUri: string;
     private _data: ArrayBuffer;
@@ -27,7 +18,6 @@ export class SelectedAsset extends imageAssetModule.ImageAsset {
     constructor(uri: android.net.Uri) {
         super(SelectedAsset._calculateFileUri(uri));
         this._uri = uri;
-        this._thumbRequested = false;
     }
 
     data(): Promise<any> {
@@ -49,21 +39,13 @@ export class SelectedAsset extends imageAssetModule.ImageAsset {
             try {
                 if (!this._data) {
                     let bb = this.getByteBuffer(this._uri);
-                    this._data = StaticArrayBuffer.from(bb);
+                    this._data = (<ArrayBufferStatic>ArrayBuffer).from(bb);
                 }
                 resolve(this._data);
             } catch (ex) {
                 reject(ex);
             }
         });
-    }
-
-    // [Deprecated. Please use thumbAsset instead.]
-    get thumb(): imagesource.ImageSource {
-        if (!this._thumbRequested) {
-            this.decodeThumbUri();
-        }
-        return this._thumb;
     }
 
     get thumbAsset(): imageAssetModule.ImageAsset {
@@ -87,6 +69,7 @@ export class SelectedAsset extends imageAssetModule.ImageAsset {
     }
 
     private static _calculateFileUri(uri: android.net.Uri) {
+        let DocumentsContract = (<any>android.provider).DocumentsContract;
         let isKitKat = android.os.Build.VERSION.SDK_INT >= 19; // android.os.Build.VERSION_CODES.KITKAT
 
         if (isKitKat && DocumentsContract.isDocumentUri(application.android.context, uri)) {
@@ -121,11 +104,11 @@ export class SelectedAsset extends imageAssetModule.ImageAsset {
                 id = split[1];
 
                 if ("image" === type) {
-                    contentUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+                    contentUri = android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
                 } else if ("video" === type) {
-                    contentUri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
+                    contentUri = android.provider.MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
                 } else if ("audio" === type) {
-                    contentUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
+                    contentUri = android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
                 }
 
                 let selection = "_id=?";
@@ -151,7 +134,7 @@ export class SelectedAsset extends imageAssetModule.ImageAsset {
     private static getDataColumn(uri: android.net.Uri, selection, selectionArgs) {
 
         let cursor = null;
-        let columns = [MediaStore.MediaColumns.DATA];
+        let columns = [android.provider.MediaStore.MediaColumns.DATA];
         let filePath;
 
         try {
@@ -188,18 +171,6 @@ export class SelectedAsset extends imageAssetModule.ImageAsset {
         return "com.android.providers.media.documents" === uri.getAuthority();
     }
 
-    private decodeThumbUri(): void {
-        // Decode image size
-        let REQUIRED_SIZE = {
-            maxWidth: 100,
-            maxHeight: 100
-        };
-
-        // Decode with scale
-         this._thumb = this.decodeUri(this._uri, REQUIRED_SIZE);
-         this.notifyPropertyChange("thumb", this._thumb);
-    }
-
     private decodeThumbAssetUri(): void {
         // Decode image size
         let REQUIRED_SIZE = {
@@ -219,9 +190,9 @@ export class SelectedAsset extends imageAssetModule.ImageAsset {
      * @param options The options that should be used to produce the correct image scale.
      */
     private getSampleSize(uri: android.net.Uri, options?: { maxWidth: number, maxHeight: number }): number {
-        let boundsOptions = new BitmapFactory.Options();
+        let boundsOptions = new android.graphics.BitmapFactory.Options();
         boundsOptions.inJustDecodeBounds = true;
-        BitmapFactory.decodeStream(this.openInputStream(uri), null, boundsOptions);
+        android.graphics.BitmapFactory.decodeStream(this.openInputStream(uri), null, boundsOptions);
 
         // Find the correct scale value. It should be the power of 2.
         let outWidth = boundsOptions.outWidth;
@@ -231,12 +202,16 @@ export class SelectedAsset extends imageAssetModule.ImageAsset {
             // TODO: Refactor to accomodate different scaling options
             //       Right now, it just selects the smallest of the two sizes
             //       and scales the image proportionally to that.
-            let targetSize = options.maxWidth < options.maxHeight ? options.maxWidth : options.maxHeight;
-            while (!(this.matchesSize(targetSize, outWidth) ||
-                this.matchesSize(targetSize, outHeight))) {
-                outWidth /= 2;
-                outHeight /= 2;
-                scale *= 2;
+            let targetSize = !options.maxWidth && options.maxHeight ? options.maxHeight :
+                (!options.maxHeight && options.maxWidth ? options.maxWidth :
+                    (options.maxWidth < options.maxHeight ? options.maxWidth : options.maxHeight));
+            if (targetSize) {
+                while (!(this.matchesSize(targetSize, outWidth) ||
+                    this.matchesSize(targetSize, outHeight))) {
+                    outWidth /= 2;
+                    outHeight /= 2;
+                    scale *= 2;
+                }
             }
         }
         return scale;
@@ -252,9 +227,9 @@ export class SelectedAsset extends imageAssetModule.ImageAsset {
      * @param options The options that should be used to decode the image.
      */
     private decodeUri(uri: android.net.Uri, options?: { maxWidth: number, maxHeight: number }): imagesource.ImageSource {
-        let downsampleOptions = new BitmapFactory.Options();
+        let downsampleOptions = new android.graphics.BitmapFactory.Options();
         downsampleOptions.inSampleSize = this.getSampleSize(uri, options);
-        let bitmap = BitmapFactory.decodeStream(this.openInputStream(uri), null, downsampleOptions);
+        let bitmap = android.graphics.BitmapFactory.decodeStream(this.openInputStream(uri), null, downsampleOptions);
         let image = new imagesource.ImageSource();
         image.setNativeSource(bitmap);
         return image;
@@ -266,9 +241,9 @@ export class SelectedAsset extends imageAssetModule.ImageAsset {
      * @param options The options that should be used to decode the image.
      */
     private decodeUriForImageAsset(uri: android.net.Uri, options?: { maxWidth: number, maxHeight: number }): imageAssetModule.ImageAsset {
-        let downsampleOptions = new BitmapFactory.Options();
+        let downsampleOptions = new android.graphics.BitmapFactory.Options();
         downsampleOptions.inSampleSize = this.getSampleSize(uri, options);
-        let bitmap = BitmapFactory.decodeStream(this.openInputStream(uri), null, downsampleOptions);
+        let bitmap = android.graphics.BitmapFactory.decodeStream(this.openInputStream(uri), null, downsampleOptions);
         return new imageAssetModule.ImageAsset(bitmap);
     }
 
@@ -341,7 +316,7 @@ export class ImagePicker {
                 let data = args.intent;
 
                 if (requestCode === RESULT_CODE_PICKER_IMAGES) {
-                    if (resultCode === Activity.RESULT_OK) {
+                    if (resultCode === android.app.Activity.RESULT_OK) {
 
                         try {
                             let results = [];
@@ -381,6 +356,7 @@ export class ImagePicker {
                 }
             }
 
+            let Intent = android.content.Intent;
             let intent = new Intent();
             intent.setType("image/*");
 

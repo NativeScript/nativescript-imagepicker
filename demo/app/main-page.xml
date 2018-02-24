@@ -12,6 +12,8 @@
                 </GridLayout>
             </ListView.itemTemplate>
         </ListView>
+
+        <Image id="imageSrc" width="200" height="200" />
         <Button row="1" text="Pick Single" tap="onSelectSingleTap" horizontalAlignment="center" />
         <Button row="2" text="Pick Multiple" tap="onSelectMultipleTap" horizontalAlignment="center" />
     </GridLayout>
