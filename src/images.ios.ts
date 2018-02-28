@@ -4,7 +4,7 @@ import platform = require("tns-core-modules/platform");
 import ui_frame = require("tns-core-modules/ui/frame");
 import { Page } from "tns-core-modules/ui/page";
 import { ActionBar, NavigationButton, ActionItems, ActionItem } from "tns-core-modules/ui/action-bar";
-import { RadListView, ListViewGridLayout } from "nativescript-pro-ui/listview";
+import { RadListView, ListViewGridLayout } from "nativescript-ui-listview";
 
 let page;
 let list;
