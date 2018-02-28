@@ -13,6 +13,7 @@ Imagepicker plugin supporting both single and multiple selection.
 
 - [Installation](#installation)
 - [Configuration](#configuration)
+- [Migrating from 4.x.x to 5.x.x](#migrating-from-4xx-to-5xx)
 - [Migrating from 3.x.x to 4.x.x](#migrating-from-3xx-to-4xx)
 - [Usage](#usage)
     - [Import the plugin](#import-the-plugin)
@@ -34,10 +35,14 @@ In Command prompt / Terminal navigate to your application root folder and run:
 
 ```
 tns plugin add nativescript-imagepicker
+tns run
 ```
 
 ## Configuration
 No additional configuration required!
+
+## Migrating from 4.x.x to 5.x.x
+With version **5.x.x** major update to the plugin there is a related dependency which needs to be updated inside your project. The plugin uses internally the `nativescript-ui-listview` plugin (part of the NativeScript Pro UI components). Recently the monolithic [NativeScript Pro UI plugin was split in multiple plugins](https://www.nativescript.org/blog/professional-components-from-nativescript-ui-the-big-breakup), each of them representing a single component. Now, instead of the monolithic package, nativescript-imagepicker uses only the component it needs. To use version 5.x.x of the plugin, you need to update any dependencies to `nativescript-pro-ui` in your project with the single component alternatives as described in the [migration guide](http://docs.telerik.com/devtools/nativescript-ui/migration).
 
 ## Migrating from 3.x.x to 4.x.x
 With the **4.x.x** major update to the plugin there is a related dependency which needs to be updated inside your project. The plugin uses internally the `nativescript-pro-ui` plugin (previously known as `nativescript-telerik-ui`) which has bee updated and made 100% free. This means that if your project is using the deprecated `nativescript-telerik-ui`/`pro` plugins adding the latest version of the `nativescript-imagepicker` plugin will cause your project to throw an build error when working with iOS. This is because the `nativescript-imagepicker` has a dependency to the new `nativescript-pro-ui` plugin and when your project also depends on the old `nativescript-telerik-ui` plugin there is a native frameworks collision.

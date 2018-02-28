@@ -1,6 +1,6 @@
 {
     "name": "nativescript-imagepicker",
-    "version": "4.0.1",
+    "version": "5.0.0",
     "description": "A plugin for the NativeScript framework implementing multiple image picker",
     "repository": {
         "type": "git",
@@ -16,7 +16,7 @@
     },
     "scripts": {
         "ngc": "node --max-old-space-size=8192 ./node_modules/.bin/ngc",
-        "build": "npm i && tsc", 
+        "build": "npm i && tsc",
         "prepublishOnly": "npm run build",
         "ci.tslint": "npm i && tslint '**/*.ts' --config '../tslint.json' --exclude '**/node_modules/**'",
         "tsc": "tsc -skipLibCheck",
@@ -47,12 +47,13 @@
     "readmeFilename": "README.md",
     "devDependencies": {
         "tns-core-modules": "^3.1.0",
-        "tns-platform-declarations": "^3.0.0",
-        "typescript": "~2.3.0",
+        "tns-platform-declarations": "^3.1.0",
+        "typescript": "~2.6.0",
         "tslint": "~5.4.3"
     },
     "dependencies": {
-        "nativescript-pro-ui": "^3.1.2",
+        "nativescript-ui-core": "^1.0.0",
+        "nativescript-ui-listview": "^3.5.0",
         "nativescript-permissions": "~1.2.3"
     },
     "bootstrapper": "nativescript-plugin-seed"

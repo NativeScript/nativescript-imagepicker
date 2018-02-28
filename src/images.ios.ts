@@ -4,7 +4,7 @@ import platform = require("tns-core-modules/platform");
 import ui_frame = require("tns-core-modules/ui/frame");
 import { Page } from "tns-core-modules/ui/page";
 import { ActionBar, NavigationButton, ActionItems, ActionItem } from "tns-core-modules/ui/action-bar";
-import { RadListView, ListViewGridLayout } from "nativescript-pro-ui/listview";
+import { RadListView, ListViewGridLayout } from "nativescript-ui-listview";
 
 let page;
 let list;
@@ -33,7 +33,7 @@ export function done(args) {
 }
 
 export function imagesPageFactory(): Page {
-    // <Page xmlns="http://www.nativescript.org/tns.xsd" loaded="pageLoaded" xmlns:lv="nativescript-pro-ui/listview">
+    // <Page xmlns="http://www.nativescript.org/tns.xsd" loaded="pageLoaded" xmlns:lv="nativescript-ui-listview">
     let page = new Page();
     page.on(Page.loadedEvent, pageLoaded);
 
