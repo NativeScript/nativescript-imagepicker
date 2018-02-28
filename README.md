@@ -35,7 +35,8 @@ In Command prompt / Terminal navigate to your application root folder and run:
 
 ```
 tns plugin add nativescript-imagepicker
-```tns run 
+tns run
+```
 
 ## Configuration
 No additional configuration required!
