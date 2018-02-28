@@ -33,7 +33,7 @@ export function done(args) {
 }
 
 export function imagesPageFactory(): Page {
-    // <Page xmlns="http://www.nativescript.org/tns.xsd" loaded="pageLoaded" xmlns:lv="nativescript-pro-ui/listview">
+    // <Page xmlns="http://www.nativescript.org/tns.xsd" loaded="pageLoaded" xmlns:lv="nativescript-ui-listview">
     let page = new Page();
     page.on(Page.loadedEvent, pageLoaded);
 
