@@ -1,8 +1,8 @@
 env:
   global:
-    - ANDROID_PACKAGE='imagepickerdemo-debug.apk'
+    - ANDROID_PACKAGE='app-debug.apk'
     - ANDROID_PACKAGE_NEXT='imagepickerdemo-debug-next.apk'
-    - ANDROID_PACKAGE_FOLDER=$TRAVIS_BUILD_DIR/demo/platforms/android/app/build/outputs/apk
+    - ANDROID_PACKAGE_FOLDER=$TRAVIS_BUILD_DIR/demo/platforms/android/app/build/outputs/apk/debug
     - ANDROID_SAUCE_STORAGE="https://saucelabs.com/rest/v1/storage/$SAUCE_USER/$ANDROID_PACKAGE_NEXT?overwrite=true"
     - IOS_PACKAGE_NEXT='imagepickerdemo-next.zip'
     - IOS_PACKAGE_FOLDER=$TRAVIS_BUILD_DIR/demo/platforms/ios/build/emulator
