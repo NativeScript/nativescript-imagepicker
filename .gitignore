@@ -2,7 +2,7 @@
 .idea
 .DS_Store
 *.js
-*§js.map
+*js.map
 *.log
 !src/scripts/*.js
 !seed-tests/*.js
