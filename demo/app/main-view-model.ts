@@ -48,25 +48,18 @@ export class MainViewModel extends Observable {
             .authorize()
             .then(() => {
                 this.imageAssets = [];
+                this.imageSrc = null;
                 return context.present();
             })
-            .then((selection) => {
+            .then((selection) => { // returns SelectedAsset[]
+                this.imageSrc = isSingle && selection.length > 0 ? selection[0] : null;
+                this.imageAssets = selection;
+
                 console.log("Selection done:");
                 selection.forEach((selected) => {
                     console.log("----------------");
                     console.log("uri: " + selected.uri);
-                    if (isSingle) {
-                        // selected.getImage({ maxWidth: 200, maxHeight: 200, aspectRatio: 'fill' })
-                        // .then((imageSource) => {
-                        //     imageSrc.src = imageSource;
-                        // });
-                        selected.options = { width: 200, height: 200 };
-                        this.imageSrc = selected;
-                    } else {
-                        this.imageSrc = null;
-                    }
                 });
-                this.imageAssets = selection;
             }).catch(function (e) {
                 console.log(e);
             });
