@@ -8,7 +8,7 @@ import { ActionBar, NavigationButton, ActionItems, ActionItem } from "tns-core-m
 import { ListView } from "tns-core-modules/ui/list-view";
 import { Label } from "tns-core-modules/ui/label";
 
-import { ImagePicker } from "./imagepicker.ios";
+// import { ImagePicker } from "./imagepicker.ios";
 
 let imagesModule;
 

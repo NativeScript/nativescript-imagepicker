@@ -1,3 +1,16 @@
+SelectedAsset extends imageAssetModule.ImageAsset
+- getImage() -> remove, use ImageSource.fromAsset() instead
+- getImageData() : ArrayBuffer -> why do we have this?
+- data() : any -> iOS only -> why do we have this?
+
+
+candidates:
+
+- https://github.com/awkward/Tatsi (no cocoa pod)
+- https://github.com/mikaoj/BSImagePicker (not very similar to native picker)
+- https://github.com/questbeat/QBImagePicker 
+
+
 # NativeScript Image Picker ![apple](https://cdn3.iconfinder.com/data/icons/picons-social/57/16-apple-32.png) ![android](https://cdn4.iconfinder.com/data/icons/logos-3/228/android-32.png) 
 
 
