@@ -17,116 +17,64 @@ if (global.TNS_WEBPACK) {
 const IMAGE_WIDTH = 80;
 const IMAGE_HEIGHT = 80;
 
-interface ImageOptions {
-    maxWidth?: number;
-    maxHeight?: number;
-    aspectRatio?: "fill" | "fit";
-}
-
-// export function create(options?): BSImagePicker {
-//     // return new ImagePickerPH(options);
-
-//     // return new ImagePicker1(options);
-//     return new BSImagePicker(options);
-// }
-
-
-
-// export class BSImagePicker extends data_observable.Observable {
-//     protected _page: ui_view_controller.Page;
-
-//     constructor(options) {
-//         super();
-//         let page = new ui_view_controller.Page();
-
-//         const pageUIViewController = page.ios;
-
-//         let imagePickerController = BSImagePickerViewController.alloc().init();
-//         imagePickerController.delegate = pageUIViewController;
-//         // imagePickerController.allowsMultipleSelection = options.mode === 'multiple';
-//         // imagePickerController.maximumNumberOfSelection = 10;
-//         // imagePickerController.showsNumberOfSelectedAssets = true;
-
-//         page.on(
-//             'navigatingTo', (data) => {
-//                 (<ui_view_controller.Page>data.object).ios.presentViewControllerAnimatedCompletion(imagePickerController, true, null);
-//             }
-//         );
-//         this._page = page;
-//     }
-
-//     authorize(): Promise<void> {
-//         console.log("authorizing...");
-
-//         return new Promise<void>((resolve, reject) => {
-//             let runloop = CFRunLoopGetCurrent();
-//             PHPhotoLibrary.requestAuthorization(function (result) {
-//                 if (result === PHAuthorizationStatus.Authorized) {
-//                     resolve();
-//                 } else {
-//                     reject(new Error("Authorization failed. Status: " + result));
-//                 }
-//             });
-//         });
-//     }
-
-//     present() {
-//         return new Promise<void>((resolve, reject) => {
-//             frame.topmost().navigate(() => {
-//                 return this._page;
-//             });
-//             resolve();
-//         });
-//     }
+// interface ImageOptions {
+//     maxWidth?: number;
+//     maxHeight?: number;
+//     aspectRatio?: "fill" | "fit";
 // }
 
 export function create(options?): QBImagePicker {
-    // return new ImagePickerPH(options);
-
-    // return new ImagePicker1(options);
     return new QBImagePicker(options);
 }
 
 export class ImagePickerControllerDelegate extends NSObject implements QBImagePickerControllerDelegate {
+    _resolve: any;
     qb_imagePickerControllerDidCancel?(imagePickerController: QBImagePickerController): void {
-        imagePickerController.dismissViewControllerAnimatedCompletion(true, null);
-    }
-    qb_imagePickerControllerDidDeselectAsset?(imagePickerController: QBImagePickerController, asset: PHAsset): void {
-        console.log("qb_imagePickerControllerDidDeselectAsset");
+        imagePickerController.dismissViewControllerAnimatedCompletion(true, () => {
+            console.log("qb_imagePickerControllerDidCancel completion");
+        });
     }
     qb_imagePickerControllerDidFinishPickingAssets?(imagePickerController: QBImagePickerController, assets: NSArray<any>): void {
         console.log("qb_imagePickerControllerDidFinishPickingAssets");
-        imagePickerController.dismissViewControllerAnimatedCompletion(true, null);
-    }
-    qb_imagePickerControllerDidSelectAsset?(imagePickerController: QBImagePickerController, asset: PHAsset): void {
-        console.log("qb_imagePickerControllerDidSelectAsset " + asset);
-    }
-    qb_imagePickerControllerShouldSelectAsset?(imagePickerController: QBImagePickerController, asset: PHAsset): boolean {
-        console.log("qb_imagePickerControllerShouldSelectAsset " + asset);
-        return true;
+        let assetPHs = [];
+        // foreach of selected items
+        for (let i = 0; i < assets.count; i++) {
+            let asset = assets[i];
+            let assetPH = new AssetPH(asset);
+            assetPHs.push(assetPH);
+            // assetPHs.push(assets);
+        }
+        this._resolve(assetPHs);
+
+        imagePickerController.dismissViewControllerAnimatedCompletion(true, () => {
+            console.log("qb_imagePickerControllerDidFinishPickingAssets completion");
+        });
     }
 
     public static ObjCProtocols = [QBImagePickerControllerDelegate];
 
     static new(): ImagePickerControllerDelegate {
-        console.log('static new DelegateImpl');
         return <ImagePickerControllerDelegate>super.new(); // calls new() on the NSObject
     }
 }
 
 export class QBImagePicker extends data_observable.Observable {
-    _imagePC: QBImagePickerController;
+    _imagePickerController: QBImagePickerController;
+    _imagePickerControllerDelegate: ImagePickerControllerDelegate;
 
     constructor(options) {
         super();
 
+        this._imagePickerControllerDelegate = new ImagePickerControllerDelegate();
+        // imagePickerControllerDelegate
+
         let imagePickerController = QBImagePickerController.alloc().init();
-        imagePickerController.delegate = new ImagePickerControllerDelegate();
+        imagePickerController.delegate = this._imagePickerControllerDelegate; // new ImagePickerControllerDelegate();
         imagePickerController.allowsMultipleSelection = options.mode === 'multiple';
         imagePickerController.maximumNumberOfSelection = 4;
         imagePickerController.showsNumberOfSelectedAssets = true;
 
-        this._imagePC = imagePickerController;
+        this._imagePickerController = imagePickerController;
     }
 
     authorize(): Promise<void> {
@@ -146,59 +94,45 @@ export class QBImagePicker extends data_observable.Observable {
 
     present() {
         return new Promise<void>((resolve, reject) => {
-            frame.topmost().ios.controller.presentViewControllerAnimatedCompletion(this._imagePC, true, null);
+            this._imagePickerControllerDelegate._resolve = resolve;
+
+
+            frame.topmost().ios.controller.presentViewControllerAnimatedCompletion(this._imagePickerController, true, null);
             // resolve();
         });
     }
 }
 
-// export class ImagePicker1 extends data_observable.Observable {
-//     protected _page: ui_view_controller.Page;
+export class AssetPH extends imageAssetModule.ImageAsset {
+    private static _uriRequestOptions: PHImageRequestOptions;
 
-//     constructor(options) {
-//         debugger;
-//         console.log("options...: " + JSON.stringify(options));
+    constructor(phAsset: PHAsset, options?) {
+        super(phAsset);
+        this.options = {};
+    }
 
-//         super();
-//         let page = new ui_view_controller.Page();
+    get uri(): string {
+        return this.ios.localIdentifier.toString();
+    }
 
-//         const pageUIViewController = page.ios;
-//         let imagePickerController = UIImagePickerController.alloc().init();
-//         imagePickerController.delegate = pageUIViewController;
-//         imagePickerController.sourceType = UIImagePickerControllerSourceType.PhotoLibrary;
-//         page.on(
-//             'navigatingTo', (data) => {
-//                 (<ui_view_controller.Page>data.object).ios.presentViewControllerAnimatedCompletion(imagePickerController, true, null);
-//             }
-//         );
-//         this._page = page;
-//     }
+    get fileUri(): string {
+        if (!AssetPH._uriRequestOptions) {
+            AssetPH._uriRequestOptions = PHImageRequestOptions.alloc().init();
+            AssetPH._uriRequestOptions.synchronous = true;
+        }
 
-//     authorize(): Promise<void> {
-//         console.log("authorizing...");
+        let uri;
+        PHImageManager.defaultManager().requestImageDataForAssetOptionsResultHandler(this.ios, AssetPH._uriRequestOptions, (data, uti, orientation, info) => {
+            uri = info.objectForKey("PHImageFileURLKey");
+        });
 
-//         return new Promise<void>((resolve, reject) => {
-//             let runloop = CFRunLoopGetCurrent();
-//             PHPhotoLibrary.requestAuthorization(function (result) {
-//                 if (result === PHAuthorizationStatus.Authorized) {
-//                     resolve();
-//                 } else {
-//                     reject(new Error("Authorization failed. Status: " + result));
-//                 }
-//             });
-//         });
-//     }
+        if (uri) {
+            return uri.toString();
+        }
 
-//     present() {
-//         return new Promise<void>((resolve, reject) => {
-//             frame.topmost().navigate(() => {
-//                 return this._page;
-//             });
-//             resolve();
-//         });
-//     }
-// }
-
+        return undefined;
+    }
+}
 
 // export class ImagePicker extends data_observable.Observable {
 //     private _selection: data_observablearray.ObservableArray<Asset>;

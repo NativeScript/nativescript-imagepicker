@@ -52,7 +52,13 @@ export class MainViewModel extends Observable {
                 return context.present();
             })
             .then((selection) => { // returns SelectedAsset[]
+                console.log("Selection done: " + JSON.stringify(selection));
+                // selection[0].options = {};
+                // selection[0].options.width = 10;
+                // selection[0].options.height = 10;
+                // selection[0].options.keepAspectRatio = true;
                 this.imageSrc = isSingle && selection.length > 0 ? selection[0] : null;
+
                 this.imageAssets = selection;
 
                 console.log("Selection done:");

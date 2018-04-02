@@ -2,7 +2,7 @@
   "nativescript": {
     "id": "org.nativescript.imagepickerdemo",
     "tns-android": {
-      "version": "3.4.0"
+      "version": "3.4.2"
     },
     "tns-ios": {
       "version": "3.4.1"
@@ -12,7 +12,7 @@
     "nativescript-imagepicker": "../src",
     "nativescript-theme-core": "^1.0.4",
     "nativescript-unit-test-runner": "^0.3.4",
-    "tns-core-modules": "^3.4.0"
+    "tns-core-modules": "^4.0.0-2018-03-27-02"
   },
   "devDependencies": {
     "@types/chai": "^4.0.2",

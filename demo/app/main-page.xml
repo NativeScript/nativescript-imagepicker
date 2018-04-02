@@ -6,14 +6,14 @@
         <ListView items="{{ imageAssets }}">
             <ListView.itemTemplate>
                 <GridLayout columns="94, *" rows="*, *">
-                    <Image rowSpan="2" width="80" height="80" src="{{ $value }}" />
+                    <Image rowSpan="2" width="80" height="80" src="{{ $value }}" stretch="fill" />
                     <Label col="1" text="{{ uri }}" />
                     <Label col="1" row="1" text="{{ fileUri }}" />
                 </GridLayout>
             </ListView.itemTemplate>
         </ListView>
 
-        <Image src="{{ imageSrc }}" width="200" height="200" stretch="fill" />
+        <Image src="{{ imageSrc }}" width="300" height="300" stretch="aspectFit" />
         <Button row="1" text="Pick Single" tap="{{ onSelectSingleTap }}" horizontalAlignment="center" />
         <Button row="2" text="Pick Multiple" tap="{{ onSelectMultipleTap }}" horizontalAlignment="center" />
     </GridLayout>
