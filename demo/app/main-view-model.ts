@@ -54,14 +54,7 @@ export class MainViewModel extends Observable {
             .then((selection) => { // returns SelectedAsset[]
                 console.log("Selection done: " + JSON.stringify(selection));
                 this.imageSrc = isSingle && selection.length > 0 ? selection[0] : null;
-
                 this.imageAssets = selection;
-
-                console.log("Selection done:");
-                selection.forEach((selected) => {
-                    console.log("----------------");
-                    console.log("uri: " + selected.uri);
-                });
             }).catch(function (e) {
                 console.log(e);
             });

@@ -2,12 +2,8 @@ import * as application from "tns-core-modules/application";
 import * as imageAssetModule from "tns-core-modules/image-asset";
 import * as permissions from "nativescript-permissions";
 
-export class SelectedAsset extends imageAssetModule.ImageAsset {
-    constructor(uri: android.net.Uri) {
-        super(SelectedAsset._calculateFileUri(uri));
-    }
-
-    private static _calculateFileUri(uri: android.net.Uri) {
+class UriHelper {
+    public static _calculateFileUri(uri: android.net.Uri) {
         let DocumentsContract = (<any>android.provider).DocumentsContract;
         let isKitKat = android.os.Build.VERSION.SDK_INT >= 19; // android.os.Build.VERSION_CODES.KITKAT
 
@@ -16,7 +12,7 @@ export class SelectedAsset extends imageAssetModule.ImageAsset {
             let contentUri: android.net.Uri = null;
 
             // ExternalStorageProvider
-            if (SelectedAsset.isExternalStorageDocument(uri)) {
+            if (UriHelper.isExternalStorageDocument(uri)) {
                 docId = DocumentsContract.getDocumentId(uri);
                 id = docId.split(":")[1];
                 type = docId.split(":")[0];
@@ -28,15 +24,15 @@ export class SelectedAsset extends imageAssetModule.ImageAsset {
                 // TODO handle non-primary volumes
             }
             // DownloadsProvider
-            else if (SelectedAsset.isDownloadsDocument(uri)) {
+            else if (UriHelper.isDownloadsDocument(uri)) {
                 id = DocumentsContract.getDocumentId(uri);
                 contentUri = android.content.ContentUris.withAppendedId(
                     android.net.Uri.parse("content://downloads/public_downloads"), long(id));
 
-                return SelectedAsset.getDataColumn(contentUri, null, null);
+                return UriHelper.getDataColumn(contentUri, null, null);
             }
             // MediaProvider
-            else if (SelectedAsset.isMediaDocument(uri)) {
+            else if (UriHelper.isMediaDocument(uri)) {
                 docId = DocumentsContract.getDocumentId(uri);
                 let split = docId.split(":");
                 type = split[0];
@@ -53,13 +49,13 @@ export class SelectedAsset extends imageAssetModule.ImageAsset {
                 let selection = "_id=?";
                 let selectionArgs = [id];
 
-                return SelectedAsset.getDataColumn(contentUri, selection, selectionArgs);
+                return UriHelper.getDataColumn(contentUri, selection, selectionArgs);
             }
         }
         else {
             // MediaStore (and general)
             if ("content" === uri.getScheme()) {
-                return SelectedAsset.getDataColumn(uri, null, null);
+                return UriHelper.getDataColumn(uri, null, null);
             }
             // FILE
             else if ("file" === uri.getScheme()) {
@@ -133,7 +129,7 @@ export class ImagePicker {
         }
     }
 
-    present(): Promise<SelectedAsset[]> {
+    present(): Promise<imageAssetModule.ImageAsset[]> {
         return new Promise((resolve, reject) => {
 
             // WARNING: If we want to support multiple pickers we will need to have a range of IDs here:
@@ -162,13 +158,15 @@ export class ImagePicker {
                                     if (clipItem) {
                                         let uri = clipItem.getUri();
                                         if (uri) {
-                                            results.push(new SelectedAsset(uri));
+                                            let selectedAsset = new imageAssetModule.ImageAsset(UriHelper._calculateFileUri(uri));
+                                            results.push(selectedAsset);
                                         }
                                     }
                                 }
                             } else {
                                 let uri = data.getData();
-                                results.push(new SelectedAsset(uri));
+                                let selectedAsset = new imageAssetModule.ImageAsset(UriHelper._calculateFileUri(uri));
+                                results.push(selectedAsset);
                             }
 
                             application.android.off(application.AndroidApplication.activityResultEvent, onResult);

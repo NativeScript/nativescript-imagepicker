@@ -8,17 +8,6 @@ interface ImagePickerOptions {
     showSelectedImagesCount?: boolean;
 }
 
-export class SelectedAsset extends imageAssetModule.ImageAsset {
-    constructor(phAsset: PHAsset, options?) {
-        super(phAsset);
-
-        // this fixes the image aspect ratio in tns-core-modules version < 4.0
-        if (!this.options) {
-            this.options = { keepAspectRatio: true };
-        }
-    }
-}
-
 export class ImagePicker extends data_observable.Observable {
     _imagePickerController: QBImagePickerController;
     _imagePickerControllerDelegate: ImagePickerControllerDelegate;
@@ -72,7 +61,13 @@ export class ImagePickerControllerDelegate extends NSObject implements QBImagePi
         let assets = [];
 
         for (let i = 0; i < iosAssets.count; i++) {
-            let asset = new SelectedAsset(iosAssets[i]);
+            let asset = new imageAssetModule.ImageAsset(iosAssets[i]);
+
+            // this fixes the image aspect ratio in tns-core-modules version < 4.0
+            if (!asset.options) {
+                asset.options = { keepAspectRatio: true };
+            }
+
             assets.push(asset);
         }
 

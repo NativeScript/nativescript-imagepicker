@@ -52,8 +52,6 @@
         "tslint": "~5.4.3"
     },
     "dependencies": {
-        "nativescript-ui-core": "^1.0.0",
-        "nativescript-ui-listview": "^3.5.0",
         "nativescript-permissions": "~1.2.3"
     },
     "bootstrapper": "nativescript-plugin-seed"
