@@ -1,27 +1,41 @@
 import * as data_observable from "tns-core-modules/data/observable";
 import * as frame from "tns-core-modules/ui/frame";
 import * as imageAssetModule from "tns-core-modules/image-asset";
+import { Options } from ".";
 
-interface ImagePickerOptions {
-    mode?: string;
-    maxImagesToPick?: number;
-    showSelectedImagesCount?: boolean;
-}
+const defaultAssetCollectionSubtypes: NSArray<any> = NSArray.arrayWithArray(<any>[
+    PHAssetCollectionSubtype.SmartAlbumRecentlyAdded,
+    PHAssetCollectionSubtype.SmartAlbumUserLibrary,
+    PHAssetCollectionSubtype.AlbumMyPhotoStream,
+    PHAssetCollectionSubtype.SmartAlbumFavorites,
+    PHAssetCollectionSubtype.SmartAlbumPanoramas,
+    PHAssetCollectionSubtype.SmartAlbumBursts,
+    PHAssetCollectionSubtype.AlbumCloudShared,
+    PHAssetCollectionSubtype.SmartAlbumSelfPortraits,
+    PHAssetCollectionSubtype.SmartAlbumScreenshots,
+    PHAssetCollectionSubtype.SmartAlbumLivePhotos
+]);
 
 export class ImagePicker extends data_observable.Observable {
     _imagePickerController: QBImagePickerController;
     _imagePickerControllerDelegate: ImagePickerControllerDelegate;
 
-    constructor(options: ImagePickerOptions) {
+    constructor(options: Options) {
         super();
 
         this._imagePickerControllerDelegate = new ImagePickerControllerDelegate();
 
         let imagePickerController = QBImagePickerController.alloc().init();
+        imagePickerController.assetCollectionSubtypes = defaultAssetCollectionSubtypes;
+        imagePickerController.mediaType = QBImagePickerMediaType.Image;
         imagePickerController.delegate = this._imagePickerControllerDelegate;
         imagePickerController.allowsMultipleSelection = options.mode === 'multiple';
-        imagePickerController.maximumNumberOfSelection = options.maxImagesToPick || 0;
-        imagePickerController.showsNumberOfSelectedAssets = options.showSelectedImagesCount || true;
+        imagePickerController.minimumNumberOfSelection = options.minimumNumberOfSelection || 0;
+        imagePickerController.maximumNumberOfSelection = options.maximumNumberOfSelection || 0;
+        imagePickerController.showsNumberOfSelectedAssets = options.showsNumberOfSelectedAssets || true;
+        imagePickerController.numberOfColumnsInPortrait = options.numberOfColumnsInPortrait || imagePickerController.numberOfColumnsInPortrait;
+        imagePickerController.numberOfColumnsInLandscape = options.numberOfColumnsInLandscape || imagePickerController.numberOfColumnsInLandscape;
+        imagePickerController.prompt = options.prompt || imagePickerController.prompt;
 
         this._imagePickerController = imagePickerController;
     }
@@ -83,7 +97,7 @@ export class ImagePickerControllerDelegate extends NSObject implements QBImagePi
     }
 }
 
-export function create(options?: ImagePickerOptions): ImagePicker {
+export function create(options?: Options): ImagePicker {
     return new ImagePicker(options);
 }
 

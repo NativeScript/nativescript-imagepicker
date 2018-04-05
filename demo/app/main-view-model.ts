@@ -10,6 +10,7 @@ export class MainViewModel extends Observable {
 
     private _imageSrc: any;
     private _imageAssets: Array<any>;
+    private _isSingleMode: boolean;
 
     get imageSrc(): any {
         return this._imageSrc;
@@ -33,17 +34,32 @@ export class MainViewModel extends Observable {
         }
     }
 
+    get isSingleMode(): any {
+        return this._isSingleMode;
+    }
+
+    set isSingleMode(value: any) {
+        if (this._isSingleMode !== value) {
+            this._isSingleMode = value;
+            this.notifyPropertyChange('isSingleMode', value);
+        }
+    }
+
     public onSelectMultipleTap(args) {
-        let context = imagepicker.create({ mode: "multiple" });
-        this.startSelection(context, false);
+        this.isSingleMode = false;
+        let context = imagepicker.create({
+            mode: "multiple"
+        });
+        this.startSelection(context);
     }
 
     public onSelectSingleTap(args) {
+        this.isSingleMode = true;
         let context = imagepicker.create({ mode: "single" });
-        this.startSelection(context, true);
+        this.startSelection(context);
     }
 
-    private startSelection(context, isSingle) {
+    private startSelection(context) {
         context
             .authorize()
             .then(() => {
@@ -51,9 +67,16 @@ export class MainViewModel extends Observable {
                 this.imageSrc = null;
                 return context.present();
             })
-            .then((selection) => { // returns SelectedAsset[]
+            .then((selection) => {
                 console.log("Selection done: " + JSON.stringify(selection));
-                this.imageSrc = isSingle && selection.length > 0 ? selection[0] : null;
+                this.imageSrc = this.isSingleMode && selection.length > 0 ? selection[0] : null;
+
+                // set the images to be loaded from the assets with optimal sizes (optimize memory usage)
+                selection.forEach(element => {
+                    element.options.width = this.isSingleMode ? 300 : 80;
+                    element.options.height = this.isSingleMode ? 300 : 80;
+                });
+
                 this.imageAssets = selection;
             }).catch(function (e) {
                 console.log(e);
