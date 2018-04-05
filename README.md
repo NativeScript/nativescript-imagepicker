@@ -126,19 +126,10 @@ context
 | prompt | iOS | undefined | Display prompt text when selecting assets. |
 | numberOfColumnsInPortrait | iOS | 4 | Set the number of columns in Portrait orientation. |
 | numberOfColumnsInLandscape | iOS | 7 | Set the number of columns in Landscape orientation. |
+| mediaType | iOS | Any | Choose whether to pick Image/Video/Any type of assets. |
 
 * authorize() - request the required permissions.
 * present() - show the albums to present the user the ability to select images. Returns an array of the selected images.
-
-### Image properties
-
-Once image is picked some options can be applied to it  before it is used:
-
-| Option | Default | Description |
-| --- | --- | --- |
-| maxWidth | null | Image max width |
-| maxHeight | null | Image max height |
-| aspectRatio | fit | iOS only. Possible values are `fit` and `fill`. [Read more](https://developer.apple.com/documentation/photos/phimagecontentmode) |
 
 ## Contribute
 We love PRs! Check out the [contributing guidelines](CONTRIBUTING.md). If you want to contribute, but you are not sure where to start - look for [issues labeled `help wanted`](https://github.com/NativeScript/nativescript-imagepicker/issues?q=is%3Aopen+is%3Aissue+label%3A%22help+wanted%22).
