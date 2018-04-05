@@ -1,7 +1,7 @@
 import * as data_observable from "tns-core-modules/data/observable";
 import * as frame from "tns-core-modules/ui/frame";
 import * as imageAssetModule from "tns-core-modules/image-asset";
-import { Options } from ".";
+import { Options, ImagePickerMediaType } from ".";
 
 const defaultAssetCollectionSubtypes: NSArray<any> = NSArray.arrayWithArray(<any>[
     PHAssetCollectionSubtype.SmartAlbumRecentlyAdded,
@@ -27,7 +27,7 @@ export class ImagePicker extends data_observable.Observable {
 
         let imagePickerController = QBImagePickerController.alloc().init();
         imagePickerController.assetCollectionSubtypes = defaultAssetCollectionSubtypes;
-        imagePickerController.mediaType = QBImagePickerMediaType.Image;
+        imagePickerController.mediaType = options.mediaType ? <QBImagePickerMediaType>options.mediaType.valueOf() : QBImagePickerMediaType.Any;
         imagePickerController.delegate = this._imagePickerControllerDelegate;
         imagePickerController.allowsMultipleSelection = options.mode === 'multiple';
         imagePickerController.minimumNumberOfSelection = options.minimumNumberOfSelection || 0;

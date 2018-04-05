@@ -16,6 +16,12 @@ export class ImagePicker {
     present(): Promise<ImageAsset[]>;
 }
 
+export declare const enum ImagePickerMediaType {
+    Any = 0,
+    Image = 1,
+    Video = 2
+}
+
 /**
  * Provide options for the image picker.
  */
@@ -49,11 +55,16 @@ interface Options {
      * Set the number of columns in Portrait in iOS
      */
     numberOfColumnsInPortrait?: number;
-    
+
     /**
      * Set the number of columns in Landscape in iOS
      */
     numberOfColumnsInLandscape?: number;
+
+    /**
+     * Set the media type (image/video/both) to pick in iOS
+     */
+    mediaType?: ImagePickerMediaType;
 
     android?: {
         /**
