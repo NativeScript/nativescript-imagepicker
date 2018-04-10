@@ -1,5 +1,4 @@
 import { Observable } from 'tns-core-modules/data/observable';
-import { isAndroid } from "tns-core-modules/platform";
 import * as imagepicker from "nativescript-imagepicker";
 
 export class MainViewModel extends Observable {

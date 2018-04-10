@@ -5,8 +5,8 @@
     <GridLayout rows="*, auto, auto">
         <ListView items="{{ imageAssets }}">
             <ListView.itemTemplate>
-                <GridLayout columns="auto, *" rows="*, *">
-                    <Image rowSpan="2" width="{{ $parents['ListView'].thumbSize }}" height="{{ $parents['ListView'].thumbSize }}" src="{{ $value }}" stretch="fill" />
+                <GridLayout columns="auto, *">
+                    <Image width="{{ $parents['ListView'].thumbSize }}" height="{{ $parents['ListView'].thumbSize }}" src="{{ $value }}" stretch="fill" />
                     <Label col="1" text="some text" />
                 </GridLayout>
             </ListView.itemTemplate>
