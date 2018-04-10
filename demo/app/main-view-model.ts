@@ -1,7 +1,6 @@
 import { Observable } from 'tns-core-modules/data/observable';
 import { isAndroid } from "tns-core-modules/platform";
 import * as imagepicker from "nativescript-imagepicker";
-import { ObservableArray } from 'tns-core-modules/data/observable-array/observable-array';
 
 export class MainViewModel extends Observable {
     constructor() {
@@ -11,6 +10,14 @@ export class MainViewModel extends Observable {
     private _imageSrc: any;
     private _imageAssets: Array<any>;
     private _isSingleMode: boolean;
+
+    get thumbSize(): any {
+        return 80;
+    }
+
+    get previewSize(): any {
+        return 300;
+    }
 
     get imageSrc(): any {
         return this._imageSrc;
@@ -73,8 +80,8 @@ export class MainViewModel extends Observable {
 
                 // set the images to be loaded from the assets with optimal sizes (optimize memory usage)
                 selection.forEach(element => {
-                    element.options.width = this.isSingleMode ? 300 : 80;
-                    element.options.height = this.isSingleMode ? 300 : 80;
+                    element.options.width = this.isSingleMode ? this.previewSize : this.thumbSize;
+                    element.options.height = this.isSingleMode ? this.previewSize : this.thumbSize;
                 });
 
                 this.imageAssets = selection;
