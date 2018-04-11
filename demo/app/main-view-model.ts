@@ -1,5 +1,7 @@
 import { Observable } from 'tns-core-modules/data/observable';
 import * as imagepicker from "nativescript-imagepicker";
+import { ItemEventData } from "tns-core-modules/ui/list-view";
+import { Label } from "tns-core-modules/ui/label";
 
 export class MainViewModel extends Observable {
     constructor() {
@@ -49,6 +51,11 @@ export class MainViewModel extends Observable {
             this._isSingleMode = value;
             this.notifyPropertyChange('isSingleMode', value);
         }
+    }
+
+    public onItemLoading(args: ItemEventData) {
+        let label = args.view.getViewById<Label>("imageLabel");
+        label.text = "image " + args.index;
     }
 
     public onSelectMultipleTap(args) {

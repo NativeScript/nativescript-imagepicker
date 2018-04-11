@@ -1,6 +1,4 @@
-import { Component, ChangeDetectorRef } from "@angular/core";
-import { ListView } from "tns-core-modules/ui/list-view";
-import { isAndroid } from "tns-core-modules/platform";
+import { Component } from "@angular/core";
 import * as imagepicker from "nativescript-imagepicker";
 
 @Component({
@@ -13,9 +11,6 @@ export class AppComponent {
     isSingleMode: boolean = true;
     thumbSize: number = 80;
     previewSize: number = 300;
-
-    constructor(private _changeDetectionRef: ChangeDetectorRef) {
-    }
 
     public onSelectMultipleTap() {
         this.isSingleMode = false;

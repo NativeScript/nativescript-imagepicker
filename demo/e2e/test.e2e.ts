@@ -9,7 +9,6 @@ describe("Imagepicker", async function () {
     const imagesFolderName = "Images";
     const imagesFolderNameIos = "Camera Roll";
     const doneButtonText = "Done";
-    let isOlderEmulator;
     let driver: AppiumDriver;
 
     before(async () => {
@@ -31,12 +30,7 @@ describe("Imagepicker", async function () {
         //await driver.driver.resetApp();
         const pickSingleButtonText = "Pick Single";
         let confirmButtonText = isAndroid ? "Allow" : "OK";
-        let uploadPicVerification;
-        if (isAndroid) {
-            uploadPicVerification = isSauceRun ? "sauce_logo.png" : "pic1.jpeg";
-        } else {
-            uploadPicVerification = "IMG_0001.JPG";
-        }
+        let uploadPicVerification = "image 0";
 
         const pickSingleButton = await driver.findElementByText(pickSingleButtonText, SearchOptions.contains);
         await pickSingleButton.click();
@@ -49,7 +43,6 @@ describe("Imagepicker", async function () {
             const imagesFolder = await driver.driver.elementByXPathIfExists(imagesFolderXpath, 10000);
 
             if (isSauceRun && imagesFolder) {
-                isOlderEmulator = true;
                 await imagesFolder.click();
                 const downloadFolder = await driver.findElementByClassName(driver.locators.image);
                 await downloadFolder.click();
@@ -62,27 +55,14 @@ describe("Imagepicker", async function () {
         const pickedImage = await driver.findElementByClassName(driver.locators.image);
         await pickedImage.click();
 
-        if (!isAndroid) {
-            const doneButton = await driver.findElementByText(doneButtonText);
-            await doneButton.click();
-        }
-
         const result = await driver.findElementByText(uploadPicVerification, SearchOptions.contains);
         expect(result).to.exist;
     });
 
     it("should pick multiple images", async function () {
         let openImagesButtonText = isAndroid ? "Open" : doneButtonText;
-        let uploadPicVerification;
-        let uploadPicVerification2;
-
-        if (isAndroid) {
-            uploadPicVerification = isSauceRun ? "sauce_logo_red.png" : "pic2.jpeg";
-            uploadPicVerification2 = isSauceRun ? "sauce_logo.png" : "pic3.jpeg";
-        } else {
-            uploadPicVerification = "IMG_0001.JPG";
-            uploadPicVerification2 = "IMG_0002.JPG";
-        }
+        let uploadPicVerification = "image 0";
+        let uploadPicVerification2 = "image 1";
 
         const pickMultipleButtonText = "Pick Multiple";
         const pickMultipleButton = await driver.findElementByText(pickMultipleButtonText, SearchOptions.contains);
@@ -107,11 +87,6 @@ describe("Imagepicker", async function () {
         await openImagesButton.click();
         const img = await driver.findElementByText(uploadPicVerification, SearchOptions.contains);
         expect(img).to.exist;
-
-        if(isOlderEmulator){
-            uploadPicVerification2 = "saucelabs_sauce.png";
-        }
-
         const img1 = await driver.findElementByText(uploadPicVerification2, SearchOptions.contains);
         expect(img1).to.exist;
     });

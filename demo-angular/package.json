@@ -2,10 +2,10 @@
   "nativescript": {
     "id": "org.nativescript.imagepickerdemoangular",
     "tns-ios": {
-      "version": "3.4.0"
+      "version": "4.0.1"
     },
     "tns-android": {
-      "version": "3.4.0"
+      "version": "4.0.0"
     }
   },
   "dependencies": {
@@ -23,7 +23,7 @@
     "nativescript-unit-test-runner": "^0.3.4",
     "reflect-metadata": "~0.1.8",
     "rxjs": "^5.5.0",
-    "tns-core-modules": "^3.4.0"
+    "tns-core-modules": "^4.0.0"
   },
   "devDependencies": {
     "@angular/compiler-cli": "~5.0.0",

@@ -4,13 +4,13 @@
 
 <GridLayout rows="*, auto, auto">
     <ListView [items]="imageAssets">
-        <ng-template let-image="item">
+        <ng-template let-image="item" let-i="index">
             <GridLayout columns="auto, *">
                 <Image
                     [width]="thumbSize" 
                     [height]="thumbSize" 
                     [src]="image" stretch="fill"></Image>
-                <Label col="1" text="some text"></Label>
+                <Label col="1" [text]="'image ' + i"></Label>
             </GridLayout>
         </ng-template>
     </ListView>

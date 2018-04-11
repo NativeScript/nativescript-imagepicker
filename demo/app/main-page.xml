@@ -3,15 +3,14 @@
         <ActionBar title="Image Picker" />
     </Page.actionBar>
     <GridLayout rows="*, auto, auto">
-        <ListView items="{{ imageAssets }}">
+        <ListView itemLoading="{{ onItemLoading }}" items="{{ imageAssets }}">
             <ListView.itemTemplate>
                 <GridLayout columns="auto, *">
                     <Image width="{{ $parents['ListView'].thumbSize }}" height="{{ $parents['ListView'].thumbSize }}" src="{{ $value }}" stretch="fill" />
-                    <Label col="1" text="some text" />
+                    <Label class="m-10" id="imageLabel" col="1" />
                 </GridLayout>
             </ListView.itemTemplate>
         </ListView>
-
         <Image src="{{ imageSrc }}" visibility="{{ isSingleMode ? 'visible' : 'collapsed' }}" width="{{ previewSize }}" height="{{ previewSize }}" stretch="aspectFit" />
         <Button row="1" text="Pick Single" tap="{{ onSelectSingleTap }}" horizontalAlignment="center" />
         <Button row="2" text="Pick Multiple" tap="{{ onSelectMultipleTap }}" horizontalAlignment="center" />
