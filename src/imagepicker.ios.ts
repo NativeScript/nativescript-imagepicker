@@ -2,6 +2,7 @@ import * as data_observable from "tns-core-modules/data/observable";
 import * as frame from "tns-core-modules/ui/frame";
 import * as imageAssetModule from "tns-core-modules/image-asset";
 import { Options, ImagePickerMediaType } from ".";
+import { View } from "tns-core-modules/ui/core/view/view";
 
 const defaultAssetCollectionSubtypes: NSArray<any> = NSArray.arrayWithArray(<any>[
     PHAssetCollectionSubtype.SmartAlbumRecentlyAdded,
@@ -19,10 +20,17 @@ const defaultAssetCollectionSubtypes: NSArray<any> = NSArray.arrayWithArray(<any
 export class ImagePicker extends data_observable.Observable {
     _imagePickerController: QBImagePickerController;
     _imagePickerControllerDelegate: ImagePickerControllerDelegate;
+    _hostView: View;
 
-    constructor(options: Options) {
+    // lazy-load latest frame.topmost() if _hostName is not used
+    get hostView() {
+        return this._hostView || frame.topmost();
+    }
+
+    constructor(options: Options = {}, hostView: View) {
         super();
 
+        this._hostView = hostView;
         this._imagePickerControllerDelegate = new ImagePickerControllerDelegate();
 
         let imagePickerController = QBImagePickerController.alloc().init();
@@ -59,7 +67,7 @@ export class ImagePicker extends data_observable.Observable {
         return new Promise<void>((resolve, reject) => {
             this._imagePickerControllerDelegate._resolve = resolve;
 
-            frame.topmost().ios.controller.presentViewControllerAnimatedCompletion(this._imagePickerController, true, null);
+            (<any>this.hostView).viewController.presentViewControllerAnimatedCompletion(this._imagePickerController, true, null);
         });
     }
 }
@@ -97,7 +105,7 @@ export class ImagePickerControllerDelegate extends NSObject implements QBImagePi
     }
 }
 
-export function create(options?: Options): ImagePicker {
-    return new ImagePicker(options);
+export function create(options?: Options, hostView?: View): ImagePicker {
+    return new ImagePicker(options, hostView);
 }
 

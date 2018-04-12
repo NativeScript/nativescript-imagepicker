@@ -1,6 +1,7 @@
 import { Observable } from "tns-core-modules/data/observable";
 import { ImageSource } from "tns-core-modules/image-source";
 import { ImageAsset } from "tns-core-modules/image-asset";
+import { View } from "tns-core-modules/ui/core/view/view";
 
 export class ImagePicker {
     /**
@@ -74,4 +75,8 @@ interface Options {
     };
 }
 
-export function create(options?: Options): ImagePicker;
+/**
+ * @param {Options} [options] - options for the image picker.
+ * @param {View} [hostView] - [use in iOS] the view that hosts the image picker (e.g. to use when open from a modal page).
+ */
+export function create(options?: Options, hostView?: View): ImagePicker;
