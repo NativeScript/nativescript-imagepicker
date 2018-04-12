@@ -128,6 +128,8 @@ context
 | numberOfColumnsInLandscape | iOS | 7 | Set the number of columns in Landscape orientation. |
 | mediaType | iOS | Any | Choose whether to pick Image/Video/Any type of assets. |
 
+The **hostView** parameter can be set to the view that hosts the image picker. Applicable in iOS only, intended to be used when open picker from a modal page.
+
 * authorize() - request the required permissions.
 * present() - show the albums to present the user the ability to select images. Returns an array of the selected images.
 
