@@ -2,10 +2,10 @@
   "nativescript": {
     "id": "org.nativescript.imagepickerdemo",
     "tns-android": {
-      "version": "3.4.2"
+      "version": "4.0.0"
     },
     "tns-ios": {
-      "version": "3.4.1"
+      "version": "4.0.1"
     }
   },
   "dependencies": {
