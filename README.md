@@ -6,13 +6,14 @@
 [![Build Status](https://travis-ci.org/NativeScript/nativescript-imagepicker.svg?branch=master)](https://travis-ci.org/NativeScript/nativescript-imagepicker)
 
 Imagepicker plugin supporting both single and multiple selection.
-<br />Plugin supports **iOS8+** and uses [Photos Framework](https://developer.apple.com/library/prerelease/ios//documentation/Photos/Reference/Photos_Framework/index.html).
+<br />Plugin supports **iOS8+** and uses [QBImagePicker](https://github.com/questbeat/QBImagePicker) cocoa pod.
 <br />For **Android** it uses Intents to open the stock images or file pickers. For Android 6 (API 23) and above the permissions to read file storage should be explicitly required. See demo for implementation details.
 
 <!-- TOC depthFrom:2 -->
 
 - [Installation](#installation)
 - [Configuration](#configuration)
+- [Migrating from 5.x.x to 6.x.x](#migrating-from-5xx-to-6xx)
 - [Migrating from 4.x.x to 5.x.x](#migrating-from-4xx-to-5xx)
 - [Migrating from 3.x.x to 4.x.x](#migrating-from-3xx-to-4xx)
 - [Usage](#usage)
@@ -40,6 +41,9 @@ tns run
 
 ## Configuration
 No additional configuration required!
+
+## Migrating from 5.x.x to 6.x.x
+With version **6.x.x** the dependency to the `nativescript-ui-listview` plugin is removed and for iOS the [QBImagePicker](https://github.com/questbeat/QBImagePicker) cocoa pod is used. Now the plugin supports some new features, fixes some bugs and looks super native for iOS. You can remove any dependencies to `nativescript-pro-ui`, `nativescript-ui-listview`, etc. in case you've added them in your app specifically for this plugin. Also the options **doneText**, **cancelText**, **albumsText**, **newestFirst** and the methods **cancel()** and **done()** are no longer applicable. The image picker now returns the basic [{N} ImageAsset class](https://github.com/NativeScript/NativeScript/tree/master/tns-core-modules/image-asset) (and not custom asset as before).
 
 ## Migrating from 4.x.x to 5.x.x
 With version **5.x.x** major update to the plugin there is a related dependency which needs to be updated inside your project. The plugin uses internally the `nativescript-ui-listview` plugin (part of the NativeScript Pro UI components). Recently the monolithic [NativeScript Pro UI plugin was split in multiple plugins](https://www.nativescript.org/blog/professional-components-from-nativescript-ui-the-big-breakup), each of them representing a single component. Now, instead of the monolithic package, nativescript-imagepicker uses only the component it needs. To use version 5.x.x of the plugin, you need to update any dependencies to `nativescript-pro-ui` in your project with the single component alternatives as described in the [migration guide](http://docs.telerik.com/devtools/nativescript-ui/migration).
@@ -116,33 +120,18 @@ context
 | Option | Platform | Default | Description |
 | --- |  --- | --- | --- |
 | mode | both | multiple | The mode if the imagepicker. Possible values are `single` for single selection and `multiple` for multiple selection. |
-| doneText | iOS | Done | The text of the "Done" button on top right. |
-| cancelText |  iOS | Cancel | The text of the "Cancel" button on top left. |
-| albumsText | iOS | Albums | The title of the "Albums" screen from where the selection of album and images can be done. |
-| newestFirst | iOS | false | Set to `true` to sort the images in an album by newest first. |
+| minimumNumberOfSelection | iOS | 0 | The minumum number of selected assets. |
+| maximumNumberOfSelection | iOS | 0 | The maximum number of selected assets. |
+| showsNumberOfSelectedAssets |  iOS | True | Display the number of selected assets. |
+| prompt | iOS | undefined | Display prompt text when selecting assets. |
+| numberOfColumnsInPortrait | iOS | 4 | Set the number of columns in Portrait orientation. |
+| numberOfColumnsInLandscape | iOS | 7 | Set the number of columns in Landscape orientation. |
+| mediaType | iOS | Any | Choose whether to pick Image/Video/Any type of assets. |
+
+The **hostView** parameter can be set to the view that hosts the image picker. Applicable in iOS only, intended to be used when open picker from a modal page.
 
 * authorize() - request the required permissions.
 * present() - show the albums to present the user the ability to select images. Returns an array of the selected images.
-* cancel() - cancel selection. iOS only.
-* done() - confirm the selection is ready. iOS only.
-
-
-### Properties
-| Property | Default | Description |
-| --- | --- | --- |
-| selection | null | An array of selected image assets. |
-| albums | null | Albums from where the images are picked. |
-
-
-### Image properties
-
-Once image is picked some options can be applied to it  before it is used:
-
-| Option | Default | Description |
-| --- | --- | --- |
-| maxWidth | null | Image max width |
-| maxHeight | null | Image max height |
-| aspectRatio | fit | iOS only. Possible values are `fit` and `fill`. [Read more](https://developer.apple.com/documentation/photos/phimagecontentmode) |
 
 ## Contribute
 We love PRs! Check out the [contributing guidelines](CONTRIBUTING.md). If you want to contribute, but you are not sure where to start - look for [issues labeled `help wanted`](https://github.com/NativeScript/nativescript-imagepicker/issues?q=is%3Aopen+is%3Aissue+label%3A%22help+wanted%22).

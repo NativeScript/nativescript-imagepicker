@@ -1,7 +1,7 @@
 env:
   global:
-    - ANDROID_PACKAGE='imagepickerdemo-debug.apk'
-    - ANDROID_PACKAGE_FOLDER=$TRAVIS_BUILD_DIR/demo/platforms/android/app/build/outputs/apk
+    - ANDROID_PACKAGE='app-debug.apk'
+    - ANDROID_PACKAGE_FOLDER=$TRAVIS_BUILD_DIR/demo/platforms/android/app/build/outputs/apk/debug
     - ANDROID_SAUCE_STORAGE="https://saucelabs.com/rest/v1/storage/$SAUCE_USER/$ANDROID_PACKAGE?overwrite=true"
     - IOS_PACKAGE='imagepickerdemo.zip'
     - IOS_PACKAGE_FOLDER=$TRAVIS_BUILD_DIR/demo/platforms/ios/build/emulator
@@ -78,7 +78,7 @@ android:
   components:
     - tools
     - platform-tools
-    - build-tools-26.0.1
+    - build-tools-26.0.2
     - android-26
     - android-23
     - extra-android-m2repository

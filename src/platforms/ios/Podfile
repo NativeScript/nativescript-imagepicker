@@ -1,0 +1,3 @@
+platform :ios, '8.0'
+
+pod 'QBImagePickerController', '~> 3.4.0'
