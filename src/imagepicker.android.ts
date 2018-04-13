@@ -1,74 +1,9 @@
-import * as observable from "tns-core-modules/data/observable";
-import * as imagesource from "tns-core-modules/image-source";
 import * as application from "tns-core-modules/application";
-import * as platform from "tns-core-modules/platform";
 import * as imageAssetModule from "tns-core-modules/image-asset";
 import * as permissions from "nativescript-permissions";
 
-interface ArrayBufferStatic extends ArrayBufferConstructor {
-    from(buffer: java.nio.ByteBuffer): ArrayBuffer;
-}
-
-export class SelectedAsset extends imageAssetModule.ImageAsset {
-    private _uri: android.net.Uri;
-    private _thumbAsset: imageAssetModule.ImageAsset;
-    private _fileUri: string;
-    private _data: ArrayBuffer;
-
-    constructor(uri: android.net.Uri) {
-        super(SelectedAsset._calculateFileUri(uri));
-        this._uri = uri;
-    }
-
-    data(): Promise<any> {
-        return Promise.reject(new Error("Not implemented."));
-    }
-
-    getImage(options?: { maxWidth: number, maxHeight: number }): Promise<imagesource.ImageSource> {
-        return new Promise<imagesource.ImageSource>((resolve, reject) => {
-            try {
-                resolve(this.decodeUri(this._uri, options));
-            } catch (ex) {
-                reject(ex);
-            }
-        });
-    }
-
-    getImageData(): Promise<ArrayBuffer> {
-        return new Promise<ArrayBuffer>((resolve, reject) => {
-            try {
-                if (!this._data) {
-                    let bb = this.getByteBuffer(this._uri);
-                    this._data = (<ArrayBufferStatic>ArrayBuffer).from(bb);
-                }
-                resolve(this._data);
-            } catch (ex) {
-                reject(ex);
-            }
-        });
-    }
-
-    get thumbAsset(): imageAssetModule.ImageAsset {
-        return this._thumbAsset;
-    }
-
-    protected setThumbAsset(value: imageAssetModule.ImageAsset): void {
-        this._thumbAsset = value;
-        this.notifyPropertyChange("thumbAsset", value);
-    }
-
-    get uri(): string {
-        return this._uri.toString();
-    }
-
-    get fileUri(): string {
-        if (!this._fileUri) {
-            this._fileUri = SelectedAsset._calculateFileUri(this._uri);
-        }
-        return this._fileUri;
-    }
-
-    private static _calculateFileUri(uri: android.net.Uri) {
+class UriHelper {
+    public static _calculateFileUri(uri: android.net.Uri) {
         let DocumentsContract = (<any>android.provider).DocumentsContract;
         let isKitKat = android.os.Build.VERSION.SDK_INT >= 19; // android.os.Build.VERSION_CODES.KITKAT
 
@@ -77,7 +12,7 @@ export class SelectedAsset extends imageAssetModule.ImageAsset {
             let contentUri: android.net.Uri = null;
 
             // ExternalStorageProvider
-            if (SelectedAsset.isExternalStorageDocument(uri)) {
+            if (UriHelper.isExternalStorageDocument(uri)) {
                 docId = DocumentsContract.getDocumentId(uri);
                 id = docId.split(":")[1];
                 type = docId.split(":")[0];
@@ -89,15 +24,15 @@ export class SelectedAsset extends imageAssetModule.ImageAsset {
                 // TODO handle non-primary volumes
             }
             // DownloadsProvider
-            else if (SelectedAsset.isDownloadsDocument(uri)) {
+            else if (UriHelper.isDownloadsDocument(uri)) {
                 id = DocumentsContract.getDocumentId(uri);
                 contentUri = android.content.ContentUris.withAppendedId(
                     android.net.Uri.parse("content://downloads/public_downloads"), long(id));
 
-                return SelectedAsset.getDataColumn(contentUri, null, null);
+                return UriHelper.getDataColumn(contentUri, null, null);
             }
             // MediaProvider
-            else if (SelectedAsset.isMediaDocument(uri)) {
+            else if (UriHelper.isMediaDocument(uri)) {
                 docId = DocumentsContract.getDocumentId(uri);
                 let split = docId.split(":");
                 type = split[0];
@@ -114,13 +49,13 @@ export class SelectedAsset extends imageAssetModule.ImageAsset {
                 let selection = "_id=?";
                 let selectionArgs = [id];
 
-                return SelectedAsset.getDataColumn(contentUri, selection, selectionArgs);
+                return UriHelper.getDataColumn(contentUri, selection, selectionArgs);
             }
         }
         else {
             // MediaStore (and general)
             if ("content" === uri.getScheme()) {
-                return SelectedAsset.getDataColumn(uri, null, null);
+                return UriHelper.getDataColumn(uri, null, null);
             }
             // FILE
             else if ("file" === uri.getScheme()) {
@@ -132,7 +67,6 @@ export class SelectedAsset extends imageAssetModule.ImageAsset {
     }
 
     private static getDataColumn(uri: android.net.Uri, selection, selectionArgs) {
-
         let cursor = null;
         let columns = [android.provider.MediaStore.MediaColumns.DATA];
         let filePath;
@@ -171,111 +105,6 @@ export class SelectedAsset extends imageAssetModule.ImageAsset {
         return "com.android.providers.media.documents" === uri.getAuthority();
     }
 
-    private decodeThumbAssetUri(): void {
-        // Decode image size
-        let REQUIRED_SIZE = {
-            maxWidth: 100,
-            maxHeight: 100
-        };
-
-        // Decode with scale
-        this._thumbAsset = this.decodeUriForImageAsset(this._uri, REQUIRED_SIZE);
-        this.notifyPropertyChange("thumbAsset", this._thumbAsset);
-    }
-
-    /**
-     * Discovers the sample size that a BitmapFactory.Options object should have
-     * to scale the retrieved image to the given max size.
-     * @param uri The URI of the image that should be scaled.
-     * @param options The options that should be used to produce the correct image scale.
-     */
-    private getSampleSize(uri: android.net.Uri, options?: { maxWidth: number, maxHeight: number }): number {
-        let boundsOptions = new android.graphics.BitmapFactory.Options();
-        boundsOptions.inJustDecodeBounds = true;
-        android.graphics.BitmapFactory.decodeStream(this.openInputStream(uri), null, boundsOptions);
-
-        // Find the correct scale value. It should be the power of 2.
-        let outWidth = boundsOptions.outWidth;
-        let outHeight = boundsOptions.outHeight;
-        let scale = 1;
-        if (options) {
-            // TODO: Refactor to accomodate different scaling options
-            //       Right now, it just selects the smallest of the two sizes
-            //       and scales the image proportionally to that.
-            let targetSize = !options.maxWidth && options.maxHeight ? options.maxHeight :
-                (!options.maxHeight && options.maxWidth ? options.maxWidth :
-                    (options.maxWidth < options.maxHeight ? options.maxWidth : options.maxHeight));
-            if (targetSize) {
-                while (!(this.matchesSize(targetSize, outWidth) ||
-                    this.matchesSize(targetSize, outHeight))) {
-                    outWidth /= 2;
-                    outHeight /= 2;
-                    scale *= 2;
-                }
-            }
-        }
-        return scale;
-    }
-
-    private matchesSize(targetSize: number, actualSize: number): boolean {
-        return targetSize && actualSize / 2 < targetSize;
-    }
-
-    /**
-     * Decodes the given URI using the given options.
-     * @param uri The URI that should be decoded into an ImageSource.
-     * @param options The options that should be used to decode the image.
-     */
-    private decodeUri(uri: android.net.Uri, options?: { maxWidth: number, maxHeight: number }): imagesource.ImageSource {
-        let downsampleOptions = new android.graphics.BitmapFactory.Options();
-        downsampleOptions.inSampleSize = this.getSampleSize(uri, options);
-        let bitmap = android.graphics.BitmapFactory.decodeStream(this.openInputStream(uri), null, downsampleOptions);
-        let image = new imagesource.ImageSource();
-        image.setNativeSource(bitmap);
-        return image;
-    }
-
-    /**
-     * Decodes the given URI using the given options.
-     * @param uri The URI that should be decoded into an ImageAsset.
-     * @param options The options that should be used to decode the image.
-     */
-    private decodeUriForImageAsset(uri: android.net.Uri, options?: { maxWidth: number, maxHeight: number }): imageAssetModule.ImageAsset {
-        let downsampleOptions = new android.graphics.BitmapFactory.Options();
-        downsampleOptions.inSampleSize = this.getSampleSize(uri, options);
-        let bitmap = android.graphics.BitmapFactory.decodeStream(this.openInputStream(uri), null, downsampleOptions);
-        return new imageAssetModule.ImageAsset(bitmap);
-    }
-
-    /**
-     * Retrieves the raw data of the given file and exposes it as a byte buffer.
-     */
-    private getByteBuffer(uri: android.net.Uri): java.nio.ByteBuffer {
-        let file: android.content.res.AssetFileDescriptor = null;
-        try {
-            file = SelectedAsset.getContentResolver().openAssetFileDescriptor(uri, "r");
-
-            // Determine how many bytes to allocate in memory based on the file length
-            let length: number = file.getLength();
-            let buffer: java.nio.ByteBuffer = java.nio.ByteBuffer.allocateDirect(length);
-            let bytes = buffer.array();
-            let stream = file.createInputStream();
-
-            // Buffer the data in 4KiB amounts
-            let reader = new java.io.BufferedInputStream(stream, 4096);
-            reader.read(bytes, 0, bytes.length);
-            return buffer;
-        } finally {
-            if (file) {
-                file.close();
-            }
-        }
-    }
-
-    private openInputStream(uri: android.net.Uri): java.io.InputStream {
-        return SelectedAsset.getContentResolver().openInputStream(uri);
-    }
-
     private static getContentResolver(): android.content.ContentResolver {
         return application.android.nativeApp.getContentResolver();
     }
@@ -300,7 +129,7 @@ export class ImagePicker {
         }
     }
 
-    present(): Promise<SelectedAsset[]> {
+    present(): Promise<imageAssetModule.ImageAsset[]> {
         return new Promise((resolve, reject) => {
 
             // WARNING: If we want to support multiple pickers we will need to have a range of IDs here:
@@ -329,13 +158,15 @@ export class ImagePicker {
                                     if (clipItem) {
                                         let uri = clipItem.getUri();
                                         if (uri) {
-                                            results.push(new SelectedAsset(uri));
+                                            let selectedAsset = new imageAssetModule.ImageAsset(UriHelper._calculateFileUri(uri));
+                                            results.push(selectedAsset);
                                         }
                                     }
                                 }
                             } else {
                                 let uri = data.getData();
-                                results.push(new SelectedAsset(uri));
+                                let selectedAsset = new imageAssetModule.ImageAsset(UriHelper._calculateFileUri(uri));
+                                results.push(selectedAsset);
                             }
 
                             application.android.off(application.AndroidApplication.activityResultEvent, onResult);

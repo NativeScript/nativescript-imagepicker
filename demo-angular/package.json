@@ -2,10 +2,10 @@
   "nativescript": {
     "id": "org.nativescript.imagepickerdemoangular",
     "tns-ios": {
-      "version": "3.4.0"
+      "version": "4.0.1"
     },
     "tns-android": {
-      "version": "3.4.0"
+      "version": "4.0.0"
     }
   },
   "dependencies": {
@@ -23,7 +23,7 @@
     "nativescript-unit-test-runner": "^0.3.4",
     "reflect-metadata": "~0.1.8",
     "rxjs": "^5.5.0",
-    "tns-core-modules": "^3.4.0"
+    "tns-core-modules": "^4.0.0"
   },
   "devDependencies": {
     "@angular/compiler-cli": "~5.0.0",
@@ -42,7 +42,7 @@
     "lazy": "1.0.11",
     "nativescript-css-loader": "~0.26.0",
     "nativescript-dev-typescript": "^0.6.0",
-    "nativescript-dev-webpack": "^0.9.0",
+    "nativescript-dev-webpack": "^0.10.1",
     "nativescript-worker-loader": "~0.8.1",
     "raw-loader": "~0.5.1",
     "resolve-url-loader": "~2.1.0",
@@ -52,7 +52,8 @@
     "webpack": "~3.8.1",
     "webpack-bundle-analyzer": "^2.8.2",
     "webpack-sources": "~1.0.1",
-    "zone.js": "^0.8.4"
+    "zone.js": "^0.8.4",
+    "uglifyjs-webpack-plugin": "~1.1.6"
   },
   "scripts": {
     "build.plugin": "cd ../src && npm run build",
