@@ -66,6 +66,7 @@ export class ImagePicker extends data_observable.Observable {
     present() {
         return new Promise<void>((resolve, reject) => {
             this._imagePickerControllerDelegate._resolve = resolve;
+            this._imagePickerControllerDelegate._reject = reject;
 
             (<any>this.hostView).viewController.presentViewControllerAnimatedCompletion(this._imagePickerController, true, null);
         });
@@ -74,9 +75,11 @@ export class ImagePicker extends data_observable.Observable {
 
 export class ImagePickerControllerDelegate extends NSObject implements QBImagePickerControllerDelegate {
     _resolve: any;
+    _reject: any;
 
     qb_imagePickerControllerDidCancel?(imagePickerController: QBImagePickerController): void {
         imagePickerController.dismissViewControllerAnimatedCompletion(true, null);
+        this._reject(new Error("Selection canceled."));
     }
 
     qb_imagePickerControllerDidFinishPickingAssets?(imagePickerController: QBImagePickerController, iosAssets: NSArray<any>): void {
