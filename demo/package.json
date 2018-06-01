@@ -2,17 +2,17 @@
   "nativescript": {
     "id": "org.nativescript.imagepickerdemo",
     "tns-android": {
-      "version": "4.0.0"
+      "version": "4.1.1"
     },
     "tns-ios": {
-      "version": "4.0.1"
+      "version": "4.1.0"
     }
   },
   "dependencies": {
     "nativescript-imagepicker": "../src",
     "nativescript-theme-core": "^1.0.4",
     "nativescript-unit-test-runner": "^0.3.4",
-    "tns-core-modules": "next"
+    "tns-core-modules": "^4.1.0"
   },
   "devDependencies": {
     "@types/chai": "^4.0.2",
@@ -40,7 +40,7 @@
     "nativescript-css-loader": "~0.26.0",
     "nativescript-dev-appium": "3.1.0",
     "nativescript-dev-typescript": "^0.6.0",
-    "nativescript-dev-webpack": "next",
+    "nativescript-dev-webpack": "^0.12.0",
     "nativescript-worker-loader": "~0.8.1",
     "raw-loader": "~0.5.1",
     "resolve-url-loader": "~2.3.0",
