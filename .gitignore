@@ -4,11 +4,12 @@
 *.js
 *.js.map
 *.log
+*.esm.json
 !src/scripts/*.js
 !seed-tests/*.js
 seed-tests/seed-copy/**/*.*
 seed-tests/seed-copy-new-git-repo/**/*.*
-demo/app/*.js
+demo/**/*.js
 !demo/karma.conf.js
 !demo/app/tests/*.js
 demo/*.d.ts
@@ -16,7 +17,7 @@ demo/*.d.ts
 demo/lib
 demo/platforms
 demo/node_modules
-demo-angular/app/*.js
+demo-angular/**/*.js
 !demo-angular/karma.conf.js
 !demo-angular/app/tests/*.js
 demo-angular/*.d.ts
