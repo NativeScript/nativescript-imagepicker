@@ -6,7 +6,7 @@
         <ListView itemLoading="{{ onItemLoading }}" items="{{ imageAssets }}">
             <ListView.itemTemplate>
                 <GridLayout columns="auto, *">
-                    <Image width="{{ $parents['ListView'].thumbSize }}" height="{{ $parents['ListView'].thumbSize }}" src="{{ $value }}" stretch="fill" />
+                    <Image width="80" height="80" src="{{ $value }}" stretch="fill" />
                     <Label class="m-10" id="imageLabel" col="1" />
                 </GridLayout>
             </ListView.itemTemplate>
