@@ -196,7 +196,11 @@ export class ImagePicker {
                 intent.putExtra("android.intent.extra.ALLOW_MULTIPLE", true);
             }
 
-            intent.setAction(Intent.ACTION_GET_CONTENT);
+            intent.putExtra(android.content.Intent.EXTRA_LOCAL_ONLY, true);
+            intent.putExtra(android.content.Intent.CATEGORY_OPENABLE, true);
+            intent.setData(android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+            intent.setAction(android.content.Intent.ACTION_PICK);
+
 
             let chooser = Intent.createChooser(intent, "Select Picture");
             application.android.foregroundActivity.startActivityForResult(intent, RESULT_CODE_PICKER_IMAGES);
