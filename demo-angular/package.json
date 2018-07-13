@@ -26,7 +26,6 @@
     "tns-core-modules": "^4.0.0"
   },
   "devDependencies": {
-    "@angular/compiler-cli": "~6.1.0-beta.1",
     "babel-traverse": "6.24.1",
     "babel-types": "6.24.1",
     "babylon": "6.16.1",
@@ -42,8 +41,7 @@
     "tns-platform-declarations": "^3.0.0",
     "tslint": "~5.4.3",
     "typescript": "~2.7.2",
-    "zone.js": "^0.8.4",
-    "@ngtools/webpack": "6.1.0-rc.0"
+    "zone.js": "^0.8.4"
   },
   "scripts": {
     "build.plugin": "cd ../src && npm run build",
