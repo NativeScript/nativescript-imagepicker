@@ -7,6 +7,9 @@ env:
     - IOS_PACKAGE_FOLDER=$TRAVIS_BUILD_DIR/demo/platforms/ios/build/emulator
     - IOS_SAUCE_STORAGE="https://saucelabs.com/rest/v1/storage/$SAUCE_USER/$IOS_PACKAGE?overwrite=true"
 
+git:
+  depth: 1
+
 branches:
   only: 
     - master
