@@ -1,6 +1,6 @@
 {
     "name": "nativescript-imagepicker",
-    "version": "6.0.2",
+    "version": "6.0.3",
     "description": "A plugin for the NativeScript framework implementing multiple image picker",
     "repository": {
         "type": "git",

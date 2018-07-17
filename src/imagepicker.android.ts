@@ -26,6 +26,11 @@ class UriHelper {
             // DownloadsProvider
             else if (UriHelper.isDownloadsDocument(uri)) {
                 id = DocumentsContract.getDocumentId(uri);
+                // Since Oreo the downloads id may be a raw string,
+                // containing the file path:
+                if (id.indexOf("raw:") !== -1) {
+                    return id.substring(4, id.length);
+                }
                 contentUri = android.content.ContentUris.withAppendedId(
                     android.net.Uri.parse("content://downloads/public_downloads"), long(id));
 
@@ -196,8 +201,8 @@ export class ImagePicker {
                 intent.putExtra("android.intent.extra.ALLOW_MULTIPLE", true);
             }
 
-            intent.setAction(Intent.ACTION_GET_CONTENT);
-
+            intent.putExtra(android.content.Intent.EXTRA_LOCAL_ONLY, true);
+            intent.setAction("android.intent.action.OPEN_DOCUMENT");
             let chooser = Intent.createChooser(intent, "Select Picture");
             application.android.foregroundActivity.startActivityForResult(intent, RESULT_CODE_PICKER_IMAGES);
         });
