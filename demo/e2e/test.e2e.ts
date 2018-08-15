@@ -27,7 +27,7 @@ describe("Imagepicker", async function () {
     });
 
     it("should pick one image", async function () {
-        //await driver.driver.resetApp();
+        // await driver.driver.resetApp();
         const pickSingleButtonText = "Pick Single";
         let confirmButtonText = isAndroid ? "Allow" : "OK";
         let uploadPicVerification = "image 0";
@@ -36,9 +36,9 @@ describe("Imagepicker", async function () {
         await pickSingleButton.click();
         const confirmButton = await driver.findElementByText(confirmButtonText);
         await confirmButton.click();
-        
+
         if (isAndroid) {
-            var imagesFolderXpath = await driver.elementHelper.getXPathByText(imagesFolderName, SearchOptions.contains);
+            const imagesFolderXpath = await driver.elementHelper.getXPathByText(imagesFolderName, SearchOptions.contains);
             await driver.driver.sleep(3000);
             const imagesFolder = await driver.driver.elementByXPathIfExists(imagesFolderXpath, 10000);
 
@@ -51,7 +51,7 @@ describe("Imagepicker", async function () {
             const cameraRollFolder = await driver.findElementByText(imagesFolderNameIos);
             await cameraRollFolder.click();
         }
-        
+
         const pickedImage = await driver.findElementByClassName(driver.locators.image);
         await pickedImage.click();
 
@@ -76,11 +76,11 @@ describe("Imagepicker", async function () {
         const allImages = await driver.findElementsByClassName(driver.locators.image);
 
         if (isAndroid) {
-            await allImages[8].hold(); //third image
-            await allImages[4].click(); //second image
+            await allImages[8].hold(); // third image
+            await allImages[4].click(); // second image
         } else {
-            await allImages[0].click(); //first image
-            await allImages[1].click(); //second image
+            await allImages[0].click(); // first image
+            await allImages[1].click(); // second image
         }
 
         const openImagesButton = await driver.findElementByText(openImagesButtonText, SearchOptions.contains);
