@@ -28,14 +28,30 @@ matrix:
       language: node_js 
       node_js: "8"
       jdk: oraclejdk8
-      script: cd demo && npm run build.plugin && npm i && tns build ios --bundle --env.uglify && cd ../demo-angular && npm run build.plugin && npm i && tns build ios --bundle --env.uglify
+      script:
+        - cd demo && npm run build.plugin && npm i && tns build ios --bundle --env.uglify 
+        - cd ../publish 
+        - sh pack.sh
+        - cp package/*.tgz ../demo-angular/package.tgz
+        - cd ../demo-angular
+        - sed -i -e 's/\"..\/src\"/"package.tgz"/g' package.json
+        - npm i
+        - tns build ios --bundle --env.uglify --env.aot
     - language: android
       os: linux
       env:
         - WebPackAndroid="26"
       jdk: oraclejdk8
       before_install: nvm install 8.11.4
-      script: cd demo && npm run build.plugin && npm i && tns build android --bundle --env.uglify --env.snapshot && cd ../demo-angular && npm run build.plugin && npm i && tns build android --bundle --env.uglify --env.snapshot
+      script:
+        - cd demo && npm run build.plugin && npm i && tns build android --bundle --env.uglify --env.snapshot
+        - cd ../publish 
+        - sh pack.sh
+        - cp package/*.tgz ../demo-angular/package.tgz
+        - cd ../demo-angular
+        - sed -i -e 's/\"..\/src\"/"package.tgz"/g' package.json
+        - npm i
+        - tns build android --bundle --env.uglify --env.aot
     - language: android
       env: 
         - BuildAndroid="26"
