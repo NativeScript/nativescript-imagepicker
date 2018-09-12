@@ -24,7 +24,11 @@ export class ImagePicker extends data_observable.Observable {
 
     // lazy-load latest frame.topmost() if _hostName is not used
     get hostView() {
-        return this._hostView || frame.topmost();
+        return this._hostView;
+    }
+
+    get hostController() {
+        return this.hostView ? this.hostView.viewController : UIApplication.sharedApplication.keyWindow.rootViewController;
     }
 
     constructor(options: Options = {}, hostView: View) {
@@ -68,7 +72,7 @@ export class ImagePicker extends data_observable.Observable {
             this._imagePickerControllerDelegate._resolve = resolve;
             this._imagePickerControllerDelegate._reject = reject;
 
-            (<any>this.hostView).viewController.presentViewControllerAnimatedCompletion(this._imagePickerController, true, null);
+            this.hostController.presentViewControllerAnimatedCompletion(this._imagePickerController, true, null);
         });
     }
 }
