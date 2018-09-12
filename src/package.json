@@ -1,6 +1,6 @@
 {
     "name": "nativescript-imagepicker",
-    "version": "6.0.3",
+    "version": "6.0.4",
     "description": "A plugin for the NativeScript framework implementing multiple image picker",
     "repository": {
         "type": "git",
@@ -10,8 +10,8 @@
     "typings": "index.d.ts",
     "nativescript": {
         "platforms": {
-            "android": "3.0.0",
-            "ios": "3.0.0"
+            "android": "4.0.0",
+            "ios": "4.0.0"
         }
     },
     "scripts": {
@@ -46,9 +46,9 @@
     "homepage": "https://github.com/NativeScript/nativescript-imagepicker",
     "readmeFilename": "README.md",
     "devDependencies": {
-        "tns-core-modules": "^3.1.0",
-        "tns-platform-declarations": "^3.1.0",
-        "typescript": "~2.6.0",
+        "tns-core-modules": "^4.0.0",
+        "tns-platform-declarations": "^4.0.0",
+        "typescript": "~2.7.0",
         "tslint": "~5.4.3"
     },
     "dependencies": {
