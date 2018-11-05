@@ -5,6 +5,7 @@
 *.js.map
 *.log
 *.esm.json
+*.tns.json
 !src/scripts/*.js
 !seed-tests/*.js
 seed-tests/seed-copy/**/*.*
