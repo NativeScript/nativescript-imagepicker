@@ -40,7 +40,7 @@ matrix:
     - language: android
       os: linux
       env:
-        - WebPackAndroid="26"
+        - WebPackAndroid="28"
       jdk: oraclejdk8
       before_install: nvm install 8.11.4
       script:
@@ -54,7 +54,7 @@ matrix:
         - tns build android --bundle --env.uglify --env.aot
     - language: android
       env: 
-        - BuildAndroid="26"
+        - BuildAndroid="28"
       os: linux
       jdk: oraclejdk8
       before_install: nvm install 8.11.4
@@ -97,8 +97,8 @@ android:
   components:
     - tools
     - platform-tools
-    - build-tools-27.0.3
-    - android-26
+    - build-tools-28.0.2
+    - android-28
     - android-23
     - extra-android-m2repository
 
