@@ -1,8 +1,8 @@
 import * as data_observable from "tns-core-modules/data/observable";
-import * as frame from "tns-core-modules/ui/frame";
 import * as imageAssetModule from "tns-core-modules/image-asset";
 import { Options, ImagePickerMediaType } from ".";
 import { View } from "tns-core-modules/ui/core/view/view";
+import * as utils from "tns-core-modules/utils/utils";
 
 const defaultAssetCollectionSubtypes: NSArray<any> = NSArray.arrayWithArray(<any>[
     PHAssetCollectionSubtype.SmartAlbumRecentlyAdded,
@@ -102,7 +102,13 @@ export class ImagePickerControllerDelegate extends NSObject implements QBImagePi
 
         this._resolve(assets);
 
-        imagePickerController.dismissViewControllerAnimatedCompletion(true, null);
+        imagePickerController.dismissViewControllerAnimatedCompletion(true, () => {
+            // FIX: possible memory issue when picking images many times.
+            // Not the best solution, but the only one working for now
+            // https://github.com/NativeScript/nativescript-imagepicker/issues/222
+            setTimeout(utils.GC, 200);
+        });
+
     }
 
     public static ObjCProtocols = [QBImagePickerControllerDelegate];
