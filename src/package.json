@@ -46,8 +46,8 @@
     "homepage": "https://github.com/NativeScript/nativescript-imagepicker",
     "readmeFilename": "README.md",
     "devDependencies": {
-        "tns-core-modules": "^5.0.0",
-        "tns-platform-declarations": "^5.0.0",
+        "tns-core-modules": "^5.1.0",
+        "tns-platform-declarations": "^5.1.0",
         "typescript": "~3.1.6",
         "tslint": "~5.11.0"
     },
