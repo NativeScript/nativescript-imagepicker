@@ -3,7 +3,7 @@
         <ActionBar title="Image Picker" />
     </Page.actionBar>
     <GridLayout rows="*, auto, auto">
-        <ListView itemLoading="{{ onItemLoading }}" items="{{ imageAssets }}">
+        <ListView visibility="{{ isSingleMode ? 'collapsed' : 'visible' }}" itemLoading="{{ onItemLoading }}" items="{{ imageAssets }}">
             <ListView.itemTemplate>
                 <GridLayout columns="auto, *">
                     <Image width="80" height="80" src="{{ $value }}" stretch="fill" />

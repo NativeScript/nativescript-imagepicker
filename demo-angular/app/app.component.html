@@ -3,7 +3,7 @@
 </ActionBar>
 
 <GridLayout rows="*, auto, auto">
-    <ListView [items]="imageAssets">
+    <ListView [items]="imageAssets" *ngIf="!isSingleMode">
         <ng-template let-image="item" let-i="index">
             <GridLayout columns="auto, *">
                 <Image
