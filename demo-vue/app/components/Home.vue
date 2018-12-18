@@ -8,7 +8,7 @@
             <ListView @itemLoading="onItemLoading" for="item in imageAssets" :visibility="isSingleMode?'collapsed':'visible'">
                 <v-template>
                     <GridLayout columns="auto, *">
-                        <Image width="80" height="80" :src="item" stretch="fill" />
+                        <Image width="80" height="80" :src="item" stretch="aspectFill" />
                         <Label class="m-10" id="imageLabel" col="1" />
                     </GridLayout>
                 </v-template>
