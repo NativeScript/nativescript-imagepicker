@@ -1,5 +1,5 @@
 # Example for using nativescript-imagepicker plugin
-## This example demonstrates how to use plugin
+## This example demonstrates how to use plugin with angular
 
 If you want to test it out on an emulator or a device you can follow the instructions below:
 
