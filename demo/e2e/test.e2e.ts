@@ -1,5 +1,5 @@
 import { AppiumDriver, createDriver, SearchOptions } from "nativescript-dev-appium";
-import { isSauceLab, runType, capabilitiesName } from "nativescript-dev-appium/lib/parser";
+import { isSauceLab, runType } from "nativescript-dev-appium/lib/parser";
 import { expect } from "chai";
 
 const isSauceRun = isSauceLab;
@@ -30,9 +30,8 @@ describe("Imagepicker", async function () {
         // await driver.driver.resetApp();
         const pickSingleButtonText = "Pick Single";
         let confirmButtonText = isAndroid ? "Allow" : "OK";
-        let uploadPicVerification = "image 0";
 
-        const pickSingleButton = await driver.findElementByText(pickSingleButtonText, SearchOptions.contains);
+        let pickSingleButton = await driver.findElementByText(pickSingleButtonText, SearchOptions.contains);
         await pickSingleButton.click();
         const confirmButton = await driver.findElementByText(confirmButtonText);
         await confirmButton.click();
@@ -40,12 +39,12 @@ describe("Imagepicker", async function () {
         if (isAndroid) {
             const imagesFolderXpath = await driver.elementHelper.getXPathByText(imagesFolderName, SearchOptions.contains);
             await driver.driver.sleep(3000);
-            const imagesFolder = await driver.driver.elementByXPathIfExists(imagesFolderXpath, 10000);
+            let imagesFolder = await driver.driver.elementByXPathIfExists(imagesFolderXpath, 10000);
 
             if (isSauceRun && imagesFolder) {
                 await imagesFolder.click();
-                const downloadFolder = await driver.findElementByClassName(driver.locators.image);
-                await downloadFolder.click();
+                imagesFolder = await driver.findElementByClassName(driver.locators.image);
+                await imagesFolder.click();
             }
         } else {
             const cameraRollFolder = await driver.findElementByText(imagesFolderNameIos);
@@ -55,7 +54,10 @@ describe("Imagepicker", async function () {
         const pickedImage = await driver.findElementByClassName(driver.locators.image);
         await pickedImage.click();
 
-        const result = await driver.findElementByText(uploadPicVerification, SearchOptions.contains);
+        pickSingleButton = await driver.findElementByText(pickSingleButtonText, SearchOptions.contains);
+        expect(pickSingleButton).to.exist;
+
+        const result = await driver.findElementByClassName(driver.locators.image);
         expect(result).to.exist;
     });
 
