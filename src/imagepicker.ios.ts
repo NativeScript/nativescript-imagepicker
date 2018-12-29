@@ -29,7 +29,14 @@ export class ImagePicker extends data_observable.Observable {
 
     get hostController() {
         let vc = this.hostView ? this.hostView.viewController : UIApplication.sharedApplication.keyWindow.rootViewController;
-        return vc.presentedViewController || vc;
+        while (
+            page.presentedViewController
+            && page.presentedViewController.viewLoaded
+            && page.presentedViewController.view.window
+        ) {
+            page = page.presentedViewController;
+        }
+        return vc;
     }
 
     constructor(options: Options = {}, hostView: View) {
