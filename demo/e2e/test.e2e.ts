@@ -3,7 +3,7 @@ import { isSauceLab, runType } from "nativescript-dev-appium/lib/parser";
 import { expect } from "chai";
 
 const isSauceRun = isSauceLab;
-const isAndroid: string = runType.includes("android");
+const isAndroid: boolean = runType.includes("android");
 
 describe("Imagepicker", async function () {
     const imagesFolderName = "Images";
