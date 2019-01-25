@@ -1,29 +1,37 @@
 {
-    "nativescript": {
-        "id": "org.nativescript.demovue",
-        "tns-android": {
-            "version": "5.1.0"
-        },
-        "tns-ios": {
-            "version": "5.1.0"
-        }
+  "nativescript": {
+    "id": "org.nativescript.demovue",
+    "tns-android": {
+      "version": "5.1.0"
     },
-    "dependencies": {
-        "nativescript-imagepicker": "../src",
-        "nativescript-theme-core": "~1.0.4",
-        "nativescript-vue": "~2.0.0",
-        "tns-core-modules": "^5.1.0"
-    },
-    "devDependencies": {
-        "@babel/core": "~7.1.0",
-        "@babel/preset-env": "~7.1.0",
-        "babel-loader": "~8.0.0",
-        "nativescript-dev-webpack": "~0.18.0",
-        "nativescript-vue-template-compiler": "~2.0.0",
-        "node-sass": "~4.9.0",
-        "vue-loader": "~15.4.0"
-    },
-    "scripts": {
-      "build.plugin": "cd ../src && npm run build"
+    "tns-ios": {
+      "version": "5.1.0"
     }
+  },
+  "dependencies": {
+    "nativescript-imagepicker": "../src",
+    "nativescript-theme-core": "~1.0.4",
+    "nativescript-vue": "~2.0.0",
+    "tns-core-modules": "^5.1.0"
+  },
+  "devDependencies": {
+    "@types/chai": "^4.1.4",
+    "@types/mocha": "^5.2.5",
+    "@types/node": "10.5.7",
+    "@babel/core": "~7.1.0",
+    "@babel/preset-env": "~7.1.0",
+    "babel-loader": "~8.0.0",
+    "chai": "~4.1.2",
+    "chai-as-promised": "~7.1.1",
+    "mocha": "~5.2.0",
+    "nativescript-dev-appium": "^4.0.9",
+    "nativescript-dev-webpack": "~0.18.0",
+    "nativescript-vue-template-compiler": "~2.0.0",
+    "node-sass": "~4.9.0",
+    "vue-loader": "~15.4.0"
+  },
+  "scripts": {
+    "build.plugin": "cd ../src && npm run build",
+    "e2e": "tsc -p e2e && mocha --opts ./e2e/config/mocha.opts"
+  }
 }
