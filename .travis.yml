@@ -36,7 +36,7 @@ matrix:
       jdk: oraclejdk8
       before_script: pod repo update
       script:
-        - cd src && npm run build.iosOnly
+        - cd src && npm run build
         - cd ../demo && npm i && tns build ios --bundle --env.uglify
     - os: osx
       env:
@@ -48,7 +48,7 @@ matrix:
       jdk: oraclejdk8
       before_script: pod repo update
       script:
-        - cd src && npm run build.iosOnly
+        - cd src && npm run build
         - cd ../demo-vue && npm i && tns build ios --bundle --env.uglify
         - cd $IOS_PACKAGE_FOLDER_VUE && zip -r $IOS_PACKAGE_VUE demovue.app
         - "curl -u $SAUCE_USER:$SAUCE_KEY -X POST -H 'Content-Type: application/octet-stream' $IOS_SAUCE_STORAGE/$IOS_PACKAGE_VUE?overwrite=true --data-binary @$IOS_PACKAGE_FOLDER_VUE/$IOS_PACKAGE_VUE"
@@ -62,7 +62,7 @@ matrix:
       jdk: oraclejdk8
       before_script: pod repo update
       script:
-        - cd src && npm run build.iosOnly && npm pack
+        - cd src && npm run build && npm pack
         - cd ../demo-angular && tns plugin add ../src/*.tgz
         - npm i && tns build ios --bundle --env.uglify --env.aot
     - language: android
