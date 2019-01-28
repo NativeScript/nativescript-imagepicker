@@ -49,7 +49,7 @@ export class ImagePicker extends data_observable.Observable {
         imagePickerController.assetCollectionSubtypes = defaultAssetCollectionSubtypes;
         imagePickerController.mediaType = options.mediaType ? <QBImagePickerMediaType>options.mediaType.valueOf() : QBImagePickerMediaType.Any;
         imagePickerController.delegate = this._imagePickerControllerDelegate;
-        imagePickerController.allowsMultipleSelection = options.mode === 'multiple';
+        imagePickerController.allowsMultipleSelection = options.mode !== 'single';
         imagePickerController.minimumNumberOfSelection = options.minimumNumberOfSelection || 0;
         imagePickerController.maximumNumberOfSelection = options.maximumNumberOfSelection || 0;
         imagePickerController.showsNumberOfSelectedAssets = options.showsNumberOfSelectedAssets || true;
