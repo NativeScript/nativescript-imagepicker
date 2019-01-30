@@ -2,13 +2,13 @@ env:
   global:
     - ANDROID_PACKAGE_JS='imagepicker-debug-js.apk'
     - ANDROID_PACKAGE_VUE='imagepicker-debug-vue.apk'
-    - ANDROID_PACKAGE_FOLDER_JS=$TRAVIS_BUILD_DIR/demo/platforms/android/app/build/outputs/apk/debug
-    - ANDROID_PACKAGE_FOLDER_VUE=$TRAVIS_BUILD_DIR/demo-vue/platforms/android/app/build/outputs/apk/debug
+    - ANDROID_PACKAGE_FOLDER_JS=$TRAVIS_BUILD_DIR/demo/outputs
+    - ANDROID_PACKAGE_FOLDER_VUE=$TRAVIS_BUILD_DIR/demo-vue/outputs
     - ANDROID_SAUCE_STORAGE="https://saucelabs.com/rest/v1/storage/$SAUCE_USER"
     - IOS_PACKAGE_JS='imagepicker-demo-js.zip'
     - IOS_PACKAGE_VUE='imagepicker-demo-vue.zip'
-    - IOS_PACKAGE_FOLDER_JS=$TRAVIS_BUILD_DIR/demo/platforms/ios/build/emulator
-    - IOS_PACKAGE_FOLDER_VUE=$TRAVIS_BUILD_DIR/demo-vue/platforms/ios/build/emulator
+    - IOS_PACKAGE_FOLDER_JS=$TRAVIS_BUILD_DIR/demo/outputs
+    - IOS_PACKAGE_FOLDER_VUE=$TRAVIS_BUILD_DIR/demo-vue/outputs
     - IOS_SAUCE_STORAGE="https://saucelabs.com/rest/v1/storage/$SAUCE_USER"
 
 git:
@@ -37,7 +37,9 @@ matrix:
       before_script: pod repo update
       script:
         - cd src && npm run build
-        - cd ../demo && npm i && tns build ios --bundle --env.uglify
+        - cd ../demo && npm i && tns build ios --bundle --env.uglify --copy-to "./outputs/demo.app"
+        - cd $IOS_PACKAGE_FOLDER_JS && zip -r $IOS_PACKAGE_JS demo.app
+        - "curl -u $SAUCE_USER:$SAUCE_KEY -X POST -H 'Content-Type: application/octet-stream' $IOS_SAUCE_STORAGE/$IOS_PACKAGE_JS?overwrite=true --data-binary @$IOS_PACKAGE_FOLDER_JS/$IOS_PACKAGE_JS"
     - os: osx
       env:
         - WebpackiOS="12.0"
@@ -49,7 +51,7 @@ matrix:
       before_script: pod repo update
       script:
         - cd src && npm run build
-        - cd ../demo-vue && npm i && tns build ios --bundle --env.uglify
+        - cd ../demo-vue && npm i && tns build ios --bundle --env.uglify --copy-to "./outputs/demovue.app"
         - cd $IOS_PACKAGE_FOLDER_VUE && zip -r $IOS_PACKAGE_VUE demovue.app
         - "curl -u $SAUCE_USER:$SAUCE_KEY -X POST -H 'Content-Type: application/octet-stream' $IOS_SAUCE_STORAGE/$IOS_PACKAGE_VUE?overwrite=true --data-binary @$IOS_PACKAGE_FOLDER_VUE/$IOS_PACKAGE_VUE"
     - os: osx
@@ -74,7 +76,7 @@ matrix:
       before_install: nvm install 8
       script:
         - cd src && npm run build
-        - cd ../demo && npm i && tns build android --bundle --env.uglify --env.snapshot
+        - cd ../demo && npm i && tns build android --bundle --env.uglify --env.snapshot --copy-to "./outputs/app-debug.apk"
         - "curl -u $SAUCE_USER:$SAUCE_KEY -X POST -H 'Content-Type: application/octet-stream' $ANDROID_SAUCE_STORAGE/$ANDROID_PACKAGE_JS?overwrite=true --data-binary @$ANDROID_PACKAGE_FOLDER_JS/app-debug.apk"
     - language: android
       os: linux
@@ -85,7 +87,7 @@ matrix:
       before_install: nvm install 8
       script:
         - cd src && npm run build
-        - cd ../demo-vue && npm i && tns build android --bundle --env.uglify
+        - cd ../demo-vue && npm i && tns build android --bundle --env.uglify --copy-to "./outputs/app-debug.apk"
         - "curl -u $SAUCE_USER:$SAUCE_KEY -X POST -H 'Content-Type: application/octet-stream' $ANDROID_SAUCE_STORAGE/$ANDROID_PACKAGE_VUE?overwrite=true --data-binary @$ANDROID_PACKAGE_FOLDER_VUE/app-debug.apk"
     - language: android
       os: linux
@@ -128,9 +130,8 @@ matrix:
       jdk: oraclejdk8
       before_script: pod repo update
       script:
-        - cd demo && npm run ci.ios.build
-        - cd $IOS_PACKAGE_FOLDER_JS && zip -r $IOS_PACKAGE_JS demo.app
-        - "curl -u $SAUCE_USER:$SAUCE_KEY -X POST -H 'Content-Type: application/octet-stream' $IOS_SAUCE_STORAGE/$IOS_PACKAGE_JS?overwrite=true --data-binary @$IOS_PACKAGE_FOLDER_JS/$IOS_PACKAGE_JS"
+        - cd src && npm run build
+        - cd ../demo && tns build ios --bundle --env.uglify
     - os: osx
       env:
         - BuildiOS="12.0"
