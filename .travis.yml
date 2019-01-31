@@ -69,7 +69,8 @@ matrix:
       script:
         - cd ../demo && npm run build.plugin && npm i && tns build android --bundle --env.uglify --env.snapshot --copy-to "./outputs/app-debug.apk"
         - "curl -u $SAUCE_USER:$SAUCE_KEY -X POST -H 'Content-Type: application/octet-stream' $ANDROID_SAUCE_STORAGE --data-binary @$ANDROID_PACKAGE_FOLDER/$ANDROID_PACKAGE"
-    - os: linux
+    - language: android
+      os: linux
       env:
         - WebPackAndroid="26"
         - Type="Angular"
@@ -80,7 +81,8 @@ matrix:
       script:
         - cd ../publish && sh pack.sh && cp package/*.tgz ../demo-angular/package.tgz
         - cd ../demo-angular && tns plugin add package.tgz && npm i && tns build android --bundle --env.uglify --env.snapshot --env.aot --copy-to "./outputs/app-debug-angular.apk"
-    - os: linux
+    - language: android
+      os: linux
       env:
         - WebPackAndroid="26"
         - Type="VueJS"
