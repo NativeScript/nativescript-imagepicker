@@ -27,13 +27,10 @@ matrix:
       jdk: oraclejdk8
       before_script:
         - cd ../demo && tns platform add ios@next
-        - cd ../demo-angular && tns platform add ios@next
       script: 
         - cd ../demo && npm run build.plugin && npm i && tns build ios --bundle --env.uglify --copy-to "./outputs/demo.app"
         - cd $IOS_PACKAGE_FOLDER && zip -r $IOS_PACKAGE_NEXT demo.app
         - "curl -u $SAUCE_USER:$SAUCE_KEY -X POST -H 'Content-Type: application/octet-stream' $IOS_SAUCE_STORAGE --data-binary @$IOS_PACKAGE_FOLDER/$IOS_PACKAGE_NEXT"
-        - cd ../publish && sh pack.sh && cp package/*.tgz ../demo-angular/package.tgz
-        - cd ../demo-angular && tns plugin add package.tgz && npm i && tns build ios --bundle --env.uglify --env.aot --copy-to "./outputs/demo-angular.app"
     - os: osx
       env:
         - WebPackiOS="12.0"
