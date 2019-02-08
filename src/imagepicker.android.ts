@@ -16,25 +16,36 @@ class UriHelper {
                 docId = DocumentsContract.getDocumentId(uri);
                 id = docId.split(":")[1];
                 type = docId.split(":")[0];
+                let storageDefinition: string;
 
                 if ("primary" === type.toLowerCase()) {
                     return android.os.Environment.getExternalStorageDirectory() + "/" + id;
+                } else {
+                    if (android.os.Environment.isExternalStorageRemovable()) {
+                        storageDefinition = "EXTERNAL_STORAGE";
+                    } else {
+                        storageDefinition = "SECONDARY_STORAGE";
+                    }
+                    return java.lang.System.getenv(storageDefinition) + "FORWARD_SLASH" + id;
                 }
-
-                // TODO handle non-primary volumes
             }
             // DownloadsProvider
             else if (UriHelper.isDownloadsDocument(uri)) {
                 id = DocumentsContract.getDocumentId(uri);
+
                 // Since Oreo the downloads id may be a raw string,
                 // containing the file path:
                 if (id.indexOf("raw:") !== -1) {
                     return id.substring(4, id.length);
                 }
                 contentUri = android.content.ContentUris.withAppendedId(
-                    android.net.Uri.parse("content://downloads/public_downloads"), long(id));
-
-                return UriHelper.getDataColumn(contentUri, null, null);
+                android.net.Uri.parse("content://downloads/public_downloads"), long(id));
+                let resolvedPath: string = UriHelper.getDataColumn(contentUri, null, null);
+                if (resolvedPath != undefined) {
+                    return resolvedPath;
+                } else {
+                    return uri.toString();
+                }
             }
             // MediaProvider
             else if (UriHelper.isMediaDocument(uri)) {
