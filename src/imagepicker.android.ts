@@ -17,16 +17,20 @@ class UriHelper {
                 id = docId.split(":")[1];
                 type = docId.split(":")[0];
                 let storageDefinition: string;
-
                 if ("primary" === type.toLowerCase()) {
                     return android.os.Environment.getExternalStorageDirectory() + "/" + id;
                 } else {
                     if (android.os.Environment.isExternalStorageRemovable()) {
-                        storageDefinition = "EXTERNAL_STORAGE";
+                        storageDefinition = "EXTERNAL_SDCARD_STORAGE";
                     } else {
                         storageDefinition = "SECONDARY_STORAGE";
                     }
-                    return java.lang.System.getenv(storageDefinition) + "FORWARD_SLASH" + id;
+                    let env: string = java.lang.System.getenv(storageDefinition);
+                    if (env != null) {
+                        return env + "/" + id;
+                    } else {
+                        return uri.toString();
+                    }
                 }
             }
             // DownloadsProvider
