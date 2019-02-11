@@ -26,7 +26,7 @@ class UriHelper {
                         storageDefinition = "SECONDARY_STORAGE";
                     }
                     let env: string = java.lang.System.getenv(storageDefinition);
-                    if (env != null) {
+                    if (env !== null) {
                         return env + "/" + id;
                     } else {
                         return uri.toString();
@@ -45,7 +45,7 @@ class UriHelper {
                 contentUri = android.content.ContentUris.withAppendedId(
                 android.net.Uri.parse("content://downloads/public_downloads"), long(id));
                 let resolvedPath: string = UriHelper.getDataColumn(contentUri, null, null);
-                if (resolvedPath != undefined) {
+                if (resolvedPath !== undefined) {
                     return resolvedPath;
                 } else {
                     return uri.toString();
