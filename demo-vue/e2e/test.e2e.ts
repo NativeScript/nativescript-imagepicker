@@ -1,7 +1,9 @@
 import { AppiumDriver, createDriver, SearchOptions } from "nativescript-dev-appium";
 import { isSauceLab, runType } from "nativescript-dev-appium/lib/parser";
 import { expect } from "chai";
-
+const fs = require('fs');
+const addContext = require('mochawesome/addContext');
+const rimraf = require('rimraf');
 const isSauceRun = isSauceLab;
 const isAndroid: boolean = runType.includes("android");
 
@@ -14,6 +16,11 @@ describe("Imagepicker", async function () {
     before(async () => {
         driver = await createDriver();
         driver.defaultWaitTime = 10000;
+        let dir = "mochawesome-report";
+        if (!fs.existsSync(dir)) {
+            fs.mkdirSync(dir);
+        }
+        rimraf('mochawesome-report/*', function () { });
     });
 
     after(async () => {
@@ -24,6 +31,19 @@ describe("Imagepicker", async function () {
         }
         await driver.quit();
         console.log("Driver quits!");
+    });
+
+    afterEach(async function () {
+        if (this.currentTest.state && this.currentTest.state === "failed") {
+            let png = await driver.logScreenshot(this.currentTest.title);
+            fs.copyFile(png, './mochawesome-report/' + this.currentTest.title + '.png', function (err) {
+                if (err) {
+                    throw err;
+                }
+                console.log('Screenshot saved.');
+            });
+            addContext(this, './' + this.currentTest.title + '.png');
+        }
     });
 
     it("should pick one image", async function () {
