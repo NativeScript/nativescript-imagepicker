@@ -75,8 +75,6 @@ export class ImagePicker extends data_observable.Observable {
     }
 
     present() {
-        this._imagePickerController.delegate = this._imagePickerControllerDelegate;
-
         return new Promise<void>((resolve, reject) => {
             this._imagePickerControllerDelegate._resolve = resolve;
             this._imagePickerControllerDelegate._reject = reject;
