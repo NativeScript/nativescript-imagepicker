@@ -43,12 +43,11 @@ export class ImagePicker extends data_observable.Observable {
         super();
 
         this._hostView = hostView;
-        this._imagePickerControllerDelegate = new ImagePickerControllerDelegate();
+        this._imagePickerControllerDelegate = ImagePickerControllerDelegate.new();
 
         let imagePickerController = QBImagePickerController.alloc().init();
         imagePickerController.assetCollectionSubtypes = defaultAssetCollectionSubtypes;
         imagePickerController.mediaType = options.mediaType ? <QBImagePickerMediaType>options.mediaType.valueOf() : QBImagePickerMediaType.Any;
-        imagePickerController.delegate = this._imagePickerControllerDelegate;
         imagePickerController.allowsMultipleSelection = options.mode !== 'single';
         imagePickerController.minimumNumberOfSelection = options.minimumNumberOfSelection || 0;
         imagePickerController.maximumNumberOfSelection = options.maximumNumberOfSelection || 0;
@@ -80,7 +79,9 @@ export class ImagePicker extends data_observable.Observable {
             this._imagePickerControllerDelegate._resolve = resolve;
             this._imagePickerControllerDelegate._reject = reject;
 
-            this.hostController.presentViewControllerAnimatedCompletion(this._imagePickerController, true, null);
+            this.hostController.presentViewControllerAnimatedCompletion(this._imagePickerController, true, () => {
+                this._imagePickerController.delegate = this._imagePickerControllerDelegate;
+            });
         });
     }
 }
@@ -129,4 +130,3 @@ export class ImagePickerControllerDelegate extends NSObject implements QBImagePi
 export function create(options?: Options, hostView?: View): ImagePicker {
     return new ImagePicker(options, hostView);
 }
-
