@@ -79,7 +79,7 @@ export class ImagePicker extends data_observable.Observable {
             this._imagePickerControllerDelegate._resolve = resolve;
             this._imagePickerControllerDelegate._reject = reject;
 
-            this.hostController.presentViewControllerAnimatedCompletion(this._imagePickerController, true, ()=>{
+            this.hostController.presentViewControllerAnimatedCompletion(this._imagePickerController, true, () => {
                 this._imagePickerController.delegate = this._imagePickerControllerDelegate;
             });
         });
@@ -130,4 +130,3 @@ export class ImagePickerControllerDelegate extends NSObject implements QBImagePi
 export function create(options?: Options, hostView?: View): ImagePicker {
     return new ImagePicker(options, hostView);
 }
-
