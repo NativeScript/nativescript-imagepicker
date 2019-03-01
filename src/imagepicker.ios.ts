@@ -17,8 +17,32 @@ const defaultAssetCollectionSubtypes: NSArray<any> = NSArray.arrayWithArray(<any
     PHAssetCollectionSubtype.SmartAlbumLivePhotos
 ]);
 
+export class QBImagePickerControllerExtension extends QBImagePickerController {
+    viewDidAppear(animated: boolean) {
+        super.viewDidAppear(animated);
+
+        console.log("viewDidAppear");
+    }
+
+    viewDidLoad() {
+        super.viewDidLoad();
+        console.log("viewDidLoad");
+    }
+
+    public static ObjCProtocols = [QBImagePickerController];
+
+    static new(): QBImagePickerControllerExtension {
+        return <QBImagePickerControllerExtension>super.new();
+    }
+
+    static alloc() {
+        return super.alloc();
+    }
+}
+
+
 export class ImagePicker extends data_observable.Observable {
-    _imagePickerController: QBImagePickerController;
+    _imagePickerController: QBImagePickerControllerExtension;
     _imagePickerControllerDelegate: ImagePickerControllerDelegate;
     _hostView: View;
 
@@ -29,6 +53,13 @@ export class ImagePicker extends data_observable.Observable {
 
     get hostController() {
         let vc = this.hostView ? this.hostView.viewController : UIApplication.sharedApplication.keyWindow.rootViewController;
+
+        if (this.hostView) {
+            console.log("this.hostView.viewController");
+        } else {
+            console.log("UIApplication.sharedApplication.keyWindow.rootViewController")
+        }
+
         while (
             vc.presentedViewController
             && vc.presentedViewController.viewLoaded
@@ -45,7 +76,8 @@ export class ImagePicker extends data_observable.Observable {
         this._hostView = hostView;
         this._imagePickerControllerDelegate = ImagePickerControllerDelegate.new();
 
-        let imagePickerController = QBImagePickerController.alloc().init();
+        // let imagePickerController = QBImagePickerControllerExtension.alloc().init();
+        let imagePickerController = QBImagePickerControllerExtension.new();
         imagePickerController.assetCollectionSubtypes = defaultAssetCollectionSubtypes;
         imagePickerController.mediaType = options.mediaType ? <QBImagePickerMediaType>options.mediaType.valueOf() : QBImagePickerMediaType.Any;
         imagePickerController.allowsMultipleSelection = options.mode !== 'single';
@@ -79,6 +111,7 @@ export class ImagePicker extends data_observable.Observable {
             this._imagePickerControllerDelegate._resolve = resolve;
             this._imagePickerControllerDelegate._reject = reject;
 
+            this._imagePickerController.viewDidAppear
             this.hostController.presentViewControllerAnimatedCompletion(this._imagePickerController, true, () => {
                 this._imagePickerController.delegate = this._imagePickerControllerDelegate;
             });
