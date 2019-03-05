@@ -80,7 +80,7 @@ export class ImagePicker extends data_observable.Observable {
             const imagePickerControllerDelegate = ImagePickerControllerDelegate.new();
             imagePickerControllerDelegate._resolve = resolve;
             imagePickerControllerDelegate._reject = reject;
-            
+
             this._imagePickerController.delegate = imagePickerControllerDelegate;
 
             this.hostController.presentViewControllerAnimatedCompletion(this._imagePickerController, true, null);
@@ -95,7 +95,7 @@ export class ImagePickerControllerDelegate extends NSObject implements QBImagePi
     qb_imagePickerControllerDidCancel?(imagePickerController: QBImagePickerController): void {
         imagePickerController.dismissViewControllerAnimatedCompletion(true, null);
         this._reject(new Error("Selection canceled."));
-        
+
         this.deRegisterFromGlobal();
     }
 
@@ -136,10 +136,10 @@ export class ImagePickerControllerDelegate extends NSObject implements QBImagePi
     }
 
     public static ObjCProtocols = [QBImagePickerControllerDelegate];
-    
+
     static new(): ImagePickerControllerDelegate {
         const instance = <ImagePickerControllerDelegate>super.new(); // calls new() on the NSObject
-        
+
         instance.registerToGlobal();
 
         return instance;
