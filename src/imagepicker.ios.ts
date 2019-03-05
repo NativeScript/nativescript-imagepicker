@@ -19,7 +19,6 @@ const defaultAssetCollectionSubtypes: NSArray<any> = NSArray.arrayWithArray(<any
 
 export class ImagePicker extends data_observable.Observable {
     _imagePickerController: QBImagePickerController;
-    _imagePickerControllerDelegate: ImagePickerControllerDelegate;
     _hostView: View;
 
     // lazy-load latest frame.topmost() if _hostName is not used
@@ -27,7 +26,9 @@ export class ImagePicker extends data_observable.Observable {
         return this._hostView;
     }
 
-    get hostController() {
+
+
+    get hostController(): UIViewController {
         let vc = this.hostView ? this.hostView.viewController : UIApplication.sharedApplication.keyWindow.rootViewController;
         while (
             vc.presentedViewController
@@ -43,9 +44,9 @@ export class ImagePicker extends data_observable.Observable {
         super();
 
         this._hostView = hostView;
-        this._imagePickerControllerDelegate = ImagePickerControllerDelegate.new();
 
         let imagePickerController = QBImagePickerController.alloc().init();
+
         imagePickerController.assetCollectionSubtypes = defaultAssetCollectionSubtypes;
         imagePickerController.mediaType = options.mediaType ? <QBImagePickerMediaType>options.mediaType.valueOf() : QBImagePickerMediaType.Any;
         imagePickerController.allowsMultipleSelection = options.mode !== 'single';
@@ -76,12 +77,13 @@ export class ImagePicker extends data_observable.Observable {
 
     present() {
         return new Promise<void>((resolve, reject) => {
-            this._imagePickerControllerDelegate._resolve = resolve;
-            this._imagePickerControllerDelegate._reject = reject;
+            const imagePickerControllerDelegate = ImagePickerControllerDelegate.new();
+            imagePickerControllerDelegate._resolve = resolve;
+            imagePickerControllerDelegate._reject = reject;
+            
+            this._imagePickerController.delegate = imagePickerControllerDelegate;
 
-            this.hostController.presentViewControllerAnimatedCompletion(this._imagePickerController, true, () => {
-                this._imagePickerController.delegate = this._imagePickerControllerDelegate;
-            });
+            this.hostController.presentViewControllerAnimatedCompletion(this._imagePickerController, true, null);
         });
     }
 }
@@ -93,6 +95,8 @@ export class ImagePickerControllerDelegate extends NSObject implements QBImagePi
     qb_imagePickerControllerDidCancel?(imagePickerController: QBImagePickerController): void {
         imagePickerController.dismissViewControllerAnimatedCompletion(true, null);
         this._reject(new Error("Selection canceled."));
+        
+        this.deRegisterFromGlobal();
     }
 
     qb_imagePickerControllerDidFinishPickingAssets?(imagePickerController: QBImagePickerController, iosAssets: NSArray<any>): void {
@@ -112,6 +116,7 @@ export class ImagePickerControllerDelegate extends NSObject implements QBImagePi
         this._resolve(assets);
 
         imagePickerController.dismissViewControllerAnimatedCompletion(true, () => {
+            this.deRegisterFromGlobal();
             // FIX: possible memory issue when picking images many times.
             // Not the best solution, but the only one working for now
             // https://github.com/NativeScript/nativescript-imagepicker/issues/222
@@ -120,10 +125,24 @@ export class ImagePickerControllerDelegate extends NSObject implements QBImagePi
 
     }
 
-    public static ObjCProtocols = [QBImagePickerControllerDelegate];
+    // FIX: stores a reference to global scope, so that the delegate is not collected in native
+    // https://github.com/NativeScript/nativescript-imagepicker/issues/251
+    private registerToGlobal(): any {
+        (<any>global).imagePickerControllerDelegate = this;
+    }
 
+    private deRegisterFromGlobal(): any {
+        (<any>global).imagePickerControllerDelegate = null;
+    }
+
+    public static ObjCProtocols = [QBImagePickerControllerDelegate];
+    
     static new(): ImagePickerControllerDelegate {
-        return <ImagePickerControllerDelegate>super.new(); // calls new() on the NSObject
+        const instance = <ImagePickerControllerDelegate>super.new(); // calls new() on the NSObject
+        
+        instance.registerToGlobal();
+
+        return instance;
     }
 }
 
