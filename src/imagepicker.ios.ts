@@ -17,32 +17,8 @@ const defaultAssetCollectionSubtypes: NSArray<any> = NSArray.arrayWithArray(<any
     PHAssetCollectionSubtype.SmartAlbumLivePhotos
 ]);
 
-export class QBImagePickerControllerExtension extends QBImagePickerController {
-    viewDidAppear(animated: boolean) {
-        super.viewDidAppear(animated);
-
-        console.log("viewDidAppear");
-    }
-
-    viewDidLoad() {
-        super.viewDidLoad();
-        console.log("viewDidLoad");
-    }
-
-    public static ObjCProtocols = [QBImagePickerController];
-
-    static new(): QBImagePickerControllerExtension {
-        return <QBImagePickerControllerExtension>super.new();
-    }
-
-    static alloc() {
-        return super.alloc();
-    }
-}
-
-
 export class ImagePicker extends data_observable.Observable {
-    _imagePickerController: QBImagePickerControllerExtension;
+    _imagePickerController: QBImagePickerController;
     _imagePickerControllerDelegate: ImagePickerControllerDelegate;
     _hostView: View;
 
@@ -53,12 +29,6 @@ export class ImagePicker extends data_observable.Observable {
 
     get hostController() {
         let vc = this.hostView ? this.hostView.viewController : UIApplication.sharedApplication.keyWindow.rootViewController;
-
-        if (this.hostView) {
-            console.log("this.hostView.viewController");
-        } else {
-            console.log("UIApplication.sharedApplication.keyWindow.rootViewController")
-        }
 
         while (
             vc.presentedViewController
@@ -74,10 +44,11 @@ export class ImagePicker extends data_observable.Observable {
         super();
 
         this._hostView = hostView;
-        this._imagePickerControllerDelegate = ImagePickerControllerDelegate.new();
+        (<any>global)._imagePickerControllerDelegate = ImagePickerControllerDelegate.new();
 
-        // let imagePickerController = QBImagePickerControllerExtension.alloc().init();
-        let imagePickerController = QBImagePickerControllerExtension.new();
+        let imagePickerController = QBImagePickerController.new();
+        imagePickerController.delegate = (<any>global)._imagePickerControllerDelegate;
+
         imagePickerController.assetCollectionSubtypes = defaultAssetCollectionSubtypes;
         imagePickerController.mediaType = options.mediaType ? <QBImagePickerMediaType>options.mediaType.valueOf() : QBImagePickerMediaType.Any;
         imagePickerController.allowsMultipleSelection = options.mode !== 'single';
@@ -108,13 +79,10 @@ export class ImagePicker extends data_observable.Observable {
 
     present() {
         return new Promise<void>((resolve, reject) => {
-            this._imagePickerControllerDelegate._resolve = resolve;
-            this._imagePickerControllerDelegate._reject = reject;
+            (<any>global)._imagePickerControllerDelegate._resolve = resolve;
+            (<any>global)._imagePickerControllerDelegate._reject = reject;
 
-            this._imagePickerController.viewDidAppear
-            this.hostController.presentViewControllerAnimatedCompletion(this._imagePickerController, true, () => {
-                this._imagePickerController.delegate = this._imagePickerControllerDelegate;
-            });
+            this.hostController.presentViewControllerAnimatedCompletion(this._imagePickerController, true, null);
         });
     }
 }
