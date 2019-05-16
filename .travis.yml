@@ -20,54 +20,8 @@ branches:
 
 matrix:
   include:
-    - stage: "Lint"
-      language: node_js
-      os: linux
-      node_js: "8"
-      script: cd src && npm run ci.tslint && cd ../demo && npm run ci.tslint && cd ../demo-angular && npm run ci.tslint
     - stage: "WebPack and Build"
-      os: osx
-      env:
-        - WebpackiOS="12.0"
-        - Type="VanillaJS"
-      osx_image: xcode10.0
-      language: node_js
-      node_js: "8"
-      jdk: oraclejdk8
-      before_script: pod repo update
-      script:
-        - cd src && npm run build
-        - cd ../demo && npm i && tns build ios --bundle --env.uglify --copy-to "./outputs/demo.app"
-        - cd $IOS_PACKAGE_FOLDER_JS && zip -r $IOS_PACKAGE_JS demo.app
-        - "curl -u $SAUCE_USER:$SAUCE_KEY -X POST -H 'Content-Type: application/octet-stream' $IOS_SAUCE_STORAGE/$IOS_PACKAGE_JS?overwrite=true --data-binary @$IOS_PACKAGE_FOLDER_JS/$IOS_PACKAGE_JS"
-    - os: osx
-      env:
-        - WebpackiOS="12.0"
-        - Type="VueJS"
-      osx_image: xcode10.0
-      language: node_js
-      node_js: "8"
-      jdk: oraclejdk8
-      before_script: pod repo update
-      script:
-        - cd src && npm run build
-        - cd ../demo-vue && npm i && tns build ios --bundle --env.uglify --copy-to "./outputs/demovue.app"
-        - cd $IOS_PACKAGE_FOLDER_VUE && zip -r $IOS_PACKAGE_VUE demovue.app
-        - "curl -u $SAUCE_USER:$SAUCE_KEY -X POST -H 'Content-Type: application/octet-stream' $IOS_SAUCE_STORAGE/$IOS_PACKAGE_VUE?overwrite=true --data-binary @$IOS_PACKAGE_FOLDER_VUE/$IOS_PACKAGE_VUE"
-    - os: osx
-      env:
-        - WebpackiOS="12.0"
-        - Type="Angular"
-      osx_image: xcode10.0
-      language: node_js
-      node_js: "8"
-      jdk: oraclejdk8
-      before_script: pod repo update
-      script:
-        - cd src && npm run build && npm pack
-        - cd ../demo-angular && tns plugin add ../src/*.tgz
-        - npm i && tns build ios --bundle --env.uglify --env.aot
-    - language: android
+      language: android
       os: linux
       env:
         - WebpackAndroid="28"
@@ -92,15 +46,6 @@ android:
     - build-tools-28.0.3
     - android-28
     - extra-android-m2repository
-
-before_cache:
-    - rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
-
-cache:
-    directories:
-        - .nvm
-        - $HOME/.gradle/caches/
-        - $HOME/.gradle/wrapper/
         
 before_install:
     - sudo pip install --upgrade pip
