@@ -50,6 +50,8 @@ android:
 before_install:
     - sudo pip install --upgrade pip
     - sudo pip install six
+    - sudo apt-get update
+    - sudo apt-get install libc6
         
 install:
     - echo no | npm install -g nativescript
