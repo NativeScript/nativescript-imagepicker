@@ -77,6 +77,7 @@ matrix:
       script:
         - ls -l $ANDROID_HOME
         - ls -l $ANDROID_HOME/platform-tools
+        - tns doctor --log trace
         - cd src && npm run build
         - cd ../demo && npm i && tns build android --bundle --env.uglify --env.snapshot --copy-to "./outputs/app-debug.apk"
         - "curl -u $SAUCE_USER:$SAUCE_KEY -X POST -H 'Content-Type: application/octet-stream' $ANDROID_SAUCE_STORAGE/$ANDROID_PACKAGE_JS?overwrite=true --data-binary @$ANDROID_PACKAGE_FOLDER_JS/app-debug.apk"
