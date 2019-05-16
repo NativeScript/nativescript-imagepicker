@@ -1,3 +1,7 @@
+branches:
+  only: 
+    - master
+
 env:
   global:
     - ANDROID_PACKAGE_JS='imagepicker-debug-js.apk'
@@ -10,13 +14,6 @@ env:
     - IOS_PACKAGE_FOLDER_JS=$TRAVIS_BUILD_DIR/demo/outputs
     - IOS_PACKAGE_FOLDER_VUE=$TRAVIS_BUILD_DIR/demo-vue/outputs
     - IOS_SAUCE_STORAGE="https://saucelabs.com/rest/v1/storage/$SAUCE_USER"
-
-git:
-  depth: 1
-
-branches:
-  only: 
-    - master
 
 matrix:
   include:
@@ -154,7 +151,7 @@ matrix:
       script:
         - npm i -g appium
         - cd demo && npm i
-        - travis_wait travis_retry npm run e2e -- --runType android23 --sauceLab --appPath $ANDROID_PACKAGE_JS
+        - travis_wait travis_retry npm run e2e -- --runType android24 --sauceLab --appPath $ANDROID_PACKAGE_JS
     - os: linux
       env:
         - Android="24"
@@ -165,7 +162,7 @@ matrix:
       script:
         - npm i -g appium
         - cd demo-vue && npm i
-        - travis_wait travis_retry npm run e2e -- --runType android23 --sauceLab --appPath $ANDROID_PACKAGE_VUE
+        - travis_wait travis_retry npm run e2e -- --runType android24 --sauceLab --appPath $ANDROID_PACKAGE_VUE
     - os: linux
       env:
         - iOS="12.0"
