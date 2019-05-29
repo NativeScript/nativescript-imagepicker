@@ -23,7 +23,7 @@ matrix:
         - WebpackAndroid="28"
         - Type="VanillaJS"
       jdk: oraclejdk8
-      before_install: nvm install 8
+      before_install: nvm install 10
       script:
         - ls -l $ANDROID_HOME
         - ls -l $ANDROID_HOME/platform-tools
