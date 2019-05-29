@@ -1,3 +1,6 @@
+branches:
+  only: 
+    - master
 env:
   global:
     - ANDROID_PACKAGE_JS='imagepicker-debug-js.apk'
@@ -10,13 +13,6 @@ env:
     - IOS_PACKAGE_FOLDER_JS=$TRAVIS_BUILD_DIR/demo/outputs
     - IOS_PACKAGE_FOLDER_VUE=$TRAVIS_BUILD_DIR/demo-vue/outputs
     - IOS_SAUCE_STORAGE="https://saucelabs.com/rest/v1/storage/$SAUCE_USER"
-
-git:
-  depth: 1
-
-branches:
-  only: 
-    - master
 
 matrix:
   include:
@@ -46,16 +42,13 @@ android:
     - build-tools-28.0.3
     - android-28
     - extra-android-m2repository
-        
+    - sys-img-armeabi-v7a-android-21
+
 before_install:
     - sudo pip install --upgrade pip
     - sudo pip install six
-    - sudo apt-get update
-    - sudo apt-get install libc6
-        
+
 install:
     - echo no | npm install -g nativescript
     - tns usage-reporting disable
     - tns error-reporting disable
-
-  
