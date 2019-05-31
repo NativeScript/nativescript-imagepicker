@@ -20,11 +20,11 @@ branches:
 
 matrix:
   include:
-    - stage: "Lint"
-      language: node_js
-      os: linux
-      node_js: "8"
-      script: cd src && npm run ci.tslint && cd ../demo && npm run ci.tslint && cd ../demo-angular && npm run ci.tslint
+    # - stage: "Lint"
+    #   language: node_js
+    #   os: linux
+    #   node_js: "8"
+    #   script: cd src && npm run ci.tslint && cd ../demo && npm run ci.tslint && cd ../demo-angular && npm run ci.tslint
     - stage: "WebPack and Build"
       os: osx
       env:
@@ -40,68 +40,69 @@ matrix:
         - cd ../demo && npm i && tns build ios --bundle --env.uglify --copy-to "./outputs/demo.app"
         - cd $IOS_PACKAGE_FOLDER_JS && zip -r $IOS_PACKAGE_JS demo.app
         - "curl -u $SAUCE_USER:$SAUCE_KEY -X POST -H 'Content-Type: application/octet-stream' $IOS_SAUCE_STORAGE/$IOS_PACKAGE_JS?overwrite=true --data-binary @$IOS_PACKAGE_FOLDER_JS/$IOS_PACKAGE_JS"
-    - os: osx
-      env:
-        - WebpackiOS="12.0"
-        - Type="VueJS"
-      osx_image: xcode10.0
-      language: node_js
-      node_js: "8"
-      jdk: oraclejdk8
-      before_script: pod repo update
-      script:
-        - cd src && npm run build
-        - cd ../demo-vue && npm i && tns build ios --bundle --env.uglify --copy-to "./outputs/demovue.app"
-        - cd $IOS_PACKAGE_FOLDER_VUE && zip -r $IOS_PACKAGE_VUE demovue.app
-        - "curl -u $SAUCE_USER:$SAUCE_KEY -X POST -H 'Content-Type: application/octet-stream' $IOS_SAUCE_STORAGE/$IOS_PACKAGE_VUE?overwrite=true --data-binary @$IOS_PACKAGE_FOLDER_VUE/$IOS_PACKAGE_VUE"
-    - os: osx
-      env:
-        - WebpackiOS="12.0"
-        - Type="Angular"
-      osx_image: xcode10.0
-      language: node_js
-      node_js: "8"
-      jdk: oraclejdk8
-      before_script: pod repo update
-      script:
-        - cd src && npm run build && npm pack
-        - cd ../demo-angular && tns plugin add ../src/*.tgz
-        - npm i && tns build ios --bundle --env.uglify --env.aot
+    # - os: osx
+    #   env:
+    #     - WebpackiOS="12.0"
+    #     - Type="VueJS"
+    #   osx_image: xcode10.0
+    #   language: node_js
+    #   node_js: "8"
+    #   jdk: oraclejdk8
+    #   before_script: pod repo update
+    #   script:
+    #     - cd src && npm run build
+    #     - cd ../demo-vue && npm i && tns build ios --bundle --env.uglify --copy-to "./outputs/demovue.app"
+    #     - cd $IOS_PACKAGE_FOLDER_VUE && zip -r $IOS_PACKAGE_VUE demovue.app
+    #     - "curl -u $SAUCE_USER:$SAUCE_KEY -X POST -H 'Content-Type: application/octet-stream' $IOS_SAUCE_STORAGE/$IOS_PACKAGE_VUE?overwrite=true --data-binary @$IOS_PACKAGE_FOLDER_VUE/$IOS_PACKAGE_VUE"
+    # - os: osx
+    #   env:
+    #     - WebpackiOS="12.0"
+    #     - Type="Angular"
+    #   osx_image: xcode10.0
+    #   language: node_js
+    #   node_js: "8"
+    #   jdk: oraclejdk8
+    #   before_script: pod repo update
+    #   script:
+    #     - cd src && npm run build && npm pack
+    #     - cd ../demo-angular && tns plugin add ../src/*.tgz
+    #     - npm i && tns build ios --bundle --env.uglify --env.aot
+    # - language: android
+    #   os: linux
+    #   env:
+    #     - WebpackAndroid="28"
+    #     - Type="VanillaJS"
+    #   jdk: oraclejdk8
+    #   before_install: nvm install 8
+    #   script:
+    #     - cd src && npm run build
+    #     - cd ../demo && npm i && tns build android --bundle --env.uglify --env.snapshot --copy-to "./outputs/app-debug.apk"
+    #     - "curl -u $SAUCE_USER:$SAUCE_KEY -X POST -H 'Content-Type: application/octet-stream' $ANDROID_SAUCE_STORAGE/$ANDROID_PACKAGE_JS?overwrite=true --data-binary @$ANDROID_PACKAGE_FOLDER_JS/app-debug.apk"
+    # - language: android
+    #   os: linux
+    #   env:
+    #     - WebpackAndroid="28"
+    #     - Type="VueJS"
+    #   jdk: oraclejdk8
+    #   before_install: nvm install 8
+    #   script:
+    #     - cd src && npm run build
+    #     - cd ../demo-vue && npm i && tns build android --bundle --env.uglify --copy-to "./outputs/app-debug.apk"
+    #     - "curl -u $SAUCE_USER:$SAUCE_KEY -X POST -H 'Content-Type: application/octet-stream' $ANDROID_SAUCE_STORAGE/$ANDROID_PACKAGE_VUE?overwrite=true --data-binary @$ANDROID_PACKAGE_FOLDER_VUE/app-debug.apk"
+    # - language: android
+    #   os: linux
+    #   env:
+    #     - WebpackAndroid="28"
+    #     - Type="Angular"
+    #   jdk: oraclejdk8
+    #   before_install: nvm install 8
+    #   script:
+    #     - cd src && npm run build
+    #     - cd ../publish && sh pack.sh
+    #     - cd ../demo-angular && tns plugin add ../publish/package/*.tgz
+    #     - npm i && tns build android --bundle --env.uglify --env.snapshot --env.aot
     - language: android
-      os: linux
-      env:
-        - WebpackAndroid="28"
-        - Type="VanillaJS"
-      jdk: oraclejdk8
-      before_install: nvm install 8
-      script:
-        - cd src && npm run build
-        - cd ../demo && npm i && tns build android --bundle --env.uglify --env.snapshot --copy-to "./outputs/app-debug.apk"
-        - "curl -u $SAUCE_USER:$SAUCE_KEY -X POST -H 'Content-Type: application/octet-stream' $ANDROID_SAUCE_STORAGE/$ANDROID_PACKAGE_JS?overwrite=true --data-binary @$ANDROID_PACKAGE_FOLDER_JS/app-debug.apk"
-    - language: android
-      os: linux
-      env:
-        - WebpackAndroid="28"
-        - Type="VueJS"
-      jdk: oraclejdk8
-      before_install: nvm install 8
-      script:
-        - cd src && npm run build
-        - cd ../demo-vue && npm i && tns build android --bundle --env.uglify --copy-to "./outputs/app-debug.apk"
-        - "curl -u $SAUCE_USER:$SAUCE_KEY -X POST -H 'Content-Type: application/octet-stream' $ANDROID_SAUCE_STORAGE/$ANDROID_PACKAGE_VUE?overwrite=true --data-binary @$ANDROID_PACKAGE_FOLDER_VUE/app-debug.apk"
-    - language: android
-      os: linux
-      env:
-        - WebpackAndroid="28"
-        - Type="Angular"
-      jdk: oraclejdk8
-      before_install: nvm install 8
-      script:
-        - cd src && npm run build
-        - cd ../publish && sh pack.sh
-        - cd ../demo-angular && tns plugin add ../publish/package/*.tgz
-        - npm i && tns build android --bundle --env.uglify --env.snapshot --env.aot
-    - language: android
+      dist: trusty
       env:
         - BuildAndroid="28"
         - Type="VanillaJS"
@@ -110,82 +111,82 @@ matrix:
       before_install: nvm install 8.11.4
       script:
         - cd demo && npm run ci.android.build
-    - language: android
-      env:
-        - BuildAndroid="28"
-        - Type="Angular"
-      os: linux
-      jdk: oraclejdk8
-      before_install: nvm install 8.11.4
-      script:
-        - cd demo-angular && npm run ci.android.build
-    - os: osx
-      env:
-        - BuildiOS="12.0"
-        - Xcode="10.0"
-        - Type="VanillaJS"
-      osx_image: xcode10.0
-      language: node_js
-      node_js: "8"
-      jdk: oraclejdk8
-      before_script: pod repo update
-      script:
-        - cd src && npm run build
-        - cd ../demo && tns build ios --bundle --env.uglify
-    - os: osx
-      env:
-        - BuildiOS="12.0"
-        - Xcode="10.0"
-        - Type="Angular"
-      osx_image: xcode10.0
-      language: node_js
-      node_js: "8"
-      jdk: oraclejdk8
-      before_script: pod repo update
-      script:
-        - cd demo-angular && npm run ci.ios.build
-    - stage: "UI Tests"
-      env:
-        - Android="24"
-        - Type="VanillaJS"
-      language: node_js
-      os: linux
-      node_js: "8"
-      script:
-        - npm i -g appium
-        - cd demo && npm i
-        - travis_wait travis_retry npm run e2e -- --runType android23 --sauceLab --appPath $ANDROID_PACKAGE_JS
-    - os: linux
-      env:
-        - Android="24"
-        - Type="VueJS"
-      language: node_js
-      os: linux
-      node_js: "8"
-      script:
-        - npm i -g appium
-        - cd demo-vue && npm i
-        - travis_wait travis_retry npm run e2e -- --runType android23 --sauceLab --appPath $ANDROID_PACKAGE_VUE
-    - os: linux
-      env:
-        - iOS="12.0"
-        - Type="VanillaJS"
-      language: node_js
-      node_js: "8"
-      script:
-        - npm i -g appium
-        - cd demo && npm i
-        - travis_wait travis_retry npm run e2e -- --runType sim11iPhone6 --sauceLab --appPath $IOS_PACKAGE_JS
-    - os: linux
-      env:
-        - iOS="12.0"
-        - Type="VueJS"
-      language: node_js
-      node_js: "8"
-      script:
-        - npm i -g appium
-        - cd demo-vue && npm i
-        - travis_wait travis_retry npm run e2e -- --runType sim12iPhoneX --sauceLab --appPath $IOS_PACKAGE_VUE
+    # - language: android
+    #   env:
+    #     - BuildAndroid="28"
+    #     - Type="Angular"
+    #   os: linux
+    #   jdk: oraclejdk8
+    #   before_install: nvm install 8.11.4
+    #   script:
+    #     - cd demo-angular && npm run ci.android.build
+    # - os: osx
+    #   env:
+    #     - BuildiOS="12.0"
+    #     - Xcode="10.0"
+    #     - Type="VanillaJS"
+    #   osx_image: xcode10.0
+    #   language: node_js
+    #   node_js: "8"
+    #   jdk: oraclejdk8
+    #   before_script: pod repo update
+    #   script:
+    #     - cd src && npm run build
+    #     - cd ../demo && tns build ios --bundle --env.uglify
+    # - os: osx
+    #   env:
+    #     - BuildiOS="12.0"
+    #     - Xcode="10.0"
+    #     - Type="Angular"
+    #   osx_image: xcode10.0
+    #   language: node_js
+    #   node_js: "8"
+    #   jdk: oraclejdk8
+    #   before_script: pod repo update
+    #   script:
+    #     - cd demo-angular && npm run ci.ios.build
+    # - stage: "UI Tests"
+    #   env:
+    #     - Android="24"
+    #     - Type="VanillaJS"
+    #   language: node_js
+    #   os: linux
+    #   node_js: "8"
+    #   script:
+    #     - npm i -g appium
+    #     - cd demo && npm i
+    #     - travis_wait travis_retry npm run e2e -- --runType android23 --sauceLab --appPath $ANDROID_PACKAGE_JS
+    # - os: linux
+    #   env:
+    #     - Android="24"
+    #     - Type="VueJS"
+    #   language: node_js
+    #   os: linux
+    #   node_js: "8"
+    #   script:
+    #     - npm i -g appium
+    #     - cd demo-vue && npm i
+    #     - travis_wait travis_retry npm run e2e -- --runType android23 --sauceLab --appPath $ANDROID_PACKAGE_VUE
+    # - os: linux
+    #   env:
+    #     - iOS="12.0"
+    #     - Type="VanillaJS"
+    #   language: node_js
+    #   node_js: "8"
+    #   script:
+    #     - npm i -g appium
+    #     - cd demo && npm i
+    #     - travis_wait travis_retry npm run e2e -- --runType sim11iPhone6 --sauceLab --appPath $IOS_PACKAGE_JS
+    # - os: linux
+    #   env:
+    #     - iOS="12.0"
+    #     - Type="VueJS"
+    #   language: node_js
+    #   node_js: "8"
+    #   script:
+    #     - npm i -g appium
+    #     - cd demo-vue && npm i
+    #     - travis_wait travis_retry npm run e2e -- --runType sim12iPhoneX --sauceLab --appPath $IOS_PACKAGE_VUE
 
 android:
   components:
