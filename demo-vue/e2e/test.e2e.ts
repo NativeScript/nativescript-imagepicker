@@ -63,6 +63,8 @@ describe("Imagepicker", async function () {
 
             if (isSauceRun && imagesFolder) {
                 await imagesFolder.click();
+                let dcimFolder = await driver.findElementByText("DCIM", SearchOptions.contains);
+                await dcimFolder.click();
                 imagesFolder = await driver.findElementByClassName(driver.locators.image);
                 await imagesFolder.click();
             }
