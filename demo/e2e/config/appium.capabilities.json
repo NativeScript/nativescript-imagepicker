@@ -2,8 +2,8 @@
         "android23.local": {
                 "platformName": "Android",
                 "platformVersion": "6.0",
-                "deviceName": "Emulator_Api23_Default",
-                "avd": "Emulator_Api23_Default",
+                "deviceName": "Emulator-Api23-Default",
+                "avd": "Emulator-Api23-Default",
                 "noReset": true
         },
         "android23": {
@@ -11,6 +11,22 @@
                 "platformVersion": "6.0",
                 "deviceName": "Android Emulator",
                 "appium-version": "1.7.1",
+                "noReset": true
+        },
+        "android24": {
+                "platformName": "Android",
+                "platformVersion": "7.0",
+                "deviceName": "Android GoogleAPI Emulator",
+                "appiumVersion": "1.9.1",
+                "noReset": true,
+                "app": ""
+        },
+        "android24.local": {
+                "platformName": "Android",
+                "platformVersion": "7.0",
+                "deviceName": "Emulator-Api24-Default",
+                "avd": "Emulator-Api24-Default",
+                "appiumVersion": "1.9.1",
                 "noReset": true
         },
         "android25": {

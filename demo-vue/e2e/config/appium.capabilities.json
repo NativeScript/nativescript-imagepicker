@@ -24,13 +24,17 @@
                 "platformName": "Android",
                 "platformVersion": "7.0",
                 "deviceName": "Android GoogleAPI Emulator",
-                "appium-version": "1.9.1",
+                "appiumVersion": "1.9.1",
                 "noReset": true,
-                "lt": 60000,
-                "newCommandTimeout": 720,
-                "fullReset": false,
-                "idleTimeout": 120,
-                "automationName": "Appium"
+                "app": ""
+        },
+        "android24.local": {
+                "platformName": "Android",
+                "platformVersion": "7.0",
+                "deviceName": "Emulator-Api24-Default",
+                "avd": "Emulator-Api24-Default",
+                "appiumVersion": "1.9.1",
+                "noReset": true
         },
         "sim11iPhone6": {
                 "platformName": "iOS",

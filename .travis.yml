@@ -161,7 +161,7 @@ matrix:
       script:
         - npm i -g appium
         - cd demo && npm i
-        - travis_wait travis_retry npm run e2e -- --runType android23 --sauceLab --appPath $ANDROID_PACKAGE_JS
+        - travis_wait travis_retry npm run e2e -- --runType android24 --sauceLab --appPath $ANDROID_PACKAGE_JS
     - os: linux
       env:
         - Android="24"
@@ -172,7 +172,7 @@ matrix:
       script:
         - npm i -g appium
         - cd demo-vue && npm i
-        - travis_wait travis_retry npm run e2e -- --runType android23 --sauceLab --appPath $ANDROID_PACKAGE_VUE
+        - travis_wait travis_retry npm run e2e -- --runType android24 --sauceLab --appPath $ANDROID_PACKAGE_VUE
     - os: linux
       env:
         - iOS="12.0"
