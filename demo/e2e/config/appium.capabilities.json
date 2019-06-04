@@ -41,5 +41,18 @@
                 "deviceName": "iPhone 6",
                 "appium-version": "1.7.1",
                 "app": ""
+        },
+        "sim12iPhoneX":{
+                "platformName": "iOS",
+                "platformVersion": "12.0",
+                "deviceName": "iPhone X",
+                "appium-version": "1.9.1",
+                "app": "",
+                "noReset": true,
+                "fullReset": false,
+                "density": 3,
+                "offsetPixels": 87,
+                "idleTimeout": 120,
+                "automationName": "Appium"
         }
 }
