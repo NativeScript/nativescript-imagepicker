@@ -3,7 +3,5 @@
     "v8Flags": "--expose_gc",
     "requireModules": ["nativescript-imagepicker"]
   },
-  "main": "app.js",
-  "name": "tns-template-hello-world",
-  "version": "3.1.0"
+  "main": "app.js"
 }

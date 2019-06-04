@@ -64,16 +64,19 @@ describe("Imagepicker", async function () {
 
             if (isSauceRun && imagesFolder) {
                 await imagesFolder.click();
+                let dcimFolder = await driver.findElementByText("DCIM", SearchOptions.contains);
+                await dcimFolder.click();
                 imagesFolder = await driver.findElementByClassName(driver.locators.image);
                 await imagesFolder.click();
             }
         } else {
-            const cameraRollFolder = await driver.findElementByText(imagesFolderNameIos);
+            const cameraRollFolder = await driver.findElementByAccessibilityId(imagesFolderNameIos);
             await cameraRollFolder.click();
         }
 
-        const pickedImage = await driver.findElementByClassName(driver.locators.image);
-        await pickedImage.click();
+        const imageLocator =  isAndroid ? "android.widget.ImageView" : "XCUIElementTypeCell";
+        const image = await driver.findElementByClassName(imageLocator);
+        await image.tap();
 
         pickSingleButton = await driver.findElementByText(pickSingleButtonText, SearchOptions.contains);
         expect(pickSingleButton).to.exist;
@@ -96,12 +99,12 @@ describe("Imagepicker", async function () {
             await cameraRollFolder.click();
         }
 
-        const allImages = await driver.findElementsByClassName(driver.locators.image);
-
         if (isAndroid) {
-            await allImages[8].hold(); // third image
-            await allImages[4].click(); // second image
+            const allImages = await driver.findElementsByClassName("android.widget.ImageView");
+            await allImages[5].hold(); // second Image
+            await allImages[2].click(); // first image
         } else {
+            const allImages = await driver.findElementsByClassName("XCUIElementTypeCell");
             await allImages[0].click(); // first image
             await allImages[1].click(); // second image
         }
