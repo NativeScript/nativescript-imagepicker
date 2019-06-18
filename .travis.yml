@@ -30,7 +30,7 @@ matrix:
       env:
         - WebpackiOS="12.0"
         - Type="VanillaJS"
-      osx_image: xcode10.0
+      osx_image: xcode10.2
       language: node_js
       node_js: "10"
       jdk: oraclejdk8
@@ -44,7 +44,7 @@ matrix:
       env:
         - WebpackiOS="12.0"
         - Type="VueJS"
-      osx_image: xcode10.0
+      osx_image: xcode10.2
       language: node_js
       node_js: "10"
       jdk: oraclejdk8
@@ -58,7 +58,7 @@ matrix:
       env:
         - WebpackiOS="12.0"
         - Type="Angular"
-      osx_image: xcode10.0
+      osx_image: xcode10.2
       language: node_js
       node_js: "10"
       jdk: oraclejdk8
@@ -131,7 +131,7 @@ matrix:
         - BuildiOS="12.0"
         - Xcode="10.0"
         - Type="VanillaJS"
-      osx_image: xcode10.0
+      osx_image: xcode10.2
       language: node_js
       node_js: "10"
       jdk: oraclejdk8
@@ -144,7 +144,7 @@ matrix:
         - BuildiOS="12.0"
         - Xcode="10.0"
         - Type="Angular"
-      osx_image: xcode10.0
+      osx_image: xcode10.2
       language: node_js
       node_js: "10"
       jdk: oraclejdk8
