@@ -254,6 +254,7 @@ install:
     - npm install -D wd@latest
     - cd ../demo-vue
     - npm install tns-core-modules@next -P --save-exact
+    - npm install nativescript-vue@next -P --save-exact
     - npm install tns-platform-declarations@next -D --save-exact
     - npm install nativescript-dev-webpack@next -D --save-exact
     - npm install nativescript-dev-typescript@next -D --save-exact
