@@ -133,7 +133,7 @@ context
 | prompt | iOS | undefined | Display prompt text when selecting assets. |
 | numberOfColumnsInPortrait | iOS | 4 | Set the number of columns in Portrait orientation. |
 | numberOfColumnsInLandscape | iOS | 7 | Set the number of columns in Landscape orientation. |
-| mediaType | iOS | Any | Choose whether to pick Image/Video/Any type of assets. |
+| mediaType | both | Any (iOS), Image (Android) | Choose whether to pick Image/Video/Any type of assets. |
 
 The **hostView** parameter can be set to the view that hosts the image picker. Applicable in iOS only, intended to be used when open picker from a modal page.
 
