@@ -97,7 +97,8 @@ matrix:
         - cd src && npm run build
         - cd ../demo && npm i && tns build android --bundle --env.uglify --env.snapshot --copy-to "./outputs/app-debug.apk"
         - "curl -u $SAUCE_USER:$SAUCE_KEY -X POST -H 'Content-Type: application/octet-stream' $ANDROID_SAUCE_STORAGE/$ANDROID_PACKAGE_JS?overwrite=true --data-binary @$ANDROID_PACKAGE_FOLDER_JS/app-debug.apk"
-    - os: linux
+    - language: android
+      os: linux
       dist: trusty
       env:
         - WebpackAndroid="28"
@@ -248,7 +249,7 @@ android:
   components:
     - tools
     - platform-tools
-    - build-tools-28
+    - build-tools-28.0.3
     - android-28
     - android-23
     - extra-android-m2repository
