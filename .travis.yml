@@ -1,13 +1,17 @@
 env:
   global:
     - ANDROID_PACKAGE_JS='imagepicker-debug-js-next.apk'
+    - ANDROID_PACKAGE_NG='imagepicker-debug-ng-next.apk'
     - ANDROID_PACKAGE_VUE='imagepicker-debug-vue-next.apk'
     - ANDROID_PACKAGE_FOLDER_JS=$TRAVIS_BUILD_DIR/demo/outputs
+    - ANDROID_PACKAGE_FOLDER_NG=$TRAVIS_BUILD_DIR/demo-angular/outputs
     - ANDROID_PACKAGE_FOLDER_VUE=$TRAVIS_BUILD_DIR/demo-vue/outputs
     - ANDROID_SAUCE_STORAGE="https://saucelabs.com/rest/v1/storage/$SAUCE_USER"
     - IOS_PACKAGE_JS='imagepicker-demo-js-next.zip'
+    - IOS_PACKAGE_NG='imagepicker-demo-ng-next.zip'
     - IOS_PACKAGE_VUE='imagepicker-demo-vue-next.zip'
     - IOS_PACKAGE_FOLDER_JS=$TRAVIS_BUILD_DIR/demo/outputs
+    - IOS_PACKAGE_FOLDER_NG=$TRAVIS_BUILD_DIR/demo-angular/outputs
     - IOS_PACKAGE_FOLDER_VUE=$TRAVIS_BUILD_DIR/demo-vue/outputs
     - IOS_SAUCE_STORAGE="https://saucelabs.com/rest/v1/storage/$SAUCE_USER"
 
@@ -39,6 +43,22 @@ matrix:
     - os: osx
       env:
         - WebpackiOS="12.0"
+        - Type="Angular"
+      osx_image: xcode10.2
+      language: node_js
+      node_js: "10"
+      jdk: oraclejdk8
+      before_script: 
+        - pod repo update
+        - cd ../demo-angular && tns platform add ios@next
+      script:
+        - cd ../src && npm run build
+        - cd ../demo-angular && npm i && tns build ios --bundle --env.uglify --env.aot --copy-to "./outputs/demo-angular.app"
+        - cd $IOS_PACKAGE_FOLDER_NG && zip -r $IOS_PACKAGE_NG demo-angular.app
+        - "curl -u $SAUCE_USER:$SAUCE_KEY -X POST -H 'Content-Type: application/octet-stream' $IOS_SAUCE_STORAGE/$IOS_PACKAGE_NG?overwrite=true --data-binary @$IOS_PACKAGE_FOLDER_NG/$IOS_PACKAGE_NG"
+    - os: osx
+      env:
+        - WebpackiOS="12.0"
         - Type="VueJS"
       osx_image: xcode10.2
       language: node_js
@@ -52,21 +72,6 @@ matrix:
         - cd ../demo-vue && npm i && tns build ios --bundle --env.uglify --copy-to "./outputs/demovue.app"
         - cd $IOS_PACKAGE_FOLDER_VUE && zip -r $IOS_PACKAGE_VUE demovue.app
         - "curl -u $SAUCE_USER:$SAUCE_KEY -X POST -H 'Content-Type: application/octet-stream' $IOS_SAUCE_STORAGE/$IOS_PACKAGE_VUE?overwrite=true --data-binary @$IOS_PACKAGE_FOLDER_VUE/$IOS_PACKAGE_VUE"
-    - os: osx
-      env:
-        - WebpackiOS="12.0"
-        - Type="Angular"
-      osx_image: xcode10.2
-      language: node_js
-      node_js: "10"
-      jdk: oraclejdk8
-      before_script: 
-        - pod repo update
-        - cd ../demo-angular && tns platform add ios@next
-      script:
-        - cd ../src && npm run build && npm pack
-        - cd ../demo-angular && tns plugin add ../src/*.tgz
-        - npm i && tns build ios --bundle --env.uglify --env.aot
     - language: android
       os: linux
       dist: trusty
@@ -86,85 +91,29 @@ matrix:
       dist: trusty
       env:
         - WebpackAndroid="28"
-        - Type="VueJS"
+        - Type="Angular"
       jdk: oraclejdk8
       before_install: nvm install 10
       before_script:
-        - cd ../demo-vue && tns platform add android@next
+        - cd ../demo-angular && tns platform add android@next
       script:
         - cd ../src && npm run build
-        - cd ../demo-vue && npm i && tns build android --bundle --env.uglify --copy-to "./outputs/app-debug.apk"
-        - "curl -u $SAUCE_USER:$SAUCE_KEY -X POST -H 'Content-Type: application/octet-stream' $ANDROID_SAUCE_STORAGE/$ANDROID_PACKAGE_VUE?overwrite=true --data-binary @$ANDROID_PACKAGE_FOLDER_VUE/app-debug.apk"
+        - cd ../demo-angular && npm i && tns build android --bundle --env.uglify --env.snapshot --copy-to "./outputs/app-debug.apk"
+        - "curl -u $SAUCE_USER:$SAUCE_KEY -X POST -H 'Content-Type: application/octet-stream' $ANDROID_SAUCE_STORAGE/$ANDROID_PACKAGE_NG?overwrite=true --data-binary @$ANDROID_PACKAGE_FOLDER_NG/app-debug.apk"
     - language: android
       os: linux
       dist: trusty
       env:
         - WebpackAndroid="28"
-        - Type="Angular"
-      jdk: oraclejdk8
-      before_install: nvm install 10
-      before_script:
-        - cd ../demo-angular && tns platform add android@next
-      script:
-        - cd ../src && npm run build
-        - cd ../publish && sh pack.sh
-        - cd ../demo-angular && tns plugin add ../publish/package/*.tgz
-        - npm i && tns build android --bundle --env.uglify --env.snapshot --env.aot
-    - language: android
-      os: linux
-      dist: trusty
-      env:
-        - BuildAndroid="28"
-        - Type="VanillaJS"
-
+        - Type="VueJS"
       jdk: oraclejdk8
       before_install: nvm install 10
       before_script:
         - cd ../demo && tns platform add android@next
       script:
-        - cd ../demo && npm run ci.android.build
-    - language: android
-      os: linux
-      dist: trusty
-      env:
-        - BuildAndroid="28"
-        - Type="Angular"
-
-      jdk: oraclejdk8
-      before_install: nvm install 10
-      before_script:
-        - cd ../demo-angular && tns platform add android@next
-      script:
-        - cd ../demo-angular && npm run ci.android.build
-    - os: osx
-      env:
-        - BuildiOS="12.0"
-        - Xcode="10.0"
-        - Type="VanillaJS"
-      osx_image: xcode10.2
-      language: node_js
-      node_js: "10"
-      jdk: oraclejdk8
-      before_script: 
-        - pod repo update
-        - cd ../demo && tns platform add ios@next
-      script:
         - cd ../src && npm run build
-        - cd ../demo && tns build ios --bundle --env.uglify
-    - os: osx
-      env:
-        - BuildiOS="12.0"
-        - Xcode="10.0"
-        - Type="Angular"
-      osx_image: xcode10.2
-      language: node_js
-      node_js: "10"
-      jdk: oraclejdk8
-      before_script: 
-        - pod repo update
-        - cd ../demo-angular && tns platform add ios@next
-      script:
-        - cd ../demo-angular && npm run ci.ios.build
+        - cd ../demo-vue && npm i && tns build android --bundle --env.uglify --copy-to "./outputs/app-debug.apk"
+        - "curl -u $SAUCE_USER:$SAUCE_KEY -X POST -H 'Content-Type: application/octet-stream' $ANDROID_SAUCE_STORAGE/$ANDROID_PACKAGE_VUE?overwrite=true --data-binary @$ANDROID_PACKAGE_FOLDER_VUE/app-debug.apk"
     - stage: "UI Tests"
       env:
         - Android="24"
@@ -174,7 +123,7 @@ matrix:
       node_js: "10"
       script:
         - npm i -g appium
-        - cd ../demo && npm i
+        - cd ../tests && npm i
         - travis_wait travis_retry npm run e2e -- --runType android24 --sauceLab --appPath $ANDROID_PACKAGE_JS
     - os: linux
       env:
@@ -185,8 +134,19 @@ matrix:
       node_js: "10"
       script:
         - npm i -g appium
-        - cd ../demo-vue && npm i
+        - cd ../tests && npm i
         - travis_wait travis_retry npm run e2e -- --runType android24 --sauceLab --appPath $ANDROID_PACKAGE_VUE
+    - os: linux
+      env:
+        - Android="24"
+        - Type="Angular"
+      language: node_js
+      os: linux
+      node_js: "10"
+      script:
+        - npm i -g appium
+        - cd tests && npm i
+        - travis_wait travis_retry npm run e2e -- --runType android24 --sauceLab --appPath $ANDROID_PACKAGE_NG
     - os: linux
       env:
         - iOS="12.0"
@@ -195,7 +155,7 @@ matrix:
       node_js: "10"
       script:
         - npm i -g appium
-        - cd ../demo && npm i
+        - cd ../tests && npm i
         - travis_wait travis_retry npm run e2e -- --runType sim12iPhoneX --sauceLab --appPath $IOS_PACKAGE_JS
     - os: linux
       env:
@@ -205,8 +165,18 @@ matrix:
       node_js: "10"
       script:
         - npm i -g appium
-        - cd ../demo-vue && npm i
+        - cd ../tests && npm i
         - travis_wait travis_retry npm run e2e -- --runType sim12iPhoneX --sauceLab --appPath $IOS_PACKAGE_VUE
+    - os: linux
+      env:
+        - iOS="12.0"
+        - Type="Angular"
+      language: node_js
+      node_js: "10"
+      script:
+        - npm i -g appium
+        - cd tests && npm i
+        - travis_wait travis_retry npm run e2e -- --runType sim12iPhoneX --sauceLab --appPath $IOS_PACKAGE_NG
 
 android:
   components:
