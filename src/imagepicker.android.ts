@@ -51,7 +51,7 @@ class UriHelper {
         else {
             // MediaStore (and general)
             if ("content" === uri.getScheme()) {
-                return UriHelper.getDataColumn(uri, null, null);
+                return UriHelper.getDataColumn(uri, null, null, false);
             }
             // FILE
             else if ("file" === uri.getScheme()) {
