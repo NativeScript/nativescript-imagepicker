@@ -145,7 +145,7 @@ matrix:
       node_js: "10"
       script:
         - npm i -g appium
-        - cd tests && npm i
+        - cd ../tests && npm i
         - travis_wait travis_retry npm run e2e -- --runType android24 --sauceLab --appPath $ANDROID_PACKAGE_NG
     - os: linux
       env:
@@ -175,7 +175,7 @@ matrix:
       node_js: "10"
       script:
         - npm i -g appium
-        - cd tests && npm i
+        - cd ../tests && npm i
         - travis_wait travis_retry npm run e2e -- --runType sim12iPhoneX --sauceLab --appPath $IOS_PACKAGE_NG
 
 android:
@@ -205,7 +205,6 @@ install:
     - tns usage-reporting disable
     - tns error-reporting disable
     - cd demo
-    - tns migrate
     - npm install tns-core-modules@next -P --save-exact
     - npm install tns-platform-declarations@next -D --save-exact
     - npm install nativescript-dev-webpack@next -D --save-exact
@@ -213,7 +212,6 @@ install:
     - npx rimraf -- hooks node_modules platforms package-lock.json
     - npm install -D wd@latest
     - cd ../demo-angular
-    - tns migrate
     - npm install tns-core-modules@next -P --save-exact
     - npm install tns-platform-declarations@next -D --save-exact
     - npm install nativescript-angular@next -P --save-exact
@@ -223,7 +221,6 @@ install:
     - npx rimraf -- hooks node_modules platforms package-lock.json
     - npm install -D wd@latest
     - cd ../demo-vue
-    - tns migrate
     - npm install tns-core-modules@next -P --save-exact
     - npm install nativescript-vue@next -P --save-exact
     - npm install tns-platform-declarations@next -D --save-exact
