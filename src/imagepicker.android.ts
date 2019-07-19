@@ -25,7 +25,7 @@ class UriHelper {
             }
             // DownloadsProvider
             else if (UriHelper.isDownloadsDocument(uri)) {
-                return UriHelper.getDataColumn(uri, null, null);
+                return UriHelper.getDataColumn(uri, null, null, true);
             }
             // MediaProvider
             else if (UriHelper.isMediaDocument(uri)) {
@@ -45,7 +45,7 @@ class UriHelper {
                 let selection = "_id=?";
                 let selectionArgs = [id];
 
-                return UriHelper.getDataColumn(contentUri, selection, selectionArgs);
+                return UriHelper.getDataColumn(contentUri, selection, selectionArgs, false);
             }
         }
         else {
@@ -62,33 +62,57 @@ class UriHelper {
         return undefined;
     }
 
-    private static getDataColumn(uri: android.net.Uri, selection, selectionArgs) {
+    private static getDataColumn(uri: android.net.Uri, selection, selectionArgs, isDownload: boolean) {
         let cursor = null;
         let filePath;
-        let columns = ["_display_name"];
-
-        try {
-            cursor = this.getContentResolver().query(uri, columns, selection, selectionArgs, null);
-            if (cursor != null && cursor.moveToFirst()) {
-                let column_index = cursor.getColumnIndexOrThrow(columns[0]);
-                filePath = cursor.getString(column_index);
-                if (filePath) {
-                    const dl = android.os.Environment.getExternalStoragePublicDirectory(android.os.Environment.DIRECTORY_DOWNLOADS);
-                    filePath = `${dl}/${filePath}`;
-                    return filePath;
+        if (isDownload) {
+            let columns = ["_display_name"];
+            try {
+                cursor = this.getContentResolver().query(uri, columns, selection, selectionArgs, null);
+                if (cursor != null && cursor.moveToFirst()) {
+                    let column_index = cursor.getColumnIndexOrThrow(columns[0]);
+                    filePath = cursor.getString(column_index);
+                    if (filePath) {
+                        const dl = android.os.Environment.getExternalStoragePublicDirectory(android.os.Environment.DIRECTORY_DOWNLOADS);
+                        filePath = `${dl}/${filePath}`;
+                        return filePath;
+                    }
+                }
+            }
+            catch (e) {
+                console.log(e);
+            }
+            finally {
+                if (cursor) {
+                    cursor.close();
                 }
             }
         }
-        catch (e) {
-            console.log(e);
-        }
-        finally {
-            if (cursor) {
-                cursor.close();
+        else {
+            let columns = [android.provider.MediaStore.MediaColumns.DATA];
+            let filePath;
+
+            try {
+                cursor = this.getContentResolver().query(uri, columns, selection, selectionArgs, null);
+                if (cursor != null && cursor.moveToFirst()) {
+                    let column_index = cursor.getColumnIndexOrThrow(columns[0]);
+                    filePath = cursor.getString(column_index);
+                    if (filePath) {
+                        return filePath;
+                    }
+                }
+            }
+            catch (e) {
+                console.log(e);
+            }
+            finally {
+                if (cursor) {
+                    cursor.close();
+                }
             }
         }
-
         return undefined;
+
     }
 
     private static isExternalStorageDocument(uri: android.net.Uri) {
