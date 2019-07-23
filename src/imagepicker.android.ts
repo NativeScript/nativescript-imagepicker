@@ -2,6 +2,9 @@ import * as application from "tns-core-modules/application";
 import * as imageAssetModule from "tns-core-modules/image-asset";
 import * as permissions from "nativescript-permissions";
 
+import { ImagePickerMediaType, Options } from "./imagepicker.common";
+export * from "./imagepicker.common";
+
 class UriHelper {
     public static _calculateFileUri(uri: android.net.Uri) {
         let DocumentsContract = (<any>android.provider).DocumentsContract;
@@ -133,9 +136,9 @@ class UriHelper {
 }
 
 export class ImagePicker {
-    private _options;
+    private _options: Options;
 
-    constructor(options) {
+    constructor(options: Options) {
         this._options = options;
     }
 
@@ -226,6 +229,6 @@ export class ImagePicker {
     }
 }
 
-export function create(options?): ImagePicker {
+export function create(options?: Options): ImagePicker {
     return new ImagePicker(options);
 }
