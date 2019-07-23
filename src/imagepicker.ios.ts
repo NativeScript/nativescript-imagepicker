@@ -1,8 +1,9 @@
 import * as data_observable from "tns-core-modules/data/observable";
 import * as imageAssetModule from "tns-core-modules/image-asset";
-import { Options, ImagePickerMediaType } from ".";
+import { Options, ImagePickerMediaType } from "./imagepicker.common";
 import { View } from "tns-core-modules/ui/core/view/view";
 import * as utils from "tns-core-modules/utils/utils";
+export * from "./imagepicker.common";
 
 const defaultAssetCollectionSubtypes: NSArray<any> = NSArray.arrayWithArray(<any>[
     PHAssetCollectionSubtype.SmartAlbumRecentlyAdded,
