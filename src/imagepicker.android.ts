@@ -27,16 +27,7 @@ class UriHelper {
             }
             // DownloadsProvider
             else if (UriHelper.isDownloadsDocument(uri)) {
-                id = DocumentsContract.getDocumentId(uri);
-                // Since Oreo the downloads id may be a raw string,
-                // containing the file path:
-                if (id.indexOf("raw:") !== -1) {
-                    return id.substring(4, id.length);
-                }
-                contentUri = android.content.ContentUris.withAppendedId(
-                    android.net.Uri.parse("content://downloads/public_downloads"), long(id));
-
-                return UriHelper.getDataColumn(contentUri, null, null);
+                return UriHelper.getDataColumn(uri, null, null, true);
             }
             // MediaProvider
             else if (UriHelper.isMediaDocument(uri)) {
@@ -56,13 +47,13 @@ class UriHelper {
                 let selection = "_id=?";
                 let selectionArgs = [id];
 
-                return UriHelper.getDataColumn(contentUri, selection, selectionArgs);
+                return UriHelper.getDataColumn(contentUri, selection, selectionArgs, false);
             }
         }
         else {
             // MediaStore (and general)
             if ("content" === uri.getScheme()) {
-                return UriHelper.getDataColumn(uri, null, null);
+                return UriHelper.getDataColumn(uri, null, null, false);
             }
             // FILE
             else if ("file" === uri.getScheme()) {
@@ -73,31 +64,57 @@ class UriHelper {
         return undefined;
     }
 
-    private static getDataColumn(uri: android.net.Uri, selection, selectionArgs) {
+    private static getDataColumn(uri: android.net.Uri, selection, selectionArgs, isDownload: boolean) {
         let cursor = null;
-        let columns = [android.provider.MediaStore.MediaColumns.DATA];
         let filePath;
-
-        try {
-            cursor = this.getContentResolver().query(uri, columns, selection, selectionArgs, null);
-            if (cursor != null && cursor.moveToFirst()) {
-                let column_index = cursor.getColumnIndexOrThrow(columns[0]);
-                filePath = cursor.getString(column_index);
-                if (filePath) {
-                    return filePath;
+        if (isDownload) {
+            let columns = ["_display_name"];
+            try {
+                cursor = this.getContentResolver().query(uri, columns, selection, selectionArgs, null);
+                if (cursor != null && cursor.moveToFirst()) {
+                    let column_index = cursor.getColumnIndexOrThrow(columns[0]);
+                    filePath = cursor.getString(column_index);
+                    if (filePath) {
+                        const dl = android.os.Environment.getExternalStoragePublicDirectory(android.os.Environment.DIRECTORY_DOWNLOADS);
+                        filePath = `${dl}/${filePath}`;
+                        return filePath;
+                    }
+                }
+            }
+            catch (e) {
+                console.log(e);
+            }
+            finally {
+                if (cursor) {
+                    cursor.close();
                 }
             }
         }
-        catch (e) {
-            console.log(e);
-        }
-        finally {
-            if (cursor) {
-                cursor.close();
+        else {
+            let columns = [android.provider.MediaStore.MediaColumns.DATA];
+            let filePath;
+
+            try {
+                cursor = this.getContentResolver().query(uri, columns, selection, selectionArgs, null);
+                if (cursor != null && cursor.moveToFirst()) {
+                    let column_index = cursor.getColumnIndexOrThrow(columns[0]);
+                    filePath = cursor.getString(column_index);
+                    if (filePath) {
+                        return filePath;
+                    }
+                }
+            }
+            catch (e) {
+                console.log(e);
+            }
+            finally {
+                if (cursor) {
+                    cursor.close();
+                }
             }
         }
-
         return undefined;
+
     }
 
     private static isExternalStorageDocument(uri: android.net.Uri) {
