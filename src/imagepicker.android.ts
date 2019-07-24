@@ -146,6 +146,17 @@ export class ImagePicker {
         return this._options && this._options.mode && this._options.mode.toLowerCase() === 'single' ? 'single' : 'multiple';
     }
 
+    get mediaType(): string {
+        const mediaType = this._options && 'mediaType' in this._options ? this._options.mediaType : ImagePickerMediaType.Image;
+        if (mediaType === ImagePickerMediaType.Image) {
+            return "image/*";
+        } else if (mediaType === ImagePickerMediaType.Video) {
+            return "video/*";
+        } else {
+            return "*/*";
+        }
+    }
+
     authorize(): Promise<void> {
         if ((<any>android).os.Build.VERSION.SDK_INT >= 23) {
             return permissions.requestPermission([(<any>android).Manifest.permission.READ_EXTERNAL_STORAGE]);
@@ -214,7 +225,7 @@ export class ImagePicker {
 
             let Intent = android.content.Intent;
             let intent = new Intent();
-            intent.setType("image/*");
+            intent.setType(this.mediaType);
 
             // TODO: Use (<any>android).content.Intent.EXTRA_ALLOW_MULTIPLE
             if (this.mode === 'multiple') {
