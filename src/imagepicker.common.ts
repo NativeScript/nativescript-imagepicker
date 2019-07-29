@@ -1,23 +1,4 @@
-import { Observable } from "tns-core-modules/data/observable";
-import { ImageSource } from "tns-core-modules/image-source";
-import { ImageAsset } from "tns-core-modules/image-asset";
-import { View } from "tns-core-modules/ui/core/view/view";
-
-export class ImagePicker {
-    /**
-     * Call this before 'present' to request any additional permissions that may be necessary.
-     * In case of failed authorization consider notifying the user for degraded functionality.
-     */
-    authorize(): Promise<void>;
-
-    /**
-     * Present the image picker UI.
-     * The result will be an array of SelectedAsset instances provided when the promise is fulfilled.
-     */
-    present(): Promise<ImageAsset[]>;
-}
-
-export declare const enum ImagePickerMediaType {
+export enum ImagePickerMediaType {
     Any = 0,
     Image = 1,
     Video = 2
@@ -26,7 +7,7 @@ export declare const enum ImagePickerMediaType {
 /**
  * Provide options for the image picker.
  */
-interface Options {
+export interface Options {
     /**
      * Set the picker mode. Supported modes: "single" or "multiple" (default).
      */
@@ -74,9 +55,3 @@ interface Options {
         read_external_storage?: string;
     };
 }
-
-/**
- * @param {Options} [options] - options for the image picker.
- * @param {View} [hostView] - [use in iOS] the view that hosts the image picker (e.g. to use when open from a modal page).
- */
-export function create(options?: Options, hostView?: View): ImagePicker;

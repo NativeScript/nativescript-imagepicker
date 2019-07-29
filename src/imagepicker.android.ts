@@ -2,6 +2,9 @@ import * as application from "tns-core-modules/application";
 import * as imageAssetModule from "tns-core-modules/image-asset";
 import * as permissions from "nativescript-permissions";
 
+import { ImagePickerMediaType, Options } from "./imagepicker.common";
+export * from "./imagepicker.common";
+
 class UriHelper {
     public static _calculateFileUri(uri: android.net.Uri) {
         let DocumentsContract = (<any>android.provider).DocumentsContract;
@@ -133,14 +136,25 @@ class UriHelper {
 }
 
 export class ImagePicker {
-    private _options;
+    private _options: Options;
 
-    constructor(options) {
+    constructor(options: Options) {
         this._options = options;
     }
 
     get mode(): string {
         return this._options && this._options.mode && this._options.mode.toLowerCase() === 'single' ? 'single' : 'multiple';
+    }
+
+    get mediaType(): string {
+        const mediaType = this._options && 'mediaType' in this._options ? this._options.mediaType : ImagePickerMediaType.Image;
+        if (mediaType === ImagePickerMediaType.Image) {
+            return "image/*";
+        } else if (mediaType === ImagePickerMediaType.Video) {
+            return "video/*";
+        } else {
+            return "*/*";
+        }
     }
 
     authorize(): Promise<void> {
@@ -211,7 +225,7 @@ export class ImagePicker {
 
             let Intent = android.content.Intent;
             let intent = new Intent();
-            intent.setType("image/*");
+            intent.setType(this.mediaType);
 
             // TODO: Use (<any>android).content.Intent.EXTRA_ALLOW_MULTIPLE
             if (this.mode === 'multiple') {
@@ -226,6 +240,6 @@ export class ImagePicker {
     }
 }
 
-export function create(options?): ImagePicker {
+export function create(options?: Options): ImagePicker {
     return new ImagePicker(options);
 }
