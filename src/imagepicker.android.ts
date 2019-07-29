@@ -227,9 +227,17 @@ export class ImagePicker {
             let intent = new Intent();
             intent.setType(this.mediaType);
 
-            let mimeTypes = Array.create(java.lang.String, 2);
-            mimeTypes[0] = 'image/*';
-            mimeTypes[1] = 'video/*';
+            let length  = this.mediaType === "*/*" ? 2 : 1;
+            let mimeTypes = Array.create(java.lang.String, length);
+
+            if (this.mediaType === "*/*") {
+                mimeTypes[0] = "image/*";
+                mimeTypes[1] = "video/*";
+            }
+            else {
+                mimeTypes[0] = this.mediaType;
+            }
+
             // not in platform-declaration typings
             intent.putExtra((android.content.Intent as any).EXTRA_MIME_TYPES, mimeTypes);
 
