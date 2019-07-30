@@ -147,7 +147,7 @@ export class ImagePicker {
     }
 
     get mediaType(): string {
-        const mediaType = this._options && 'mediaType' in this._options ? this._options.mediaType : ImagePickerMediaType.Image;
+        const mediaType = this._options && 'mediaType' in this._options ? this._options.mediaType : ImagePickerMediaType.Any;
         if (mediaType === ImagePickerMediaType.Image) {
             return "image/*";
         } else if (mediaType === ImagePickerMediaType.Video) {
