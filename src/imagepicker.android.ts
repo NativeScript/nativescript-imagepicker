@@ -240,7 +240,6 @@ export class ImagePicker {
 
             // not in platform-declaration typings
             intent.putExtra((android.content.Intent as any).EXTRA_MIME_TYPES, mimeTypes);
-            
             // TODO: Use (<any>android).content.Intent.EXTRA_ALLOW_MULTIPLE
             if (this.mode === 'multiple') {
                 intent.putExtra("android.intent.extra.ALLOW_MULTIPLE", true);
