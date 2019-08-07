@@ -147,7 +147,7 @@ export class ImagePicker {
     }
 
     get mediaType(): string {
-        const mediaType = this._options && 'mediaType' in this._options ? this._options.mediaType : ImagePickerMediaType.Image;
+        const mediaType = this._options && 'mediaType' in this._options ? this._options.mediaType : ImagePickerMediaType.Any;
         if (mediaType === ImagePickerMediaType.Image) {
             return "image/*";
         } else if (mediaType === ImagePickerMediaType.Video) {
@@ -227,6 +227,19 @@ export class ImagePicker {
             let intent = new Intent();
             intent.setType(this.mediaType);
 
+            let length  = this.mediaType === "*/*" ? 2 : 1;
+            let mimeTypes = Array.create(java.lang.String, length);
+
+            if (this.mediaType === "*/*") {
+                mimeTypes[0] = "image/*";
+                mimeTypes[1] = "video/*";
+            }
+            else {
+                mimeTypes[0] = this.mediaType;
+            }
+
+            // not in platform-declaration typings
+            intent.putExtra((android.content.Intent as any).EXTRA_MIME_TYPES, mimeTypes);
             // TODO: Use (<any>android).content.Intent.EXTRA_ALLOW_MULTIPLE
             if (this.mode === 'multiple') {
                 intent.putExtra("android.intent.extra.ALLOW_MULTIPLE", true);
