@@ -57,26 +57,14 @@ describe("Imagepicker", async function () {
         const confirmButton = await driver.findElementByText(confirmButtonText);
         await confirmButton.click();
 
-        if (isAndroid) {
-            const imagesFolderXpath = await driver.elementHelper.getXPathByText(imagesFolderName, SearchOptions.contains);
-            await driver.driver.sleep(3000);
-            let imagesFolder = await driver.driver.elementByXPathIfExists(imagesFolderXpath, 10000);
-
-            if (isSauceRun && imagesFolder) {
-                await imagesFolder.click();
-                let dcimFolder = await driver.findElementByText("DCIM", SearchOptions.contains);
-                await dcimFolder.click();
-                imagesFolder = await driver.findElementByClassName(driver.locators.image);
-                await imagesFolder.click();
-            }
-        } else {
+        if (!isAndroid) {
             const cameraRollFolder = await driver.findElementByAccessibilityId(imagesFolderNameIos);
             await cameraRollFolder.click();
         }
 
         const imageLocator =  isAndroid ? "android.widget.ImageView" : "XCUIElementTypeCell";
-        const image = await driver.findElementByClassName(imageLocator);
-        await image.tap();
+        const images = await driver.findElementsByClassName(imageLocator);
+        await images[1].tap();
 
         pickSingleButton = await driver.findElementByText(pickSingleButtonText, SearchOptions.contains);
         expect(pickSingleButton).to.exist;
@@ -101,8 +89,8 @@ describe("Imagepicker", async function () {
 
         if (isAndroid) {
             const allImages = await driver.findElementsByClassName("android.widget.ImageView");
-            await allImages[5].hold(); // second Image
-            await allImages[2].click(); // first image
+            await allImages[1].hold(); // second Image
+            await allImages[4].click(); // first image
         } else {
             const allImages = await driver.findElementsByClassName("XCUIElementTypeCell");
             await allImages[0].click(); // first image
