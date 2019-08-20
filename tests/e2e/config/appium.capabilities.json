@@ -36,6 +36,13 @@
                 "appium-version": "1.7.1",
                 "noReset": true
         },
+        "android28": {
+                "platformName": "Android",
+                "platformVersion": "9.0",
+                "deviceName": "Android GoogleAPI Emulator",
+                "appiumVersion": "1.9.1",
+                "noReset": true
+        },
         "sim11iPhone6": {
                 "platformName": "iOS",
                 "platformVersion": "11.0",
