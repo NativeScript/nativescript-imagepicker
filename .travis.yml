@@ -110,7 +110,7 @@ matrix:
         - "curl -u $SAUCE_USER:$SAUCE_KEY -X POST -H 'Content-Type: application/octet-stream' $ANDROID_SAUCE_STORAGE/$ANDROID_PACKAGE_VUE?overwrite=true --data-binary @$ANDROID_PACKAGE_FOLDER_VUE/app-debug.apk"
     - stage: "UI Tests"
       env:
-        - Android="24"
+        - Android="28"
         - Type="VanillaJS"
       language: node_js
       os: linux
@@ -121,7 +121,7 @@ matrix:
         - travis_wait travis_retry npm run e2e -- --runType android28 --sauceLab --appPath $ANDROID_PACKAGE_JS
     - os: linux
       env:
-        - Android="24"
+        - Android="28"
         - Type="VueJS"
       language: node_js
       os: linux
@@ -132,7 +132,7 @@ matrix:
         - travis_wait travis_retry npm run e2e -- --runType android28 --sauceLab --appPath $ANDROID_PACKAGE_VUE
     - os: linux
       env:
-        - Android="24"
+        - Android="28"
         - Type="Angular"
       language: node_js
       os: linux
