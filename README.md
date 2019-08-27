@@ -22,8 +22,6 @@ Imagepicker plugin supporting both single and multiple selection.
     - [Request permissions, show the images list and process the selection](#request-permissions-show-the-images-list-and-process-the-selection)
 - [API](#api)
     - [Methods](#methods)
-    - [Properties](#properties)
-    - [Image properties](#image-properties)
 - [Contribute](#contribute)
 - [Get Help](#get-help)
 
@@ -134,6 +132,7 @@ context
 | numberOfColumnsInPortrait | iOS | 4 | Set the number of columns in Portrait orientation. |
 | numberOfColumnsInLandscape | iOS | 7 | Set the number of columns in Landscape orientation. |
 | mediaType | both | Any | Choose whether to pick Image/Video/Any type of assets. |
+| showAdvanced | Android | false | Show internal and removable storage options on Android (**WARNING**: [not supported officially](https://issuetracker.google.com/issues/72053350)). |
 
 The **hostView** parameter can be set to the view that hosts the image picker. Applicable in iOS only, intended to be used when open picker from a modal page.
 

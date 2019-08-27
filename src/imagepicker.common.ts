@@ -48,6 +48,12 @@ export interface Options {
      */
     mediaType?: ImagePickerMediaType;
 
+    /**
+     * Show internal and removable storage options on Android.
+     * Not supported officially, see https://issuetracker.google.com/issues/72053350 |
+     */
+    showAdvanced?: boolean;
+
     android?: {
         /**
          * Provide a reason for permission request to access external storage on api levels above 23.
