@@ -245,6 +245,10 @@ export class ImagePicker {
                 intent.putExtra("android.intent.extra.ALLOW_MULTIPLE", true);
             }
 
+            if (this._options.showAdvanced) {
+                intent.putExtra("android.content.extra.SHOW_ADVANCED", true);
+            }
+
             intent.putExtra(android.content.Intent.EXTRA_LOCAL_ONLY, true);
             intent.setAction("android.intent.action.OPEN_DOCUMENT");
             let chooser = Intent.createChooser(intent, "Select Picture");
