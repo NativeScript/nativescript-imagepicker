@@ -2,10 +2,10 @@
   "nativescript": {
     "id": "org.nativescript.imagepickerdemo",
     "tns-android": {
-      "version": "6.0.0"
+      "version": "6.1.0"
     },
     "tns-ios": {
-      "version": "6.0.1"
+      "version": "6.1.0"
     }
   },
   "dependencies": {
@@ -30,7 +30,7 @@
     "mochawesome": "^3.1.1",
     "nativescript-css-loader": "~0.26.0",
     "nativescript-dev-appium": "~5.2.0",
-    "nativescript-dev-webpack": "~1.0.1",
+    "nativescript-dev-webpack": "^1.0.0",
     "tns-platform-declarations": "^6.0.0",
     "tslint": "~5.11.0",
     "typescript": "~3.4.5",
