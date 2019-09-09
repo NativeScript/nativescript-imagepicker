@@ -157,6 +157,20 @@ export class ImagePicker {
         }
     }
 
+    get mimeTypes() {
+        let length = this.mediaType === "*/*" ? 2 : 1;
+        let mimeTypes = Array.create(java.lang.String, length);
+
+        if (this.mediaType === "*/*") {
+            mimeTypes[0] = "image/*";
+            mimeTypes[1] = "video/*";
+        }
+        else {
+            mimeTypes[0] = this.mediaType;
+        }
+        return mimeTypes;
+    }
+
     authorize(): Promise<void> {
         if ((<any>android).os.Build.VERSION.SDK_INT >= 23) {
             return permissions.requestPermission([(<any>android).Manifest.permission.READ_EXTERNAL_STORAGE]);
@@ -227,19 +241,9 @@ export class ImagePicker {
             let intent = new Intent();
             intent.setType(this.mediaType);
 
-            let length  = this.mediaType === "*/*" ? 2 : 1;
-            let mimeTypes = Array.create(java.lang.String, length);
-
-            if (this.mediaType === "*/*") {
-                mimeTypes[0] = "image/*";
-                mimeTypes[1] = "video/*";
-            }
-            else {
-                mimeTypes[0] = this.mediaType;
-            }
-
             // not in platform-declaration typings
-            intent.putExtra((android.content.Intent as any).EXTRA_MIME_TYPES, mimeTypes);
+            intent.putExtra((android.content.Intent as any).EXTRA_MIME_TYPES, this.mimeTypes);
+
             // TODO: Use (<any>android).content.Intent.EXTRA_ALLOW_MULTIPLE
             if (this.mode === 'multiple') {
                 intent.putExtra("android.intent.extra.ALLOW_MULTIPLE", true);
