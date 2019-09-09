@@ -4,6 +4,9 @@ import { ImageAsset } from "tns-core-modules/image-asset";
 import { View } from "tns-core-modules/ui/core/view/view";
 
 export class ImagePicker {
+
+    constructor(options?: Options);
+
     /**
      * Call this before 'present' to request any additional permissions that may be necessary.
      * In case of failed authorization consider notifying the user for degraded functionality.
