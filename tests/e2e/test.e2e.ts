@@ -1,6 +1,7 @@
 import { AppiumDriver, createDriver, SearchOptions } from "nativescript-dev-appium";
 import { isSauceLab, runType } from "nativescript-dev-appium/lib/parser";
 import { expect } from "chai";
+import { findAndroidImages } from "./helper";
 const fs = require('fs');
 const addContext = require('mochawesome/addContext');
 const rimraf = require('rimraf');
@@ -57,6 +58,11 @@ describe("Imagepicker", async function () {
         const confirmButton = await driver.findElementByText(confirmButtonText);
         await confirmButton.click();
 
+        // TODO remove when SauceLabs fix images location
+        if (isAndroid) {
+            await findAndroidImages(driver);
+        }
+
         if (!isAndroid) {
             const cameraRollFolder = await driver.findElementByAccessibilityId(imagesFolderNameIos);
             await cameraRollFolder.click();
@@ -81,6 +87,11 @@ describe("Imagepicker", async function () {
         const pickMultipleButtonText = "Pick Multiple";
         const pickMultipleButton = await driver.findElementByText(pickMultipleButtonText, SearchOptions.contains);
         await pickMultipleButton.click();
+
+        // TODO remove when SauceLabs fix images location
+        if (isAndroid) {
+            await findAndroidImages(driver);
+        }
 
         if (!isAndroid) {
             const cameraRollFolder = await driver.findElementByText(imagesFolderNameIos);
