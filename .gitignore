@@ -36,3 +36,7 @@ demo-angular/report/stats.json
 /src/platforms/android/nativescript_imagepicker.aar
 /src/*.tgz
 !demo-vue/app/app.js
+
+// Tests
+**/mochawesome-report/
+test-results.xml
