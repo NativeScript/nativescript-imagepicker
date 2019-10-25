@@ -185,7 +185,7 @@ export class ImagePicker {
             // WARNING: If we want to support multiple pickers we will need to have a range of IDs here:
             let RESULT_CODE_PICKER_IMAGES = 9192;
 
-            let application = require("application");
+            let application = require("tns-core-modules/application");
             application.android.on(application.AndroidApplication.activityResultEvent, onResult);
 
             function onResult(args) {
