@@ -1,7 +1,8 @@
 {
   "android": {
     "v8Flags": "--expose_gc",
-    "requireModules": ["nativescript-imagepicker"]
+    "requireModules": ["nativescript-imagepicker"],
+    "markingMode": "none"
   },
   "main": "app.js"
 }
