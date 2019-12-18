@@ -19,7 +19,7 @@
 	<uses-permission android:name="android.permission.INTERNET"/>
 
 	<application
-		androandroid:targetSdkVersion="29"
+		android:targetSdkVersion="29"
 		id:name="com.tns.NativeScriptApplication"
 		android:allowBackup="true"
 		android:icon="@drawable/icon"
