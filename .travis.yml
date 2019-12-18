@@ -76,7 +76,7 @@ matrix:
       os: linux
       dist: trusty
       env:
-        - WebpackAndroid="28"
+        - WebpackAndroid="29"
         - Type="VanillaJS"
       jdk: oraclejdk8
       before_install: nvm install 10
@@ -90,7 +90,7 @@ matrix:
       os: linux
       dist: trusty
       env:
-        - WebpackAndroid="28"
+        - WebpackAndroid="29"
         - Type="Angular"
       jdk: oraclejdk8
       before_install: nvm install 10
@@ -104,7 +104,7 @@ matrix:
       os: linux
       dist: trusty
       env:
-        - WebpackAndroid="28"
+        - WebpackAndroid="29"
         - Type="VueJS"
       jdk: oraclejdk8
       before_install: nvm install 10
@@ -116,7 +116,7 @@ matrix:
         - "curl -u $SAUCE_USER:$SAUCE_KEY -X POST -H 'Content-Type: application/octet-stream' $ANDROID_SAUCE_STORAGE/$ANDROID_PACKAGE_VUE?overwrite=true --data-binary @$ANDROID_PACKAGE_FOLDER_VUE/app-debug.apk"
     - stage: "UI Tests"
       env:
-        - Android="28"
+        - Android="29"
         - Type="VanillaJS"
       language: node_js
       os: linux
@@ -127,7 +127,7 @@ matrix:
         - travis_wait travis_retry npm run e2e -- --runType android28 --sauceLab --appPath $ANDROID_PACKAGE_JS
     - os: linux
       env:
-        - Android="28"
+        - Android="29"
         - Type="VueJS"
       language: node_js
       os: linux
@@ -138,7 +138,7 @@ matrix:
         - travis_wait travis_retry npm run e2e -- --runType android28 --sauceLab --appPath $ANDROID_PACKAGE_VUE
     - os: linux
       env:
-        - Android="28"
+        - Android="29"
         - Type="Angular"
       language: node_js
       os: linux
@@ -182,8 +182,8 @@ android:
   components:
     - tools
     - platform-tools
-    - build-tools-28.0.3
-    - android-28
+    - build-tools-29.0.2
+    - android-29
     - android-23
     - extra-android-m2repository
 
