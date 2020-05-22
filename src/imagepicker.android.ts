@@ -22,9 +22,20 @@ class UriHelper {
 
                 if ("primary" === type.toLowerCase()) {
                     return android.os.Environment.getExternalStorageDirectory() + "/" + id;
+                } else {
+                    if (android.os.Build.VERSION.SDK_INT > 23) {
+                        (this.getContentResolver() as any).takePersistableUriPermission(
+                            uri,
+                            android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION | android.content.Intent.FLAG_GRANT_WRITE_URI_PERMISSION,
+                        );
+                        const externalMediaDirs = application.android.context.getExternalMediaDirs();
+                        if (externalMediaDirs.length > 1) {
+                            let filePath = externalMediaDirs[1].getAbsolutePath();
+                            filePath = filePath.substring(0, filePath.indexOf("Android")) + id;
+                            return filePath;
+                        }
+                    }
                 }
-
-                // TODO handle non-primary volumes
             }
             // DownloadsProvider
             else if (UriHelper.isDownloadsDocument(uri)) {
