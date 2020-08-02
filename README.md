@@ -109,6 +109,18 @@ context
 
 > **NOTE**: To request permissions for Android 6+ (API 23+) we use [nativescript-permissions](https://www.npmjs.com/package/nativescript-permissions).
 
+> **NOTE**: To be sure to have permissions add the following lines in AndroidManifest.xml
+```
+<manifest ... >
+  <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+
+  <application android:requestLegacyExternalStorage="true" ... >
+    ...
+  </application>
+</manifest>
+```
+
+
 > **NOTE**: Using the plugin on iOS requres photo library permission. Your app might be rejected from the Apple App Store if you do not provide a description about why you need this permission. The default message "Requires access to photo library." might not be enough for the App Store reviewers. You can customize it by editing the `app/App_Resources/iOS/Info.plist` file in your app and adding the following key:
 
 ```xml
