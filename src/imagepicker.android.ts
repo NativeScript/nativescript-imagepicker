@@ -1,5 +1,4 @@
-import * as application from "tns-core-modules/application";
-import * as imageAssetModule from "tns-core-modules/image-asset";
+import { ImageAsset, Application, AndroidApplication } from "@nativescript/core";
 import * as permissions from "nativescript-permissions";
 
 import { ImagePickerMediaType, Options } from "./imagepicker.common";
@@ -10,7 +9,7 @@ class UriHelper {
         let DocumentsContract = (<any>android.provider).DocumentsContract;
         let isKitKat = android.os.Build.VERSION.SDK_INT >= 19; // android.os.Build.VERSION_CODES.KITKAT
 
-        if (isKitKat && DocumentsContract.isDocumentUri(application.android.context, uri)) {
+        if (isKitKat && DocumentsContract.isDocumentUri(Application.android.context, uri)) {
             let docId, id, type;
             let contentUri: android.net.Uri = null;
 
@@ -28,7 +27,7 @@ class UriHelper {
                             uri,
                             android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION | android.content.Intent.FLAG_GRANT_WRITE_URI_PERMISSION,
                         );
-                        const externalMediaDirs = application.android.context.getExternalMediaDirs();
+                        const externalMediaDirs = Application.android.context.getExternalMediaDirs();
                         if (externalMediaDirs.length > 1) {
                             let filePath = externalMediaDirs[1].getAbsolutePath();
                             filePath = filePath.substring(0, filePath.indexOf("Android")) + id;
@@ -142,7 +141,7 @@ class UriHelper {
     }
 
     private static getContentResolver(): android.content.ContentResolver {
-        return application.android.nativeApp.getContentResolver();
+        return Application.android.nativeApp.getContentResolver();
     }
 }
 
@@ -190,14 +189,13 @@ export class ImagePicker {
         }
     }
 
-    present(): Promise<imageAssetModule.ImageAsset[]> {
+    present(): Promise<ImageAsset[]> {
         return new Promise((resolve, reject) => {
 
             // WARNING: If we want to support multiple pickers we will need to have a range of IDs here:
             let RESULT_CODE_PICKER_IMAGES = 9192;
 
-            let application = require("tns-core-modules/application");
-            application.android.on(application.AndroidApplication.activityResultEvent, onResult);
+            Application.android.on(AndroidApplication.activityResultEvent, onResult);
 
             function onResult(args) {
 
@@ -219,29 +217,29 @@ export class ImagePicker {
                                     if (clipItem) {
                                         let uri = clipItem.getUri();
                                         if (uri) {
-                                            let selectedAsset = new imageAssetModule.ImageAsset(UriHelper._calculateFileUri(uri));
+                                            let selectedAsset = new ImageAsset(UriHelper._calculateFileUri(uri));
                                             results.push(selectedAsset);
                                         }
                                     }
                                 }
                             } else {
                                 let uri = data.getData();
-                                let selectedAsset = new imageAssetModule.ImageAsset(UriHelper._calculateFileUri(uri));
+                                let selectedAsset = new ImageAsset(UriHelper._calculateFileUri(uri));
                                 results.push(selectedAsset);
                             }
 
-                            application.android.off(application.AndroidApplication.activityResultEvent, onResult);
+                            Application.android.off(AndroidApplication.activityResultEvent, onResult);
                             resolve(results);
                             return;
 
                         } catch (e) {
-                            application.android.off(application.AndroidApplication.activityResultEvent, onResult);
+                            Application.android.off(AndroidApplication.activityResultEvent, onResult);
                             reject(e);
                             return;
 
                         }
                     } else {
-                        application.android.off(application.AndroidApplication.activityResultEvent, onResult);
+                        Application.android.off(AndroidApplication.activityResultEvent, onResult);
                         reject(new Error("Image picker activity result code " + resultCode));
                         return;
                     }
@@ -267,7 +265,7 @@ export class ImagePicker {
             intent.putExtra(android.content.Intent.EXTRA_LOCAL_ONLY, true);
             intent.setAction("android.intent.action.OPEN_DOCUMENT");
             let chooser = Intent.createChooser(intent, "Select Picture");
-            application.android.foregroundActivity.startActivityForResult(intent, RESULT_CODE_PICKER_IMAGES);
+            Application.android.foregroundActivity.startActivityForResult(intent, RESULT_CODE_PICKER_IMAGES);
         });
     }
 }

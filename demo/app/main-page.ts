@@ -1,5 +1,4 @@
-import { EventData } from 'tns-core-modules/data/observable';
-import { Page } from 'tns-core-modules/ui/page';
+import { EventData, Page } from '@nativescript/core';
 import { MainViewModel } from './main-view-model';
 
 export function onNavigatingTo(args: EventData) {

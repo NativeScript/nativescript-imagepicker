@@ -1,7 +1,8 @@
 {
     "compilerOptions": {
-        "target": "es5",
-        "module": "commonjs",
+      "target": "es2017",
+      "module": "esnext",
+      "moduleResolution": "node",
         "declaration": false,
         "removeComments": true,
         "noLib": false,
@@ -9,8 +10,7 @@
         "experimentalDecorators": true,
         "lib": [
             "es6",
-            "dom",
-            "es2015.iterable"
+            "dom"
         ],
         "pretty": true,
         "allowUnreachableCode": false,
@@ -23,10 +23,6 @@
         "noFallthroughCasesInSwitch": true,
         "baseUrl": ".",
         "paths": {
-            "*": [
-                "./node_modules/tns-core-modules/*",
-                "./node_modules/*"
-            ],
             "~/*": [
                 "app/*"
             ]

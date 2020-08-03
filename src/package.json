@@ -1,6 +1,6 @@
 {
-    "name": "nativescript-imagepicker",
-    "version": "7.1.0",
+    "name": "@nativescript/imagepicker",
+    "version": "1.0.0",
     "description": "A plugin for the NativeScript framework implementing multiple image picker",
     "repository": {
         "type": "git",
@@ -15,7 +15,6 @@
         }
     },
     "scripts": {
-        "ngc": "node --max-old-space-size=8192 ./node_modules/.bin/ngc",
         "build": "npm i && tsc",
         "prepublishOnly": "npm run build",
         "ci.tslint": "npm i && tslint '**/*.ts' --config '../tslint.json' --exclude '**/node_modules/**'",
@@ -30,7 +29,7 @@
         "demo.android": "npm i && npm run tsc && cd ../demo && tns run android",
         "demo.ng.ios": "npm i && npm run tsc && cd ../demo-angular && tns run ios",
         "demo.ng.android": "npm i && npm run tsc && cd ../demo-angular && tns run android",
-        "clean": "rm -rf node_modules && cd ../demo && rm -rf hooks node_modules platforms && cd ../src && npm run plugin.link"
+        "clean": "rm -rf node_modules package-lock.json && cd ../demo && rm -rf hooks node_modules platforms package-lock.json && cd ../src && npm i && ts-patch install"
     },
     "keywords": [
         "NativeScript",
@@ -46,13 +45,16 @@
     "homepage": "https://github.com/NativeScript/nativescript-imagepicker",
     "readmeFilename": "README.md",
     "devDependencies": {
-        "tns-core-modules": "^6.0.0",
-        "tns-platform-declarations": "^6.0.0",
-        "typescript": "~3.5.3",
-        "tslint": "~5.11.0"
+        "@nativescript/core": "rc",
+        "@nativescript/types": "rc",
+        "@nativescript/webpack": "~2.1.3",
+        "typescript": "~3.9.0",
+        "tslint": "~6.1.3",
+        "ts-patch": "~1.3.0"
     },
     "dependencies": {
-        "nativescript-permissions": "~1.3.0"
+        "nativescript-permissions": "~1.3.0",
+        "ts-node": "^8.10.2"
     },
     "bootstrapper": "nativescript-plugin-seed"
 }

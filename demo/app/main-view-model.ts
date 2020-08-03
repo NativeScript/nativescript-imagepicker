@@ -1,7 +1,5 @@
-import { Observable } from 'tns-core-modules/data/observable';
-import * as imagepicker from "nativescript-imagepicker";
-import { ItemEventData } from "tns-core-modules/ui/list-view";
-import { Label } from "tns-core-modules/ui/label";
+import { Observable, ItemEventData, Label } from '@nativescript/core';
+import * as imagepicker from "@nativescript/imagepicker";
 
 export class MainViewModel extends Observable {
     constructor() {

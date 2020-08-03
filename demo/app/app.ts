@@ -1,4 +1,4 @@
-﻿import * as application from 'tns-core-modules/application';
+﻿import { Application } from '@nativescript/core';
 
-application.setCssFileName("./app.css");
-application.run({ moduleName: "app-root" });
+Application.setCssFileName("./app.css");
+Application.run({ moduleName: "app-root" });

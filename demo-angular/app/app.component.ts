@@ -1,5 +1,5 @@
 import { Component } from "@angular/core";
-import * as imagepicker from "nativescript-imagepicker";
+import * as imagepicker from "@nativescript/imagepicker";
 
 @Component({
     selector: "my-app",

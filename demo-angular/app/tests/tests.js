@@ -1,4 +1,4 @@
-// var ImagePicker = require("nativescript-imagepicker").ImagePicker;
+// var ImagePicker = require("@nativescript/imagepicker").ImagePicker;
 // var imagePicker = new ImagePicker();
 
 // describe("greet function", function() {

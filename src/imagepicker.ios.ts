@@ -1,150 +1,183 @@
-import * as data_observable from "tns-core-modules/data/observable";
-import * as imageAssetModule from "tns-core-modules/image-asset";
+import { Observable, ImageAsset, View, Utils } from "@nativescript/core";
 import { Options, ImagePickerMediaType } from "./imagepicker.common";
-import { View } from "tns-core-modules/ui/core/view/view";
-import * as utils from "tns-core-modules/utils/utils";
 export * from "./imagepicker.common";
 
-const defaultAssetCollectionSubtypes: NSArray<any> = NSArray.arrayWithArray(<any>[
-    PHAssetCollectionSubtype.SmartAlbumRecentlyAdded,
-    PHAssetCollectionSubtype.SmartAlbumUserLibrary,
-    PHAssetCollectionSubtype.AlbumMyPhotoStream,
-    PHAssetCollectionSubtype.SmartAlbumFavorites,
-    PHAssetCollectionSubtype.SmartAlbumPanoramas,
-    PHAssetCollectionSubtype.SmartAlbumBursts,
-    PHAssetCollectionSubtype.AlbumCloudShared,
-    PHAssetCollectionSubtype.SmartAlbumSelfPortraits,
-    PHAssetCollectionSubtype.SmartAlbumScreenshots,
-    PHAssetCollectionSubtype.SmartAlbumLivePhotos
+const defaultAssetCollectionSubtypes: NSArray<any> = NSArray.arrayWithArray(<
+  any
+>[
+  PHAssetCollectionSubtype.SmartAlbumRecentlyAdded,
+  PHAssetCollectionSubtype.SmartAlbumUserLibrary,
+  PHAssetCollectionSubtype.AlbumMyPhotoStream,
+  PHAssetCollectionSubtype.SmartAlbumFavorites,
+  PHAssetCollectionSubtype.SmartAlbumPanoramas,
+  PHAssetCollectionSubtype.SmartAlbumBursts,
+  PHAssetCollectionSubtype.AlbumCloudShared,
+  PHAssetCollectionSubtype.SmartAlbumSelfPortraits,
+  PHAssetCollectionSubtype.SmartAlbumScreenshots,
+  PHAssetCollectionSubtype.SmartAlbumLivePhotos,
 ]);
 
-export class ImagePicker extends data_observable.Observable {
-    _imagePickerController: QBImagePickerController;
-    _hostView: View;
+export class ImagePicker extends Observable {
+  _imagePickerController: QBImagePickerController;
+  _hostView: View;
+  _delegate: ImagePickerControllerDelegate;
 
-    // lazy-load latest frame.topmost() if _hostName is not used
-    get hostView() {
-        return this._hostView;
+  // lazy-load latest frame.topmost() if _hostName is not used
+  get hostView() {
+    return this._hostView;
+  }
+
+  get hostController(): UIViewController {
+    let vc = this.hostView
+      ? this.hostView.viewController
+      : UIApplication.sharedApplication.keyWindow.rootViewController;
+    while (
+      vc.presentedViewController &&
+      vc.presentedViewController.viewLoaded &&
+      vc.presentedViewController.view.window
+    ) {
+      vc = vc.presentedViewController;
     }
+    return vc;
+  }
 
-    get hostController(): UIViewController {
-        let vc = this.hostView ? this.hostView.viewController : UIApplication.sharedApplication.keyWindow.rootViewController;
-        while (
-            vc.presentedViewController
-            && vc.presentedViewController.viewLoaded
-            && vc.presentedViewController.view.window
-        ) {
-            vc = vc.presentedViewController;
+  constructor(options: Options = {}, hostView: View) {
+    super();
+
+    this._hostView = hostView;
+
+    let imagePickerController = QBImagePickerController.alloc().init();
+
+    imagePickerController.assetCollectionSubtypes = defaultAssetCollectionSubtypes;
+    imagePickerController.mediaType = options.mediaType
+      ? <QBImagePickerMediaType>options.mediaType.valueOf()
+      : QBImagePickerMediaType.Any;
+    imagePickerController.allowsMultipleSelection = options.mode !== "single";
+    imagePickerController.minimumNumberOfSelection =
+      options.minimumNumberOfSelection || 0;
+    imagePickerController.maximumNumberOfSelection =
+      options.maximumNumberOfSelection || 0;
+    imagePickerController.showsNumberOfSelectedAssets =
+      options.showsNumberOfSelectedAssets || true;
+    imagePickerController.numberOfColumnsInPortrait =
+      options.numberOfColumnsInPortrait ||
+      imagePickerController.numberOfColumnsInPortrait;
+    imagePickerController.numberOfColumnsInLandscape =
+      options.numberOfColumnsInLandscape ||
+      imagePickerController.numberOfColumnsInLandscape;
+    imagePickerController.prompt =
+      options.prompt || imagePickerController.prompt;
+
+    this._imagePickerController = imagePickerController;
+  }
+
+  authorize(): Promise<void> {
+    console.log("authorizing...");
+
+    return new Promise<void>((resolve, reject) => {
+      let runloop = CFRunLoopGetCurrent();
+      PHPhotoLibrary.requestAuthorization(function (result) {
+        if (result === PHAuthorizationStatus.Authorized) {
+          resolve();
+        } else {
+          reject(new Error("Authorization failed. Status: " + result));
         }
-        return vc;
-    }
+      });
+    });
+  }
 
-    constructor(options: Options = {}, hostView: View) {
-        super();
+  present() {
+    return new Promise<void>((resolve, reject) => {
+      this._delegate = ImagePickerControllerDelegate.initWithOwner(
+        this,
+        resolve,
+        reject
+      );
 
-        this._hostView = hostView;
+      this._imagePickerController.delegate = this._delegate;
 
-        let imagePickerController = QBImagePickerController.alloc().init();
+      this.hostController.presentViewControllerAnimatedCompletion(
+        this._imagePickerController,
+        true,
+        null
+      );
+    });
+  }
 
-        imagePickerController.assetCollectionSubtypes = defaultAssetCollectionSubtypes;
-        imagePickerController.mediaType = options.mediaType ? <QBImagePickerMediaType>options.mediaType.valueOf() : QBImagePickerMediaType.Any;
-        imagePickerController.allowsMultipleSelection = options.mode !== 'single';
-        imagePickerController.minimumNumberOfSelection = options.minimumNumberOfSelection || 0;
-        imagePickerController.maximumNumberOfSelection = options.maximumNumberOfSelection || 0;
-        imagePickerController.showsNumberOfSelectedAssets = options.showsNumberOfSelectedAssets || true;
-        imagePickerController.numberOfColumnsInPortrait = options.numberOfColumnsInPortrait || imagePickerController.numberOfColumnsInPortrait;
-        imagePickerController.numberOfColumnsInLandscape = options.numberOfColumnsInLandscape || imagePickerController.numberOfColumnsInLandscape;
-        imagePickerController.prompt = options.prompt || imagePickerController.prompt;
-
-        this._imagePickerController = imagePickerController;
-    }
-
-    authorize(): Promise<void> {
-        console.log("authorizing...");
-
-        return new Promise<void>((resolve, reject) => {
-            let runloop = CFRunLoopGetCurrent();
-            PHPhotoLibrary.requestAuthorization(function (result) {
-                if (result === PHAuthorizationStatus.Authorized) {
-                    resolve();
-                } else {
-                    reject(new Error("Authorization failed. Status: " + result));
-                }
-            });
-        });
-    }
-
-    present() {
-        return new Promise<void>((resolve, reject) => {
-            const imagePickerControllerDelegate = ImagePickerControllerDelegate.new();
-            imagePickerControllerDelegate._resolve = resolve;
-            imagePickerControllerDelegate._reject = reject;
-
-            this._imagePickerController.delegate = imagePickerControllerDelegate;
-
-            this.hostController.presentViewControllerAnimatedCompletion(this._imagePickerController, true, null);
-        });
-    }
+  _cleanup() {
+    this._imagePickerController = null;
+    this._delegate = null;
+  }
 }
 
-export class ImagePickerControllerDelegate extends NSObject implements QBImagePickerControllerDelegate {
-    _resolve: any;
-    _reject: any;
+@NativeClass()
+export class ImagePickerControllerDelegate extends NSObject
+  implements QBImagePickerControllerDelegate {
+  _resolve: any;
+  _reject: any;
+  owner: WeakRef<ImagePicker>;
 
-    qb_imagePickerControllerDidCancel?(imagePickerController: QBImagePickerController): void {
-        imagePickerController.dismissViewControllerAnimatedCompletion(true, null);
-        this._reject(new Error("Selection canceled."));
+  qb_imagePickerControllerDidCancel?(
+    imagePickerController: QBImagePickerController
+  ): void {
+    imagePickerController.dismissViewControllerAnimatedCompletion(true, () => {
+      if (this._reject) {
+        this._reject();
+      }
 
-        this.deRegisterFromGlobal();
+      if (imagePicker) {
+        imagePicker._cleanup();
+      }
+      imagePicker = null;
+    });
+  }
+
+  qb_imagePickerControllerDidFinishPickingAssets?(
+    imagePickerController: QBImagePickerController,
+    iosAssets: NSArray<any>
+  ): void {
+    let assets = [];
+
+    for (let i = 0; i < iosAssets.count; i++) {
+      let asset = new ImageAsset(iosAssets[i]);
+
+      // this fixes the image aspect ratio in tns-core-modules version < 4.0
+      if (!asset.options) {
+        asset.options = { keepAspectRatio: true };
+      }
+
+      assets.push(asset);
     }
 
-    qb_imagePickerControllerDidFinishPickingAssets?(imagePickerController: QBImagePickerController, iosAssets: NSArray<any>): void {
-        let assets = [];
-
-        for (let i = 0; i < iosAssets.count; i++) {
-            let asset = new imageAssetModule.ImageAsset(iosAssets[i]);
-
-            // this fixes the image aspect ratio in tns-core-modules version < 4.0
-            if (!asset.options) {
-                asset.options = { keepAspectRatio: true };
-            }
-
-            assets.push(asset);
-        }
-
-        this._resolve(assets);
-
-        imagePickerController.dismissViewControllerAnimatedCompletion(true, () => {
-            this.deRegisterFromGlobal();
-            // FIX: possible memory issue when picking images many times.
-            // Not the best solution, but the only one working for now
-            // https://github.com/NativeScript/nativescript-imagepicker/issues/222
-            setTimeout(utils.GC, 200);
-        });
-
+    if (this._resolve) {
+      this._resolve(assets);
     }
 
-    // FIX: stores a reference to global scope, so that the delegate is not collected in native
-    // https://github.com/NativeScript/nativescript-imagepicker/issues/251
-    private registerToGlobal(): any {
-        (<any>global).imagePickerControllerDelegate = this;
-    }
+    imagePickerController.dismissViewControllerAnimatedCompletion(true, () => {
+      if (imagePicker) {
+        imagePicker._cleanup();
+      }
+      imagePicker = null;
+      // FIX: possible memory issue when picking images many times.
+      // Not the best solution, but the only one working for now
+      // https://github.com/NativeScript/nativescript-imagepicker/issues/222
+      setTimeout(Utils.GC, 200);
+    });
+  }
 
-    private deRegisterFromGlobal(): any {
-        (<any>global).imagePickerControllerDelegate = null;
-    }
+  static ObjCProtocols = [QBImagePickerControllerDelegate];
 
-    public static ObjCProtocols = [QBImagePickerControllerDelegate];
-
-    static new(): ImagePickerControllerDelegate {
-        const instance = <ImagePickerControllerDelegate>super.new(); // calls new() on the NSObject
-
-        instance.registerToGlobal();
-
-        return instance;
-    }
+  static initWithOwner(owner: ImagePicker, resolve, reject) {
+    const delegate = new ImagePickerControllerDelegate();
+    delegate.owner = new WeakRef(owner);
+    delegate._resolve = resolve;
+    delegate._reject = reject;
+    return delegate;
+  }
 }
 
+let imagePicker: ImagePicker;
 export function create(options?: Options, hostView?: View): ImagePicker {
-    return new ImagePicker(options, hostView);
+  imagePicker = new ImagePicker(options, hostView);
+  return imagePicker;
 }
