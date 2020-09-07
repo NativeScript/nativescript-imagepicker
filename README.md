@@ -1,3 +1,10 @@
+## NativeScript 7
+
+* Use `@nativescript/imagepicker`: `~1.0.0`
+* [Source managed here](https://github.com/NativeScript/plugins)
+
+## If using 6 and below, see the following:
+
 # NativeScript Image Picker ![apple](https://cdn3.iconfinder.com/data/icons/picons-social/57/16-apple-32.png) ![android](https://cdn4.iconfinder.com/data/icons/logos-3/228/android-32.png) 
 
 
