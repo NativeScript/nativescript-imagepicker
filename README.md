@@ -1,4 +1,4 @@
-## NativeScript 7
+## NativeScript 7 or higher
 
 * Use `@nativescript/imagepicker`: `~1.0.0`
 * [Source managed here](https://github.com/NativeScript/plugins)
