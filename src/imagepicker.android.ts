@@ -220,6 +220,11 @@ export class ImagePicker {
                                         let uri = clipItem.getUri();
                                         if (uri) {
                                             let selectedAsset = new imageAssetModule.ImageAsset(UriHelper._calculateFileUri(uri));
+                                            // Cap dimensions to prevent bitmap overflow on API 22
+                                            selectedAsset.options = selectedAsset.options || {};
+                                            const maxSize = 2048; // Safe max dimension
+                                            selectedAsset.options.width = maxSize;
+                                            selectedAsset.options.height = maxSize;
                                             results.push(selectedAsset);
                                         }
                                     }
@@ -227,6 +232,11 @@ export class ImagePicker {
                             } else {
                                 let uri = data.getData();
                                 let selectedAsset = new imageAssetModule.ImageAsset(UriHelper._calculateFileUri(uri));
+                                // Cap dimensions to prevent bitmap overflow on API 22
+                                selectedAsset.options = selectedAsset.options || {};
+                                const maxSize = 2048; // Safe max dimension
+                                selectedAsset.options.width = maxSize;
+                                selectedAsset.options.height = maxSize;
                                 results.push(selectedAsset);
                             }
 
